@@ -9,7 +9,7 @@
 
 - **Active Branch**: `backend/core`
 - **Active Developer**: Person 1 (Backend & AI)
-- **Phase**: Phase 3 — Profiles & Organizations (READY TO START)
+- **Phase**: Phase 4 — Careers & Skills + Seed Data (READY TO START)
 - **Last Updated**: 2026-08-25
 
 ---
@@ -46,21 +46,35 @@
 - Multi-Tenant Organization boundary enforcement (`src/middleware/organizationScope.middleware.js`)
 - Full Auth test suite passing (`tests/auth.test.js` - 10 test cases)
 
+### ✅ Phase 3 — Profiles & Organizations
+- `StudentProfile` Model (`src/models/studentProfile.model.js`)
+- `Organization` and `Department` Models (`src/models/organization.model.js`, `src/models/department.model.js`)
+- Profile Service with auto-initialization (`src/services/profile.service.js`)
+- Profile Endpoints:
+  - `GET /api/v1/profile` (retrieves student profile with populated target career & org)
+  - `PUT /api/v1/profile` (updates rollNumber, graduationYear, CGPA, interests, locations, experience)
+  - `POST /api/v1/profile/skills` (adds skill or updates proficiency levels 1-5)
+  - `PUT /api/v1/profile/target-career` (selects active career path)
+- Profile test suite passing (`tests/profile.test.js` - 8 test cases, total 21 passed across test suites)
+
 ---
 
 ## Next Phase
 
-### 🔄 Phase 3 — Profiles & Organizations
+### 🔄 Phase 4 — Careers & Skills + Seed Data
 
-**Goal**: Implement Organization, Department, and StudentProfile models and REST APIs.
+**Goal**: Implement master catalog of Careers, Skills, CareerRequirements, Career-Skill mappings, REST APIs, and a comprehensive database seed script.
 
 **Files to implement:**
-- [ ] `apps/backend/src/models/studentProfile.model.js`
-- [ ] `apps/backend/src/validators/profile.validator.js`
-- [ ] `apps/backend/src/services/profile.service.js`
-- [ ] `apps/backend/src/controllers/profile.controller.js`
-- [ ] `apps/backend/src/routes/profile.routes.js`
-- [ ] `apps/backend/tests/profile.test.js`
+- [ ] `apps/backend/src/models/careerRequirement.model.js`
+- [ ] `apps/backend/src/services/career.service.js`
+- [ ] `apps/backend/src/services/skill.service.js`
+- [ ] `apps/backend/src/controllers/career.controller.js`
+- [ ] `apps/backend/src/controllers/skill.controller.js`
+- [ ] `apps/backend/src/routes/career.routes.js`
+- [ ] `apps/backend/src/routes/skill.routes.js`
+- [ ] `apps/backend/scripts/seed.js`
+- [ ] `apps/backend/tests/careerSkill.test.js`
 
 ---
 
@@ -68,8 +82,7 @@
 
 | Phase | Title | Status |
 | :--- | :--- | :--- |
-| Phase 3 | Profiles & Organizations | 🔄 Next |
-| Phase 4 | Careers & Skills + Seed Data | ⏳ Pending |
+| Phase 4 | Careers & Skills + Seed Data | 🔄 Next |
 | Phase 5 | Assessments | ⏳ Pending |
 | Phase 6 | Career Gap Engine | ⏳ Pending |
 | Phase 7 | Gemini AI Integration | ⏳ Pending |

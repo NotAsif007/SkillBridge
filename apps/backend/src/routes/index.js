@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import healthRouter from './health.routes.js';
 import authRouter from './auth.routes.js';
+import profileRouter from './profile.routes.js';
 
 const router = Router();
 
@@ -10,8 +11,10 @@ router.use('/health', healthRouter);
 // Auth routes — /api/v1/auth
 router.use('/auth', authRouter);
 
-// Phase 3+ routes:
-// router.use('/profile',     profileRouter);
+// Profile routes — /api/v1/profile
+router.use('/profile', profileRouter);
+
+// Phase 4+ routes:
 // router.use('/careers',     careerRouter);
 // router.use('/skills',      skillRouter);
 // router.use('/career-analysis', gapEngineRouter);
