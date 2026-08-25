@@ -9,7 +9,7 @@
 
 - **Active Branch**: `backend/core`
 - **Active Developer**: Person 1 (Backend & AI)
-- **Phase**: Phase 9 — Projects (READY TO START)
+- **Phase**: Phase 10 — Resume (READY TO START)
 - **Last Updated**: 2026-08-25
 
 ---
@@ -85,23 +85,30 @@
 - Task completion toggle & automatic progress recalculation (`PATCH /api/v1/roadmaps/tasks/:taskId`)
 - Readiness score synchronization (`roadmapProgress` weight in placement score)
 - Roadmap Endpoints (`GET /api/v1/roadmaps/active`, `POST /api/v1/roadmaps/generate`, `PATCH /api/v1/roadmaps/tasks/:taskId`)
-- Roadmap test suite passing (`tests/roadmap.test.js` - 6 test cases, total 49 passed across test suites)
+- Roadmap test suite passing (`tests/roadmap.test.js` - 6 test cases)
+
+### ✅ Phase 9 — Projects
+- `Project` Model (`src/models/project.model.js`) for student portfolio items
+- Project Service with CRUD, AI project recommendation generation, and deterministic score computation (`src/services/project.service.js`)
+- Automatic placement readiness project score updates (`projects` weight)
+- Project Endpoints (`GET /api/v1/projects`, `POST /api/v1/projects`, `PUT /api/v1/projects/:id`, `DELETE /api/v1/projects/:id`, `GET /api/v1/projects/recommendations`)
+- Project test suite passing (`tests/project.test.js` - 6 test cases, total 55 passed across test suites)
 
 ---
 
 ## Next Phase
 
-### 🔄 Phase 9 — Projects
+### 🔄 Phase 10 — Resume
 
-**Goal**: Implement student portfolio Projects management, Project creation/updating, AI project recommendations closing target skill gaps, and automatic placement readiness project score recalculation.
+**Goal**: Implement student Resume upload, ATS evaluation via Gemini AI, Resume analysis history, and placement readiness resume score synchronization.
 
 **Files to implement:**
-- [ ] `apps/backend/src/models/project.model.js`
-- [ ] `apps/backend/src/validators/project.validator.js`
-- [ ] `apps/backend/src/services/project.service.js`
-- [ ] `apps/backend/src/controllers/project.controller.js`
-- [ ] `apps/backend/src/routes/project.routes.js`
-- [ ] `apps/backend/tests/project.test.js`
+- [ ] `apps/backend/src/models/resume.model.js`
+- [ ] `apps/backend/src/validators/resume.validator.js`
+- [ ] `apps/backend/src/services/resume.service.js`
+- [ ] `apps/backend/src/controllers/resume.controller.js`
+- [ ] `apps/backend/src/routes/resume.routes.js`
+- [ ] `apps/backend/tests/resume.test.js`
 
 ---
 
@@ -109,8 +116,7 @@
 
 | Phase | Title | Status |
 | :--- | :--- | :--- |
-| Phase 9 | Projects | 🔄 Next |
-| Phase 10 | Resume | ⏳ Pending |
+| Phase 10 | Resume | 🔄 Next |
 | Phase 11 | AI Interviews | ⏳ Pending |
 | Phase 12 | Jobs & Applications | ⏳ Pending |
 | Phase 13 | Student Dashboard API | ⏳ Pending |

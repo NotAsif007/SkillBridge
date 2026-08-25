@@ -16,6 +16,8 @@ export class GeminiService {
       return fallbackData;
     }
 
+    let timeoutId = null;
+
     try {
       const model = client.getGenerativeModel({
         model: 'gemini-1.5-flash',
@@ -26,9 +28,9 @@ export class GeminiService {
         },
       });
 
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Gemini API request timed out')), 15000)
-      );
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error('Gemini API request timed out')), 15000);
+      });
 
       const resultPromise = model.generateContent(prompt);
       const result = await Promise.race([resultPromise, timeoutPromise]);
@@ -56,6 +58,8 @@ export class GeminiService {
         orgId,
       });
       return fallbackData;
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
     }
   }
 
