@@ -1,0 +1,25 @@
+﻿{
+  "name": "careeros-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CareerOS — AI-powered Career and Placement Readiness SaaS",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "backend:dev": "npm --workspace=apps/backend run dev",
+    "backend:start": "npm --workspace=apps/backend run start",
+    "backend:test": "npm --workspace=apps/backend test",
+    "frontend:dev": "npm --workspace=apps/frontend run dev",
+    "seed": "npm --workspace=apps/backend run seed"
+  },
+  "keywords": [
+    "careeros",
+    "placement",
+    "edtech",
+    "ai",
+    "gemini"
+  ],
+  "author": "",
+  "license": "ISC"
+}

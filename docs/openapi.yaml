@@ -1,0 +1,234 @@
+﻿openapi: 3.0.3
+info:
+  title: CareerOS REST API
+  description: AI-Powered Career & Placement Readiness Operating System
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: V1 REST API Endpoint
+
+paths:
+  /auth/me:
+    get:
+      summary: Get current authenticated user
+      tags: [Authentication]
+      responses:
+        '200':
+          description: User profile and organizational membership
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthMeResponse'
+
+  /auth/logout:
+    post:
+      summary: Invalidate user session
+      tags: [Authentication]
+      responses:
+        '200':
+          description: Logout confirmation
+
+  /profile:
+    get:
+      summary: Get student profile
+      tags: [Profile]
+      responses:
+        '200':
+          description: Student profile with skills and target career
+    put:
+      summary: Update student profile
+      tags: [Profile]
+      responses:
+        '200':
+          description: Updated student profile
+
+  /careers:
+    get:
+      summary: List all careers
+      tags: [Careers]
+      responses:
+        '200':
+          description: List of standard careers
+  /careers/{id}:
+    get:
+      summary: Get career details with required skill weightings
+      tags: [Careers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Career details with requirements
+
+  /skills:
+    get:
+      summary: List skills
+      tags: [Skills]
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of skills
+
+  /career-analysis:
+    get:
+      summary: Calculate Career Gap & Placement Readiness
+      tags: [Career Gap Engine]
+      responses:
+        '200':
+          description: Gap analysis and score breakdown
+
+  /assessments:
+    get:
+      summary: List assessments
+      tags: [Assessments]
+      responses:
+        '200':
+          description: List of assessments
+  /assessments/{id}:
+    get:
+      summary: Start assessment session
+      tags: [Assessments]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Assessment questions
+  /assessments/{id}/submit:
+    post:
+      summary: Submit assessment answers
+      tags: [Assessments]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Evaluation and updated skill proficiency
+
+  /roadmaps/me:
+    get:
+      summary: Get student learning roadmap
+      tags: [Roadmaps]
+      responses:
+        '200':
+          description: Milestone tasks and completion state
+
+  /projects:
+    get:
+      summary: List student portfolio projects
+      tags: [Projects]
+      responses:
+        '200':
+          description: Projects list
+    post:
+      summary: Add a portfolio project
+      tags: [Projects]
+      responses:
+        '201':
+          description: Project created
+
+  /resumes/upload:
+    post:
+      summary: Upload resume for AI parsing and scoring
+      tags: [Resumes]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Resume analysis and extracted skills
+
+  /interviews:
+    post:
+      summary: Start AI mock interview session
+      tags: [Interviews]
+      responses:
+        '201':
+          description: Interview initialized with first question
+  /interviews/{id}/answer:
+    post:
+      summary: Submit answer to current interview question
+      tags: [Interviews]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Feedback and next question / final score
+
+  /jobs:
+    get:
+      summary: List job openings with student skill match percentage
+      tags: [Jobs]
+      responses:
+        '200':
+          description: Jobs list
+
+  /dashboard/student:
+    get:
+      summary: Aggregated student dashboard data
+      tags: [Dashboard]
+      responses:
+        '200':
+          description: Readiness, progress, and activity summary
+
+  /dashboard/admin:
+    get:
+      summary: Aggregated college admin dashboard data
+      tags: [Admin]
+      responses:
+        '200':
+          description: Institutional placement readiness and skill gaps
+
+  /admin/students:
+    get:
+      summary: Search and paginate organization students
+      tags: [Admin]
+      responses:
+        '200':
+          description: Paginated student roster
+
+components:
+  schemas:
+    AuthMeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            user:
+              type: object
+              properties:
+                _id:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                role:
+                  type: string
+                  enum: [STUDENT, COLLEGE_ADMIN, SUPER_ADMIN]
