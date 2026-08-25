@@ -1,0 +1,16 @@
+import { Router } from 'express';
+import { ResumeController } from '../controllers/resume.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { analyzeResumeSchema } from '../validators/resume.validator.js';
+
+const router = Router();
+
+// All resume operations require authentication
+router.use(requireAuth);
+
+router.post('/analyze', validate(analyzeResumeSchema), ResumeController.analyzeResume);
+router.get('/latest', ResumeController.getLatestResume);
+router.get('/history', ResumeController.getResumeHistory);
+
+export default router;

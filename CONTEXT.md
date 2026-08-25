@@ -9,7 +9,7 @@
 
 - **Active Branch**: `backend/core`
 - **Active Developer**: Person 1 (Backend & AI)
-- **Phase**: Phase 10 — Resume (READY TO START)
+- **Phase**: Phase 11 — AI Mock Interviews (READY TO START)
 - **Last Updated**: 2026-08-25
 
 ---
@@ -92,23 +92,30 @@
 - Project Service with CRUD, AI project recommendation generation, and deterministic score computation (`src/services/project.service.js`)
 - Automatic placement readiness project score updates (`projects` weight)
 - Project Endpoints (`GET /api/v1/projects`, `POST /api/v1/projects`, `PUT /api/v1/projects/:id`, `DELETE /api/v1/projects/:id`, `GET /api/v1/projects/recommendations`)
-- Project test suite passing (`tests/project.test.js` - 6 test cases, total 55 passed across test suites)
+- Project test suite passing (`tests/project.test.js` - 6 test cases)
+
+### ✅ Phase 10 — Resume
+- `Resume` Model (`src/models/resume.model.js`) storing parsed content, ATS score, formatting score, impact score, extracted skills, and recommendations
+- Resume Service with Gemini AI ATS evaluation (`src/services/resume.service.js`)
+- Automatic placement readiness resume score updates (`resume` weight)
+- Resume Endpoints (`POST /api/v1/resumes/analyze`, `GET /api/v1/resumes/latest`, `GET /api/v1/resumes/history`)
+- Resume test suite passing (`tests/resume.test.js` - 4 test cases, total 60 passed across test suites)
 
 ---
 
 ## Next Phase
 
-### 🔄 Phase 10 — Resume
+### 🔄 Phase 11 — AI Mock Interviews
 
-**Goal**: Implement student Resume upload, ATS evaluation via Gemini AI, Resume analysis history, and placement readiness resume score synchronization.
+**Goal**: Implement stateful AI Mock Interview Sessions, dynamic question generation, live answer submission & evaluation, session completion scoring, and placement readiness interview score synchronization (`interviews` weight).
 
 **Files to implement:**
-- [ ] `apps/backend/src/models/resume.model.js`
-- [ ] `apps/backend/src/validators/resume.validator.js`
-- [ ] `apps/backend/src/services/resume.service.js`
-- [ ] `apps/backend/src/controllers/resume.controller.js`
-- [ ] `apps/backend/src/routes/resume.routes.js`
-- [ ] `apps/backend/tests/resume.test.js`
+- [ ] `apps/backend/src/models/interviewSession.model.js`
+- [ ] `apps/backend/src/validators/interview.validator.js`
+- [ ] `apps/backend/src/services/interview.service.js`
+- [ ] `apps/backend/src/controllers/interview.controller.js`
+- [ ] `apps/backend/src/routes/interview.routes.js`
+- [ ] `apps/backend/tests/interview.test.js`
 
 ---
 
@@ -116,8 +123,7 @@
 
 | Phase | Title | Status |
 | :--- | :--- | :--- |
-| Phase 10 | Resume | 🔄 Next |
-| Phase 11 | AI Interviews | ⏳ Pending |
+| Phase 11 | AI Interviews | 🔄 Next |
 | Phase 12 | Jobs & Applications | ⏳ Pending |
 | Phase 13 | Student Dashboard API | ⏳ Pending |
 | Phase 14 | College Admin Analytics | ⏳ Pending |

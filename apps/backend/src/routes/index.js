@@ -8,6 +8,7 @@ import assessmentRouter from './assessment.routes.js';
 import gapEngineRouter from './gapEngine.routes.js';
 import roadmapRouter from './roadmap.routes.js';
 import projectRouter from './project.routes.js';
+import resumeRouter from './resume.routes.js';
 
 const router = Router();
 
@@ -38,8 +39,10 @@ router.use('/roadmaps', roadmapRouter);
 // Projects — /api/v1/projects
 router.use('/projects', projectRouter);
 
-// Phase 10+ routes:
-// router.use('/resumes',     resumeRouter);
+// Resumes — /api/v1/resumes
+router.use('/resumes', resumeRouter);
+
+// Phase 11+ routes:
 // router.use('/interviews',  interviewRouter);
 // router.use('/jobs',        jobRouter);
 // router.use('/dashboard',   dashboardRouter);
