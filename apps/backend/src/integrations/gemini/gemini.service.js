@@ -19,23 +19,22 @@ export class GeminiService {
     let timeoutId = null;
 
     try {
-      const model = client.getGenerativeModel({
-        model: 'gemini-1.5-flash',
-        systemInstruction: systemInstruction || 'You are an expert AI Career and Placement Readiness Coach. Respond exclusively with valid JSON.',
-        generationConfig: {
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error('Gemini API request timed out')), 15000);
+      });
+
+      const generatePromise = client.models.generateContent({
+        model: 'gemini-3.5-flash-lite',
+        contents: prompt,
+        config: {
+          systemInstruction: systemInstruction || 'You are an expert AI Career and Placement Readiness Coach. Respond exclusively with valid JSON.',
           responseMimeType: 'application/json',
           temperature: 0.2,
         },
       });
 
-      const timeoutPromise = new Promise((_, reject) => {
-        timeoutId = setTimeout(() => reject(new Error('Gemini API request timed out')), 15000);
-      });
-
-      const resultPromise = model.generateContent(prompt);
-      const result = await Promise.race([resultPromise, timeoutPromise]);
-
-      const text = result.response.text();
+      const result = await Promise.race([generatePromise, timeoutPromise]);
+      const text = result.text;
       const parsed = JSON.parse(text);
 
       await this.logAudit({

@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { config } from '../../config/env.js';
 import { logger } from '../../utils/logger.js';
 
@@ -7,8 +7,8 @@ let genAI = null;
 export function getGeminiClient() {
   if (!genAI && config.gemini.apiKey) {
     try {
-      genAI = new GoogleGenerativeAI(config.gemini.apiKey);
-      logger.info('Gemini AI Client initialized successfully');
+      genAI = new GoogleGenAI({ apiKey: config.gemini.apiKey });
+      logger.info('Gemini AI Client initialized successfully with GoogleGenAI SDK');
     } catch (err) {
       logger.warn(`Failed to initialize Gemini AI: ${err.message}`);
     }
