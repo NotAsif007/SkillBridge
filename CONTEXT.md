@@ -9,7 +9,7 @@
 
 - **Active Branch**: `backend/core`
 - **Active Developer**: Person 1 (Backend & AI)
-- **Phase**: Phase 8 — Roadmaps (READY TO START)
+- **Phase**: Phase 9 — Projects (READY TO START)
 - **Last Updated**: 2026-08-25
 
 ---
@@ -76,30 +76,32 @@
 ### ✅ Phase 7 — Gemini AI Integration
 - `AIGeneration` Model (`src/models/aiGeneration.model.js`) for audit trails and token tracking
 - `GeminiClient` singleton (`src/integrations/gemini/geminiClient.js`)
-- Structured JSON AI engine (`src/integrations/gemini/gemini.service.js`) for:
-  - Career Gap Qualitative Insights
-  - Personalized Learning Roadmap Generation
-  - ATS Resume Analysis & Diagnostic Scoring
-  - Recommended Portfolio Projects
-  - AI Mock Interview Questions & Answer Critique
-- Robust fallback mechanisms ensuring non-blocking local dev and CI execution
-- Gemini AI test suite passing (`tests/gemini.test.js` - 5 test cases, total 43 passed across test suites)
+- Structured JSON AI engine (`src/integrations/gemini/gemini.service.js`)
+- Gemini AI test suite passing (`tests/gemini.test.js` - 5 test cases)
+
+### ✅ Phase 8 — Roadmaps
+- `Roadmap` Model (`src/models/roadmap.model.js`) with milestones and task completion status
+- Roadmap Service with AI plan generation targeting identified skill gaps (`src/services/roadmap.service.js`)
+- Task completion toggle & automatic progress recalculation (`PATCH /api/v1/roadmaps/tasks/:taskId`)
+- Readiness score synchronization (`roadmapProgress` weight in placement score)
+- Roadmap Endpoints (`GET /api/v1/roadmaps/active`, `POST /api/v1/roadmaps/generate`, `PATCH /api/v1/roadmaps/tasks/:taskId`)
+- Roadmap test suite passing (`tests/roadmap.test.js` - 6 test cases, total 49 passed across test suites)
 
 ---
 
 ## Next Phase
 
-### 🔄 Phase 8 — Roadmaps
+### 🔄 Phase 9 — Projects
 
-**Goal**: Implement student personalized learning Roadmaps, Milestone tracking, Task completion toggles, Progress calculation, and integration with the Gemini AI roadmap generator.
+**Goal**: Implement student portfolio Projects management, Project creation/updating, AI project recommendations closing target skill gaps, and automatic placement readiness project score recalculation.
 
 **Files to implement:**
-- [ ] `apps/backend/src/models/roadmap.model.js`
-- [ ] `apps/backend/src/validators/roadmap.validator.js`
-- [ ] `apps/backend/src/services/roadmap.service.js`
-- [ ] `apps/backend/src/controllers/roadmap.controller.js`
-- [ ] `apps/backend/src/routes/roadmap.routes.js`
-- [ ] `apps/backend/tests/roadmap.test.js`
+- [ ] `apps/backend/src/models/project.model.js`
+- [ ] `apps/backend/src/validators/project.validator.js`
+- [ ] `apps/backend/src/services/project.service.js`
+- [ ] `apps/backend/src/controllers/project.controller.js`
+- [ ] `apps/backend/src/routes/project.routes.js`
+- [ ] `apps/backend/tests/project.test.js`
 
 ---
 
@@ -107,8 +109,7 @@
 
 | Phase | Title | Status |
 | :--- | :--- | :--- |
-| Phase 8 | Roadmaps | 🔄 Next |
-| Phase 9 | Projects | ⏳ Pending |
+| Phase 9 | Projects | 🔄 Next |
 | Phase 10 | Resume | ⏳ Pending |
 | Phase 11 | AI Interviews | ⏳ Pending |
 | Phase 12 | Jobs & Applications | ⏳ Pending |
