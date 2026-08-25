@@ -1,4 +1,4 @@
-﻿# CareerOS — Design System & UI/UX Guidelines
+# CareerOS — Design System & UI/UX Guidelines
 
 ## 1. Design Philosophy & Brand Identity
 
