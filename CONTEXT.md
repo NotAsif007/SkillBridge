@@ -9,7 +9,7 @@
 
 - **Active Branch**: `backend/core`
 - **Active Developer**: Person 1 (Backend & AI)
-- **Phase**: Phase 2 — Authentication (READY TO START)
+- **Phase**: Phase 3 — Profiles & Organizations (READY TO START)
 - **Last Updated**: 2026-08-25
 
 ---
@@ -21,37 +21,46 @@
 - Git remote: `https://github.com/NotAsif007/careerOS.git`
 - Branches: `main`, `develop`, `backend/core`
 - All docs written: `SPEC.md`, `docs/API_CONTRACT.md`, `docs/openapi.yaml`, `docs/DATABASE.md`, `docs/ARCHITECTURE.md`, `docs/DESIGN.md`
-- Full file tree scaffolded (empty files, all modules)
+- Full file tree scaffolded
 
 ### ✅ Phase 1 — Backend Foundation
 - Express app bootstrap (`app.js`, `server.js`)
 - MongoDB connection manager with Mongoose (`src/config/db.js`)
-- Environment validation (`src/config/env.js`)
 - Security middleware: Helmet, CORS, Rate Limiters (`src/middleware/rateLimiter.middleware.js`)
 - Centralized Error Handling & AppError (`src/utils/errors.js`, `src/middleware/error.middleware.js`)
 - Standardized API Response Envelopes (`src/utils/responseEnvelope.js`)
 - Zod Request Validator middleware (`src/middleware/validate.middleware.js`)
 - Health Check API (`GET /api/v1/health`)
-- Automated tests passing via Jest + mongodb-memory-server (`tests/health.test.js`)
+- Automated tests passing via Jest (`tests/health.test.js`)
+
+### ✅ Phase 2 — Authentication
+- User Mongoose Model (`src/models/user.model.js`)
+- Google OAuth / OpenID Connect token verification service (`src/integrations/google/oauthClient.js`)
+- JWT Token Issuance, verification, and session management (`src/services/auth.service.js`)
+- Auth Middleware (`requireAuth`, `requireRole`, `requireOrganizationAccess`)
+- Auth Endpoints:
+  - `POST /api/v1/auth/google` (Google OAuth ID Token verification & auto-registration)
+  - `POST /api/v1/auth/dev-login` (Fast dev/test token generation, disabled in production)
+  - `GET /api/v1/auth/me` (Authenticated profile retrieval with organization/department population)
+  - `POST /api/v1/auth/logout`
+- Multi-Tenant Organization boundary enforcement (`src/middleware/organizationScope.middleware.js`)
+- Full Auth test suite passing (`tests/auth.test.js` - 10 test cases)
 
 ---
 
 ## Next Phase
 
-### 🔄 Phase 2 — Authentication (Google OAuth / JWT)
+### 🔄 Phase 3 — Profiles & Organizations
 
-**Goal**: Complete Google OAuth 2.0 / OpenID Connect + JWT Session management and Role-Based Access Control.
+**Goal**: Implement Organization, Department, and StudentProfile models and REST APIs.
 
 **Files to implement:**
-- [ ] `apps/backend/src/models/user.model.js`
-- [ ] `apps/backend/src/integrations/google/oauthClient.js`
-- [ ] `apps/backend/src/services/auth.service.js`
-- [ ] `apps/backend/src/controllers/auth.controller.js`
-- [ ] `apps/backend/src/middleware/auth.middleware.js`
-- [ ] `apps/backend/src/middleware/role.middleware.js`
-- [ ] `apps/backend/src/validators/auth.validator.js`
-- [ ] `apps/backend/src/routes/auth.routes.js`
-- [ ] `apps/backend/tests/auth.test.js`
+- [ ] `apps/backend/src/models/studentProfile.model.js`
+- [ ] `apps/backend/src/validators/profile.validator.js`
+- [ ] `apps/backend/src/services/profile.service.js`
+- [ ] `apps/backend/src/controllers/profile.controller.js`
+- [ ] `apps/backend/src/routes/profile.routes.js`
+- [ ] `apps/backend/tests/profile.test.js`
 
 ---
 
@@ -59,8 +68,7 @@
 
 | Phase | Title | Status |
 | :--- | :--- | :--- |
-| Phase 2 | Authentication (Google OAuth / JWT) | 🔄 Next |
-| Phase 3 | Profiles & Organizations | ⏳ Pending |
+| Phase 3 | Profiles & Organizations | 🔄 Next |
 | Phase 4 | Careers & Skills + Seed Data | ⏳ Pending |
 | Phase 5 | Assessments | ⏳ Pending |
 | Phase 6 | Career Gap Engine | ⏳ Pending |

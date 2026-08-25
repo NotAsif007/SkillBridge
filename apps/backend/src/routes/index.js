@@ -1,13 +1,16 @@
 import { Router } from 'express';
 import healthRouter from './health.routes.js';
+import authRouter from './auth.routes.js';
 
 const router = Router();
 
-// Health check — no auth required
+// Health check — public
 router.use('/health', healthRouter);
 
-// Phase 2+ routes will be added here as they are implemented:
-// router.use('/auth',        authRouter);
+// Auth routes — /api/v1/auth
+router.use('/auth', authRouter);
+
+// Phase 3+ routes:
 // router.use('/profile',     profileRouter);
 // router.use('/careers',     careerRouter);
 // router.use('/skills',      skillRouter);
