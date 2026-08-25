@@ -9,7 +9,7 @@
 
 - **Active Branch**: `backend/core`
 - **Active Developer**: Person 1 (Backend & AI)
-- **Phase**: Phase 5 — Assessments (READY TO START)
+- **Phase**: Phase 6 — Career Gap Engine (READY TO START)
 - **Last Updated**: 2026-08-25
 
 ---
@@ -55,24 +55,27 @@
 - Career and Skill Services (`src/services/career.service.js`, `src/services/skill.service.js`)
 - Career and Skill Controllers & Routes (`GET /api/v1/careers`, `GET /api/v1/careers/:id`, `GET /api/v1/skills`)
 - Comprehensive Database Seed Script (`scripts/seed.js` with apex org, 4 depts, 3 standard users, 37 master skills, 6 top careers with weighted requirements, sample student profile)
-- Career & Skill test suite passing (`tests/careerSkill.test.js` - 7 test cases, total 28 passed across test suites)
+- Career & Skill test suite passing (`tests/careerSkill.test.js` - 7 test cases)
+
+### ✅ Phase 5 — Assessments
+- `Assessment` and `AssessmentAttempt` Models (`src/models/assessment.model.js`, `src/models/assessmentAttempt.model.js`)
+- Assessment Service with answer-leak protection & automatic skill verification on pass (`src/services/assessment.service.js`)
+- Assessment Endpoints (`GET /api/v1/assessments`, `GET /api/v1/assessments/:id`, `POST /api/v1/assessments/:id/submit`, `GET /api/v1/assessments/attempts/me`)
+- Assessment test suite passing (`tests/assessment.test.js` - 6 test cases, total 34 passed across test suites)
 
 ---
 
 ## Next Phase
 
-### 🔄 Phase 5 — Assessments
+### 🔄 Phase 6 — Career Gap Engine
 
-**Goal**: Implement Assessment system, Questions, Attempt tracking, deterministic scoring, skill level verification updates, and REST endpoints.
+**Goal**: Implement deterministic skill gap analysis, placement readiness calculation (with configurable component weightings), matched/weak/missing skill categorization, and priority skill recommendations.
 
 **Files to implement:**
-- [ ] `apps/backend/src/models/assessment.model.js`
-- [ ] `apps/backend/src/models/assessmentAttempt.model.js`
-- [ ] `apps/backend/src/validators/assessment.validator.js`
-- [ ] `apps/backend/src/services/assessment.service.js`
-- [ ] `apps/backend/src/controllers/assessment.controller.js`
-- [ ] `apps/backend/src/routes/assessment.routes.js`
-- [ ] `apps/backend/tests/assessment.test.js`
+- [ ] `apps/backend/src/services/gapEngine.service.js`
+- [ ] `apps/backend/src/controllers/gapEngine.controller.js`
+- [ ] `apps/backend/src/routes/gapEngine.routes.js`
+- [ ] `apps/backend/tests/gapEngine.test.js`
 
 ---
 
@@ -80,8 +83,7 @@
 
 | Phase | Title | Status |
 | :--- | :--- | :--- |
-| Phase 5 | Assessments | 🔄 Next |
-| Phase 6 | Career Gap Engine | ⏳ Pending |
+| Phase 6 | Career Gap Engine | 🔄 Next |
 | Phase 7 | Gemini AI Integration | ⏳ Pending |
 | Phase 8 | Roadmaps | ⏳ Pending |
 | Phase 9 | Projects | ⏳ Pending |

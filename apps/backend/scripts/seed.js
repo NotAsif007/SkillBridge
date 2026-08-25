@@ -9,6 +9,8 @@ import { Skill } from '../src/models/skill.model.js';
 import { Career } from '../src/models/career.model.js';
 import { CareerRequirement } from '../src/models/careerRequirement.model.js';
 import { StudentProfile } from '../src/models/studentProfile.model.js';
+import { Assessment } from '../src/models/assessment.model.js';
+import { AssessmentAttempt } from '../src/models/assessmentAttempt.model.js';
 
 export async function seedDatabase() {
   logger.info('🌱 Starting CareerOS Database Seeding...');
@@ -21,6 +23,8 @@ export async function seedDatabase() {
   await Career.deleteMany({});
   await CareerRequirement.deleteMany({});
   await StudentProfile.deleteMany({});
+  await Assessment.deleteMany({});
+  await AssessmentAttempt.deleteMany({});
 
   logger.info('🧹 Cleaned existing records.');
 
@@ -296,7 +300,69 @@ export async function seedDatabase() {
 
   logger.info(`✨ Seeded ${careersData.length} careers with weighted requirements.`);
 
-  // 7. Initialize Student Profile for Demo User Alex Chen
+  // 7. Seed Sample Assessments
+  const sampleAssessments = [
+    {
+      title: 'JavaScript Intermediate Assessment',
+      description: 'Test closures, event loop, Promises, and prototype inheritance',
+      skillId: skillMap['JavaScript']._id,
+      difficulty: 'INTERMEDIATE',
+      durationMinutes: 25,
+      passingScore: 70,
+      questions: [
+        {
+          questionText: 'What is the output of typeof (function(){})()?',
+          options: ['"function"', '"undefined"', '"object"', '"boolean"'],
+          correctOptionIndex: 1,
+          explanation: 'The IIFE returns nothing, so its value is undefined.',
+          points: 10,
+        },
+        {
+          questionText: 'Where do Promise callbacks execute in the Node.js event loop?',
+          options: ['Timers queue', 'Poll queue', 'Microtask queue', 'Check queue'],
+          correctOptionIndex: 2,
+          explanation: 'Promises execute in the microtask queue between phase ticks.',
+          points: 10,
+        },
+        {
+          questionText: 'What does Object.freeze() prevent?',
+          options: ['Property addition only', 'Property modification, addition, and deletion', 'Garbage collection', 'Prototype access'],
+          correctOptionIndex: 1,
+          explanation: 'Object.freeze() makes the object immutable.',
+          points: 10,
+        },
+      ],
+    },
+    {
+      title: 'React Fundamentals Assessment',
+      description: 'Evaluate understanding of state, hooks, and component lifecycle',
+      skillId: skillMap['React']._id,
+      difficulty: 'INTERMEDIATE',
+      durationMinutes: 20,
+      passingScore: 70,
+      questions: [
+        {
+          questionText: 'What triggers a React component re-render?',
+          options: ['State or prop changes', 'Variable assignment', 'DOM mutation', 'CSS transition'],
+          correctOptionIndex: 0,
+          explanation: 'State or prop updates cause virtual DOM diffing.',
+          points: 10,
+        },
+        {
+          questionText: 'When is the cleanup function of useEffect called?',
+          options: ['Before unmounting and before the next effect run', 'Only on unmount', 'Before initial render', 'Never'],
+          correctOptionIndex: 0,
+          explanation: 'Cleanup executes before re-running the effect and upon component unmount.',
+          points: 10,
+        },
+      ],
+    },
+  ];
+
+  await Assessment.insertMany(sampleAssessments);
+  logger.info(`✨ Seeded ${sampleAssessments.length} standardized assessments.`);
+
+  // 8. Initialize Student Profile for Demo User Alex Chen
   const fullStack = await Career.findOne({ slug: 'full-stack-developer' });
 
   await StudentProfile.create({
