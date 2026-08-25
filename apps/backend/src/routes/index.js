@@ -11,6 +11,8 @@ import projectRouter from './project.routes.js';
 import resumeRouter from './resume.routes.js';
 import interviewRouter from './interview.routes.js';
 import jobRouter from './job.routes.js';
+import dashboardRouter from './dashboard.routes.js';
+import adminRouter from './admin.routes.js';
 
 const router = Router();
 
@@ -50,8 +52,10 @@ router.use('/interviews', interviewRouter);
 // Jobs & Applications — /api/v1/jobs
 router.use('/jobs', jobRouter);
 
-// Phase 13+ routes:
-// router.use('/dashboard',   dashboardRouter);
-// router.use('/admin',       adminRouter);
+// Dashboard (Student & Admin) — /api/v1/dashboard
+router.use('/dashboard', dashboardRouter);
+
+// College Admin Analytics & Management — /api/v1/admin
+router.use('/admin', adminRouter);
 
 export default router;

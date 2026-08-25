@@ -6,10 +6,10 @@ import { startSessionSchema, submitAnswerSchema } from '../validators/interview.
 
 const router = Router();
 
-// All interview endpoints require authentication
 router.use(requireAuth);
 
 router.post('/start', validate(startSessionSchema), InterviewController.startSession);
+router.post('/', validate(startSessionSchema), InterviewController.startSession);
 router.get('/history', InterviewController.getHistory);
 router.get('/:sessionId', InterviewController.getSession);
 router.post('/:sessionId/answer', validate(submitAnswerSchema), InterviewController.submitAnswer);

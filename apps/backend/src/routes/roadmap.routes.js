@@ -6,11 +6,12 @@ import { generateRoadmapSchema, toggleTaskSchema } from '../validators/roadmap.v
 
 const router = Router();
 
-// All roadmap operations require authentication
 router.use(requireAuth);
 
 router.get('/active', RoadmapController.getActiveRoadmap);
+router.get('/me', RoadmapController.getActiveRoadmap);
 router.post('/generate', validate(generateRoadmapSchema), RoadmapController.generateRoadmap);
 router.patch('/tasks/:taskId', validate(toggleTaskSchema), RoadmapController.toggleTask);
+router.put('/tasks/:taskId/toggle', validate(toggleTaskSchema), RoadmapController.toggleTask);
 
 export default router;
