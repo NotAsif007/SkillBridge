@@ -9,7 +9,7 @@
 
 - **Active Branch**: `backend/core`
 - **Active Developer**: Person 1 (Backend & AI)
-- **Phase**: Phase 7 — Gemini AI Integration (READY TO START)
+- **Phase**: Phase 8 — Roadmaps (READY TO START)
 - **Last Updated**: 2026-08-25
 
 ---
@@ -71,27 +71,35 @@
 - Live `StudentProfile.readinessScore` synchronization in database
 - Support for target career override analysis (`?careerId=...`)
 - Career Gap Engine API (`GET /api/v1/career-analysis`)
-- Gap Engine test suite passing (`tests/gapEngine.test.js` - 4 test cases, total 38 passed across test suites)
+- Gap Engine test suite passing (`tests/gapEngine.test.js` - 4 test cases)
+
+### ✅ Phase 7 — Gemini AI Integration
+- `AIGeneration` Model (`src/models/aiGeneration.model.js`) for audit trails and token tracking
+- `GeminiClient` singleton (`src/integrations/gemini/geminiClient.js`)
+- Structured JSON AI engine (`src/integrations/gemini/gemini.service.js`) for:
+  - Career Gap Qualitative Insights
+  - Personalized Learning Roadmap Generation
+  - ATS Resume Analysis & Diagnostic Scoring
+  - Recommended Portfolio Projects
+  - AI Mock Interview Questions & Answer Critique
+- Robust fallback mechanisms ensuring non-blocking local dev and CI execution
+- Gemini AI test suite passing (`tests/gemini.test.js` - 5 test cases, total 43 passed across test suites)
 
 ---
 
 ## Next Phase
 
-### 🔄 Phase 7 — Gemini AI Integration
+### 🔄 Phase 8 — Roadmaps
 
-**Goal**: Implement Gemini AI Service layer with strict schema validation, safe timeouts, rate limiting, and structured prompt generation for:
-- Qualitative Career Analysis & Strengths/Weaknesses Synthesis
-- Dynamic Personalized Roadmap Generation
-- ATS Resume Analysis & Improvement Suggestions
-- Project Recommendations
-- AI Interview Question Generation & Speech/Text Evaluation
-- `AIGeneration` audit & token tracking model (`src/models/aiGeneration.model.js`)
+**Goal**: Implement student personalized learning Roadmaps, Milestone tracking, Task completion toggles, Progress calculation, and integration with the Gemini AI roadmap generator.
 
 **Files to implement:**
-- [ ] `apps/backend/src/models/aiGeneration.model.js`
-- [ ] `apps/backend/src/integrations/gemini/geminiClient.js`
-- [ ] `apps/backend/src/integrations/gemini/gemini.service.js`
-- [ ] `apps/backend/tests/gemini.test.js`
+- [ ] `apps/backend/src/models/roadmap.model.js`
+- [ ] `apps/backend/src/validators/roadmap.validator.js`
+- [ ] `apps/backend/src/services/roadmap.service.js`
+- [ ] `apps/backend/src/controllers/roadmap.controller.js`
+- [ ] `apps/backend/src/routes/roadmap.routes.js`
+- [ ] `apps/backend/tests/roadmap.test.js`
 
 ---
 
@@ -99,8 +107,7 @@
 
 | Phase | Title | Status |
 | :--- | :--- | :--- |
-| Phase 7 | Gemini AI Integration | 🔄 Next |
-| Phase 8 | Roadmaps | ⏳ Pending |
+| Phase 8 | Roadmaps | 🔄 Next |
 | Phase 9 | Projects | ⏳ Pending |
 | Phase 10 | Resume | ⏳ Pending |
 | Phase 11 | AI Interviews | ⏳ Pending |
