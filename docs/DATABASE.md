@@ -1,4 +1,4 @@
-﻿# CareerOS Database Specification & Schemas (MongoDB / Mongoose)
+# CareerOS Database Specification & Schemas (MongoDB / Mongoose)
 
 ## 1. Overview
 CareerOS utilizes MongoDB with Mongoose ODM in a multi-tenant, organization-scoped architecture. All organization-specific data is strictly indexed and partitioned by `organizationId`.

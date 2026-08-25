@@ -1,4 +1,4 @@
-﻿# CareerOS Architecture & Repository Guide
+# CareerOS Architecture & Repository Guide
 
 ## 1. Monorepo Directory Architecture
 

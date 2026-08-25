@@ -1,4 +1,4 @@
-﻿# CareerOS — Project Specification
+# CareerOS — Project Specification
 
 ## 1. Project Overview
 

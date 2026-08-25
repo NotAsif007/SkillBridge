@@ -1,18 +1,22 @@
-﻿{
+{
   "name": "careeros-backend",
   "version": "1.0.0",
   "description": "CareerOS Backend API and Core AI Engine",
   "main": "src/server.js",
+  "type": "module",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "jest --detectOpenHandles --runInBand",
-    "test:watch": "jest --watch",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --runInBand",
+    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:smoke": "node scripts/smokeTest.js",
     "seed": "node scripts/seed.js"
   },
   "dependencies": {
-    "@google/genai": "^0.1.2",
+    "@google/genai": "^2.18.0",
+    "@google/generative-ai": "^0.24.0",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-rate-limit": "^7.3.1",
@@ -21,20 +25,23 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.2",
     "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.1",
+    "multer": "^2.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "mongodb-memory-server": "^9.4.0",
+    "mongodb-memory-server": "^10.1.2",
     "nodemon": "^3.1.4",
     "supertest": "^7.0.0"
   },
   "jest": {
     "testEnvironment": "node",
+    "testTimeout": 25000,
     "testMatch": [
       "**/tests/**/*.test.js"
     ],
-    "setupFilesAfterEnv": []
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    }
   }
 }

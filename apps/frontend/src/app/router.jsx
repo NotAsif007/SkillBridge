@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 // Placeholder route wrappers for Person 2 (Student) and Person 3 (Admin)

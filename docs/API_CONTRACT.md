@@ -1,4 +1,4 @@
-﻿# CareerOS API Contract Specification (`/api/v1`)
+# CareerOS API Contract Specification (`/api/v1`)
 
 > **Notice for Frontend Developers (Person 2 & Person 3):**
 > All endpoints documented here define the contract. You can immediately build against these endpoints using mock state/fixtures.

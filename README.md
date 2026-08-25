@@ -1,4 +1,4 @@
-﻿# CareerOS
+# CareerOS
 
 > AI-Powered Career & Placement Readiness Operating System for Colleges and Students.
 

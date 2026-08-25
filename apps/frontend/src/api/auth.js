@@ -1,4 +1,4 @@
-﻿import api from './client';
+import api from './client';
 
 export const authApi = {
   getMe: () => api.get('/auth/me'),
