@@ -1,71 +1,125 @@
-﻿# CareerOS Architecture & Security Guide
+﻿# CareerOS Architecture & Repository Guide
 
-## 1. System Architecture
+## 1. Monorepo Directory Architecture
 
 ```text
-┌────────────────────────────────────────────────────────┐
-│                   React + Vite (SPA)                   │
-│   (Person 2: /features/student  | Person 3: /admin)    │
-└───────────────────────────┬────────────────────────────┘
-                            │ REST JSON (/api/v1)
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│               Express.js Application Layer             │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │ Security: Helmet, CORS, Rate Limit, Size Guards  │  │
-│  └──────────────────────────┬───────────────────────┘  │
-│                             ▼                          │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │ Middlewares: requireAuth, requireRole, orgScope  │  │
-│  └──────────────────────────┬───────────────────────┘  │
-│                             ▼                          │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │ Controllers (Thin orchestration layer)           │  │
-│  └──────────────────────────┬───────────────────────┘  │
-│                             ▼                          │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │ Services (Pure domain business logic)            │  │
-│  └───────┬───────────────────────────────┬──────────┘  │
-│          │                               │             │
-│          ▼                               ▼             │
-│   ┌───────────────┐              ┌─────────────────┐   │
-│   │ Mongoose/DB   │              │ Gemini AI Layer │   │
-│   └──────┬────────┘              └────────┬────────┘   │
-└──────────┼────────────────────────────────┼────────────┘
-           ▼                                ▼
-     MongoDB Cluster                 Google Gemini API
+CareerOS
+│
+├── apps/
+│   │
+│   ├── backend/                 ← Person 1 (branch: backend/core)
+│   │   ├── src/
+│   │   │   ├── controllers/
+│   │   │   ├── models/
+│   │   │   ├── routes/
+│   │   │   ├── services/
+│   │   │   ├── middleware/
+│   │   │   ├── validators/
+│   │   │   └── integrations/
+│   │   │
+│   │   └── tests/
+│   │
+│   └── frontend/
+│       │
+│       └── src/
+│           │
+│           ├── app/             ← Shared
+│           ├── api/             ← Shared
+│           ├── components/      ← Shared
+│           ├── layouts/         ← Shared
+│           │
+│           └── features/
+│               │
+│               ├── student/     ← Person 2 (branch: frontend/student)
+│               │   ├── dashboard/
+│               │   ├── profile/
+│               │   ├── careers/
+│               │   ├── assessments/
+│               │   ├── roadmap/
+│               │   ├── projects/
+│               │   ├── resume/
+│               │   ├── interview/
+│               │   └── jobs/
+│               │
+│               └── admin/       ← Person 3 (branch: frontend/admin)
+│                   ├── dashboard/
+│                   ├── students/
+│                   ├── departments/
+│                   ├── analytics/
+│                   ├── assessments/
+│                   ├── interviews/
+│                   └── jobs/
+│
+├── docs/
+│   ├── openapi.yaml
+│   ├── API_CONTRACT.md
+│   ├── ARCHITECTURE.md
+│   ├── DATABASE.md
+│   └── DESIGN.md
+├── SPEC.md
+└── README.md
 ```
 
 ---
 
-## 2. Layer Responsibilities
+## 2. Layer & Domain Responsibilities
 
-1. **Routes**: Exclusively route registration, middleware wiring, and input validator binding.
-2. **Controllers**: Parse query/body/params, invoke services, return standardized envelopes (`{ success: true, data }`).
-3. **Services**: Pure business rules, deterministic scoring algorithms, Gemini AI orchestration, and multi-tenant scoping.
-4. **Models / Mongoose**: Schema validation, indexes, virtuals, and entity hooks.
+### Backend Layer (`apps/backend/` — Person 1)
+```text
+Route (routes/)
+  ↓
+Middleware (middleware/ - requireAuth, requireRole, orgScope)
+  ↓
+Validator (validators/ - Zod schemas)
+  ↓
+Controller (controllers/ - Thin orchestration)
+  ↓
+Service (services/ - Domain logic & Deterministic scoring)
+  ↓
+Mongoose Model (models/) + Gemini AI (integrations/gemini/)
+  ↓
+MongoDB Database
+```
+
+### Student Frontend (`apps/frontend/src/features/student/` — Person 2)
+| Subfolder | Feature Purpose | Primary API Endpoints Consumed |
+| :--- | :--- | :--- |
+| `dashboard/` | Student overview & readiness cards | `GET /api/v1/dashboard/student` |
+| `profile/` | Academic info & skill management | `GET /api/v1/profile`, `PUT /api/v1/profile`, `POST /api/v1/profile/skills` |
+| `careers/` | Career exploration & target selection | `GET /api/v1/careers`, `PUT /api/v1/profile/target-career` |
+| `assessments/` | Taking tests & viewing scores | `GET /api/v1/assessments`, `POST /api/v1/assessments/:id/submit` |
+| `roadmap/` | Personalized milestone task tracker | `GET /api/v1/roadmaps/me`, `PUT /api/v1/roadmaps/tasks/:id/toggle` |
+| `projects/` | Student portfolio project showcases | `GET /api/v1/projects`, `POST /api/v1/projects` |
+| `resume/` | PDF upload & AI ATS diagnostic | `POST /api/v1/resumes/upload` |
+| `interview/` | Interactive AI mock interview | `POST /api/v1/interviews`, `POST /api/v1/interviews/:id/answer` |
+| `jobs/` | Job discovery with skill matching | `GET /api/v1/jobs`, `POST /api/v1/jobs/:id/apply` |
+
+### Admin Frontend (`apps/frontend/src/features/admin/` — Person 3)
+| Subfolder | Feature Purpose | Primary API Endpoints Consumed |
+| :--- | :--- | :--- |
+| `dashboard/` | College placement summary | `GET /api/v1/dashboard/admin` |
+| `students/` | Student search, filter & tracking | `GET /api/v1/admin/students` |
+| `departments/` | Departmental performance | `GET /api/v1/admin/departments` |
+| `analytics/` | Readiness & skill distributions | `GET /api/v1/admin/analytics` |
+| `assessments/` | Assessment score analytics | `GET /api/v1/admin/assessments/analytics` |
+| `interviews/` | AI interview performance reports | `GET /api/v1/admin/interviews/analytics` |
+| `jobs/` | Campus drives & placement matches | `GET /api/v1/admin/jobs` |
 
 ---
 
 ## 3. Multi-Tenant Organization Isolation
 
-- Every organization-specific entity carries `organizationId`.
-- Authentication middleware injects `req.user` with `req.user.organizationId` and `req.user.role`.
-- `organizationScope.middleware.js` automatically binds tenant boundaries.
-- College Admin cannot query students outside their `organizationId`.
-- Student cannot query or update any private document belonging to another student.
+- **Zero-Trust Client Input**: Never accept `organizationId` from frontend request body or query parameter for authorization decisions.
+- **Server Injection**: Authenticated user's verified `organizationId` from session/JWT is attached to `req.user.organizationId`.
+- **Query Scoping**: Database queries for organization-scoped collections are automatically enclosed in `{ organizationId: req.user.organizationId }`.
 
 ---
 
-## 4. Deterministic + AI Hybrid Engine Pattern
-
-```text
-Student Skills + Target Career Requirements
-                 ↓
-Deterministic Career Gap Engine (Score: 0-100%, Matched/Weak/Missing)
-                 ↓
-Gemini AI Layer (Synthesizes contextual explanations, tailored roadmaps & interview critiques)
-                 ↓
-Authoritative Response to Client
-```
-The numeric readiness score is computed deterministically by the backend algorithms. Gemini AI enhances qualitative reasoning, personalized guidance, and dynamic question generation.
+## 4. Protected Shared Files
+- `SPEC.md`
+- `README.md`
+- `docs/openapi.yaml`
+- `docs/API_CONTRACT.md`
+- `docs/DESIGN.md`
+- `apps/frontend/src/app/router.jsx`
+- `apps/frontend/src/api/client.js`

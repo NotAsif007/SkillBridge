@@ -4,37 +4,75 @@
 
 ---
 
-## 🎯 Overview
-
-CareerOS bridges the gap between college education and placement readiness by continuously evaluating student profiles, target careers, missing skills, roadmaps, project portfolios, resume quality, and AI mock interview performance.
-
----
-
-## 🏗️ Monorepo Architecture
+## 🏗️ Repository Architecture & Ownership
 
 ```text
-careeros/
+CareerOS
+│
 ├── apps/
-│   ├── backend/             # Express.js REST API, Mongoose, Gemini AI
-│   └── frontend/            # React + Vite (Student & Admin Experience)
+│   │
+│   ├── backend/                 ← Person 1 (branch: backend/core)
+│   │   ├── src/
+│   │   │   ├── controllers/
+│   │   │   ├── models/
+│   │   │   ├── routes/
+│   │   │   ├── services/
+│   │   │   ├── middleware/
+│   │   │   ├── validators/
+│   │   │   └── integrations/
+│   │   │
+│   │   └── tests/
+│   │
+│   └── frontend/
+│       │
+│       └── src/
+│           │
+│           ├── app/             ← Shared
+│           ├── api/             ← Shared
+│           ├── components/      ← Shared
+│           ├── layouts/         ← Shared
+│           │
+│           └── features/
+│               │
+│               ├── student/     ← Person 2 (branch: frontend/student)
+│               │   ├── dashboard/
+│               │   ├── profile/
+│               │   ├── careers/
+│               │   ├── assessments/
+│               │   ├── roadmap/
+│               │   ├── projects/
+│               │   ├── resume/
+│               │   ├── interview/
+│               │   └── jobs/
+│               │
+│               └── admin/       ← Person 3 (branch: frontend/admin)
+│                   ├── dashboard/
+│                   ├── students/
+│                   ├── departments/
+│                   ├── analytics/
+│                   ├── assessments/
+│                   ├── interviews/
+│                   └── jobs/
+│
 ├── docs/
-│   ├── openapi.yaml         # OpenAPI 3.0 API Specification
-│   ├── API_CONTRACT.md      # Detailed REST API endpoints and mock contracts
-│   ├── ARCHITECTURE.md      # High-level architecture and data flows
-│   └── DATABASE.md          # MongoDB schema documentation and relationships
-├── SPEC.md                  # Comprehensive product specification
-└── package.json             # Root workspace configuration
+│   ├── openapi.yaml
+│   ├── API_CONTRACT.md
+│   ├── ARCHITECTURE.md
+│   ├── DATABASE.md
+│   └── DESIGN.md
+├── SPEC.md
+└── README.md
 ```
 
 ---
 
-## 👥 Team Ownership & Branches
+## 👥 Three-Person Parallel Development Model
 
-| Person | Role | Branch | Owned Directory |
-| :--- | :--- | :--- | :--- |
-| **Person 1** | Backend & Core Platform | `backend/core` | `apps/backend/`, `docs/openapi.yaml`, `docs/API_CONTRACT.md`, `docs/DATABASE.md` |
-| **Person 2** | Student Frontend | `frontend/student` | `apps/frontend/src/features/student/` |
-| **Person 3** | Admin & Analytics Frontend | `frontend/admin` | `apps/frontend/src/features/admin/` |
+| Person | Role | Git Branch | Owned Directory | Key Responsibility |
+| :--- | :--- | :--- | :--- | :--- |
+| **Person 1** | Backend & Core Platform | `backend/core` | `apps/backend/`, `docs/openapi.yaml`, `docs/API_CONTRACT.md`, `docs/DATABASE.md` | Express APIs, Mongoose, Auth, Career Gap Engine, Gemini AI, Tests |
+| **Person 2** | Student Experience | `frontend/student` | `apps/frontend/src/features/student/` | Student dashboard, career analysis, assessments, roadmap, projects, AI interview |
+| **Person 3** | Admin & Analytics Frontend | `frontend/admin` | `apps/frontend/src/features/admin/` | College placement dashboard, student tracking, department analytics, reports |
 
 ---
 
@@ -42,11 +80,11 @@ careeros/
 
 ### Prerequisites
 - Node.js >= 18.x
-- MongoDB instance (Local or Atlas)
+- MongoDB (Local or Atlas)
 - Google Cloud OAuth Credentials
 - Google Gemini API Key
 
-### Backend Setup
+### Backend Setup (Person 1)
 ```bash
 cd apps/backend
 cp .env.example .env
@@ -54,14 +92,19 @@ npm install
 npm run dev
 ```
 
-### Running Tests
+### Frontend Setup (Person 2 & 3)
 ```bash
-npm run backend:test
+cd apps/frontend
+npm install
+npm run dev
 ```
 
 ---
 
-## 📜 API Documentation & Contracts
-- **Swagger / OpenAPI 3.0**: [docs/openapi.yaml](docs/openapi.yaml)
-- **API Contracts & Mock JSON**: [docs/API_CONTRACT.md](docs/API_CONTRACT.md)
-- **Database Model Schemas**: [docs/DATABASE.md](docs/DATABASE.md)
+## 📚 Essential Documentation
+- **[SPEC.md](SPEC.md)**: Master product specification & requirements
+- **[docs/API_CONTRACT.md](docs/API_CONTRACT.md)**: REST API contracts & mock data
+- **[docs/DESIGN.md](docs/DESIGN.md)**: Design system tokens & UI/UX guidelines
+- **[docs/DATABASE.md](docs/DATABASE.md)**: MongoDB schemas & indexes
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**: System architecture & multi-tenant isolation
+- **[docs/openapi.yaml](docs/openapi.yaml)**: OpenAPI 3.0 specification
