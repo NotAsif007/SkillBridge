@@ -9,7 +9,7 @@
 
 - **Active Branch**: `backend/core`
 - **Active Developer**: Person 1 (Backend & AI)
-- **Phase**: Phase 12 — Jobs & Applications (READY TO START)
+- **Phase**: Phase 13 — Student Dashboard API (READY TO START)
 - **Last Updated**: 2026-08-25
 
 ---
@@ -106,24 +106,36 @@
 - Interview state machine service (`src/services/interview.service.js`) supporting dynamic question generation, live answer evaluation, and rubrics
 - Automatic placement readiness interview score synchronization (`interviewPerformance` weight)
 - Interview Endpoints (`POST /api/v1/interviews/start`, `POST /api/v1/interviews/:sessionId/answer`, `GET /api/v1/interviews/:sessionId`, `GET /api/v1/interviews/history`)
-- Interview test suite passing (`tests/interview.test.js` - 5 test cases, total 65 passed across test suites)
+- Interview test suite passing (`tests/interview.test.js` - 5 test cases)
+
+### ✅ Phase 12 — Jobs & Applications
+- `Job` Model (`src/models/job.model.js`) with eligibility criteria, required skills with proficiency levels and weights
+- `JobApplication` Model (`src/models/jobApplication.model.js`) with application status lifecycle and compound unique constraint
+- Deterministic Match Percentage engine evaluating student profile skills against job requirements
+- Job Service & Controller with role-guarded job posting (`COLLEGE_ADMIN`, `SUPER_ADMIN`), application submission, and listing
+- Job Endpoints (`GET /api/v1/jobs`, `GET /api/v1/jobs/:id`, `POST /api/v1/jobs/:id/apply`, `GET /api/v1/jobs/applications/me`, `POST /api/v1/jobs`)
+- Job test suite passing (`tests/job.test.js` - 7 test cases, total 72 passed across test suites)
 
 ---
 
 ## Next Phase
 
-### 🔄 Phase 12 — Jobs & Applications
+### 🔄 Phase 13 — Student Dashboard API
 
-**Goal**: Implement Job postings, dynamic Match Percentage algorithm matching student skills against job requirement weights, Job applications submission, and application status tracking.
+**Goal**: Implement the composite Aggregated Student Dashboard API (`GET /api/v1/dashboard/student`) returning single-round-trip data powering the Person 2 frontend (`frontend/student`).
+
+**Aggregated Components in `GET /api/v1/dashboard/student`:**
+- Student overview (name, avatar, department, target career, overall readiness score, score breakdown)
+- Active Roadmap (milestones, progress percentage, next upcoming task)
+- Next Recommended Actions (prioritized skill gaps, pending assessments, recommended projects)
+- Placement Match Highlights (top matched jobs, application counts by status)
+- Recent Activities (recent assessment attempts, interview sessions, resume score)
 
 **Files to implement:**
-- [ ] `apps/backend/src/models/job.model.js`
-- [ ] `apps/backend/src/models/jobApplication.model.js`
-- [ ] `apps/backend/src/validators/job.validator.js`
-- [ ] `apps/backend/src/services/job.service.js`
-- [ ] `apps/backend/src/controllers/job.controller.js`
-- [ ] `apps/backend/src/routes/job.routes.js`
-- [ ] `apps/backend/tests/job.test.js`
+- [ ] `apps/backend/src/services/dashboard.service.js`
+- [ ] `apps/backend/src/controllers/dashboard.controller.js`
+- [ ] `apps/backend/src/routes/dashboard.routes.js`
+- [ ] `apps/backend/tests/dashboard.test.js`
 
 ---
 
@@ -131,8 +143,7 @@
 
 | Phase | Title | Status |
 | :--- | :--- | :--- |
-| Phase 12 | Jobs & Applications | 🔄 Next |
-| Phase 13 | Student Dashboard API | ⏳ Pending |
+| Phase 13 | Student Dashboard API | 🔄 Next |
 | Phase 14 | College Admin Analytics | ⏳ Pending |
 
 ---

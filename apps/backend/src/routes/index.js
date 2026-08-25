@@ -10,6 +10,7 @@ import roadmapRouter from './roadmap.routes.js';
 import projectRouter from './project.routes.js';
 import resumeRouter from './resume.routes.js';
 import interviewRouter from './interview.routes.js';
+import jobRouter from './job.routes.js';
 
 const router = Router();
 
@@ -46,8 +47,10 @@ router.use('/resumes', resumeRouter);
 // AI Mock Interviews — /api/v1/interviews
 router.use('/interviews', interviewRouter);
 
-// Phase 12+ routes:
-// router.use('/jobs',        jobRouter);
+// Jobs & Applications — /api/v1/jobs
+router.use('/jobs', jobRouter);
+
+// Phase 13+ routes:
 // router.use('/dashboard',   dashboardRouter);
 // router.use('/admin',       adminRouter);
 
