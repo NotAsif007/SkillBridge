@@ -9,7 +9,7 @@
 
 - **Active Branch**: `backend/core`
 - **Active Developer**: Person 1 (Backend & AI)
-- **Phase**: Phase 6 — Career Gap Engine (READY TO START)
+- **Phase**: Phase 7 — Gemini AI Integration (READY TO START)
 - **Last Updated**: 2026-08-25
 
 ---
@@ -61,21 +61,37 @@
 - `Assessment` and `AssessmentAttempt` Models (`src/models/assessment.model.js`, `src/models/assessmentAttempt.model.js`)
 - Assessment Service with answer-leak protection & automatic skill verification on pass (`src/services/assessment.service.js`)
 - Assessment Endpoints (`GET /api/v1/assessments`, `GET /api/v1/assessments/:id`, `POST /api/v1/assessments/:id/submit`, `GET /api/v1/assessments/attempts/me`)
-- Assessment test suite passing (`tests/assessment.test.js` - 6 test cases, total 34 passed across test suites)
+- Assessment test suite passing (`tests/assessment.test.js` - 6 test cases)
+
+### ✅ Phase 6 — Career Gap Engine
+- Deterministic weighted scoring algorithm evaluating student skills against career requirements
+- Dynamic categorization of `matchedSkills`, `weakSkills`, and `missingSkills`
+- Gap-weighted `prioritySkills` ranking: `weight * (gap + 1)`
+- Institutional weight customization (`technicalSkills` 30%, `assessments` 20%, `projects` 15%, `resume` 10%, `interviews` 15%, `roadmap` 10%)
+- Live `StudentProfile.readinessScore` synchronization in database
+- Support for target career override analysis (`?careerId=...`)
+- Career Gap Engine API (`GET /api/v1/career-analysis`)
+- Gap Engine test suite passing (`tests/gapEngine.test.js` - 4 test cases, total 38 passed across test suites)
 
 ---
 
 ## Next Phase
 
-### 🔄 Phase 6 — Career Gap Engine
+### 🔄 Phase 7 — Gemini AI Integration
 
-**Goal**: Implement deterministic skill gap analysis, placement readiness calculation (with configurable component weightings), matched/weak/missing skill categorization, and priority skill recommendations.
+**Goal**: Implement Gemini AI Service layer with strict schema validation, safe timeouts, rate limiting, and structured prompt generation for:
+- Qualitative Career Analysis & Strengths/Weaknesses Synthesis
+- Dynamic Personalized Roadmap Generation
+- ATS Resume Analysis & Improvement Suggestions
+- Project Recommendations
+- AI Interview Question Generation & Speech/Text Evaluation
+- `AIGeneration` audit & token tracking model (`src/models/aiGeneration.model.js`)
 
 **Files to implement:**
-- [ ] `apps/backend/src/services/gapEngine.service.js`
-- [ ] `apps/backend/src/controllers/gapEngine.controller.js`
-- [ ] `apps/backend/src/routes/gapEngine.routes.js`
-- [ ] `apps/backend/tests/gapEngine.test.js`
+- [ ] `apps/backend/src/models/aiGeneration.model.js`
+- [ ] `apps/backend/src/integrations/gemini/geminiClient.js`
+- [ ] `apps/backend/src/integrations/gemini/gemini.service.js`
+- [ ] `apps/backend/tests/gemini.test.js`
 
 ---
 
@@ -83,8 +99,7 @@
 
 | Phase | Title | Status |
 | :--- | :--- | :--- |
-| Phase 6 | Career Gap Engine | 🔄 Next |
-| Phase 7 | Gemini AI Integration | ⏳ Pending |
+| Phase 7 | Gemini AI Integration | 🔄 Next |
 | Phase 8 | Roadmaps | ⏳ Pending |
 | Phase 9 | Projects | ⏳ Pending |
 | Phase 10 | Resume | ⏳ Pending |
