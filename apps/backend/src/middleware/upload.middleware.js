@@ -29,11 +29,14 @@ export const resumeUploadMiddleware = [
         const parsed = await pdfParse(req.file.buffer);
         const extractedText = parsed.text ? parsed.text.trim() : '';
 
+        console.log(`[PDF Parser] Extracted ${extractedText.length} characters from ${req.file.originalname}`);
+
         req.body.resumeText = extractedText && extractedText.length >= 20
           ? extractedText
           : `Resume for applicant from ${req.file.originalname}. Skills include JavaScript, React, Node.js, Python, MongoDB, REST APIs, Git, and Full Stack Development.`;
         req.body.fileName = req.file.originalname;
       } catch (err) {
+        console.error('[PDF Parser Error]', err);
         req.body.resumeText = `Uploaded document ${req.file.originalname}. Professional student profile with software engineering and computing foundation.`;
         req.body.fileName = req.file.originalname;
       }
