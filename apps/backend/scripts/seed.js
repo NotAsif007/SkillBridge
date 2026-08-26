@@ -19,7 +19,7 @@ import { Job } from '../src/models/job.model.js';
 import { JobApplication } from '../src/models/jobApplication.model.js';
 
 export async function seedDatabase() {
-  logger.info('🌱 Starting CareerOS Database Seeding...');
+  logger.info('🌱 Starting SkillBridge Database Seeding...');
 
   // 1. Clear existing collections
   await Organization.deleteMany({});
@@ -91,7 +91,7 @@ export async function seedDatabase() {
   // 4. Create Standard Users
   const superAdmin = await User.create({
     name: 'Platform SuperAdmin',
-    email: 'superadmin@careeros.com',
+    email: 'superadmin@skillbridge.com',
     role: 'SUPER_ADMIN',
     isActive: true,
   });
@@ -315,7 +315,7 @@ export async function seedDatabase() {
     status: 'UNDER_REVIEW',
   });
 
-  logger.info('🎉 CareerOS database seed successfully completed with full 14-phase demo data!');
+  logger.info('🎉 SkillBridge database seed successfully completed with full 14-phase demo data!');
 }
 
 // Standalone execution support

@@ -91,7 +91,7 @@ function AdminSidebar({ isOpen, onClose, user, onLogout }) {
               className="font-bold tracking-tight text-sm leading-none"
               style={{ color: COLORS.textPrimary, fontFamily: 'Inter, Plus Jakarta Sans, system-ui, sans-serif' }}
             >
-              CareerOS
+              SkillBridge
             </span>
             <p
               className="text-xs mt-0.5"
@@ -353,7 +353,7 @@ export default function AdminLayout({ pageTitle }) {
             }}
             role="contentinfo"
           >
-            CareerOS &copy; {new Date().getFullYear()} &mdash; Admin Portal
+            SkillBridge &copy; {new Date().getFullYear()} &mdash; Admin Portal
           </footer>
         </div>
       </div>

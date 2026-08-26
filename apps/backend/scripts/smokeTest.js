@@ -6,7 +6,7 @@ import { seedDatabase } from './seed.js';
 
 async function runSmokeTest() {
   console.log('\n======================================================');
-  console.log('🚀 CareerOS Backend Live Interactive Smoke Test');
+  console.log('🚀 SkillBridge Backend Live Interactive Smoke Test');
   console.log('======================================================\n');
 
   // 1. Start in-memory MongoDB

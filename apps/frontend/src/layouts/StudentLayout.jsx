@@ -91,7 +91,7 @@ function SidebarContent({ user, onLogout, onClose, showClose }) {
             <GraduationCap size={20} color="#fff" />
           </div>
           <div>
-            <div style={{ color: COLORS.textPrimary, fontWeight: 700, fontSize: 15 }}>CareerOS</div>
+            <div style={{ color: COLORS.textPrimary, fontWeight: 700, fontSize: 15 }}>SkillBridge</div>
             <div style={{ color: COLORS.textMuted, fontSize: 11 }}>Student Portal</div>
           </div>
         </div>

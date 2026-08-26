@@ -92,7 +92,7 @@ export default function LoginPage() {
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-bold text-lg tracking-tight text-white">CareerOS</span>
+                <span className="font-bold text-lg tracking-tight text-white">SkillBridge</span>
                 <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   Apex Tech
                 </span>
@@ -367,7 +367,7 @@ export default function LoginPage() {
       <footer className="border-t border-slate-800/80 bg-[#0B0F17] py-6 px-6 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-2">
-            <span>© 2026 CareerOS Technologies Inc.</span>
+            <span>© 2026 SkillBridge Technologies Inc.</span>
             <span>•</span>
             <span>All rights reserved.</span>
           </div>

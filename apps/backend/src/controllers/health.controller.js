@@ -19,5 +19,5 @@ export function healthCheck(req, res) {
       database: dbStatus,
     },
     uptime: Math.floor(process.uptime()),
-  }, 'CareerOS API is healthy');
+  }, 'SkillBridge API is healthy');
 }

@@ -10,7 +10,7 @@ async function start() {
   await connectDB();
 
   const server = app.listen(PORT, () => {
-    logger.info(`CareerOS API running in [${config.nodeEnv}] mode on port ${PORT}`);
+    logger.info(`SkillBridge API running in [${config.nodeEnv}] mode on port ${PORT}`);
     logger.info(`Health: http://localhost:${PORT}/api/v1/health`);
   });
 
