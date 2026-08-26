@@ -13,8 +13,23 @@ const app = express();
 app.use(helmet());
 
 // ── CORS ─────────────────────────────────────────────────────────────────────
+const allowedOrigins = [
+  config.clientUrl,
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5173',
+].filter(Boolean);
+
 app.use(cors({
-  origin:      config.clientUrl,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, server-to-server) or matching allowed origins
+    if (!origin || allowedOrigins.includes(origin) || (!config.isProd && /^http:\/\/localhost:\d+$/.test(origin))) {
+      callback(null, true);
+    } else {
+      callback(new Error('Blocked by CORS policy'));
+    }
+  },
   credentials: true,
   methods:     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
