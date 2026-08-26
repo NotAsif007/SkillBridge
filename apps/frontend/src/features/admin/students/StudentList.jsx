@@ -113,7 +113,7 @@ const MOCK_DEPARTMENTS = [
 
 function buildMockStudents(page = 1, limit = PAGE_SIZE, search = '', dept = '', minReadiness = 0) {
   const all = [
-    { id: 's001', name: 'Alex Chen',       email: 'alex.chen@apex.edu',    rollNumber: '2023CSE042', department: 'CSE', graduationYear: 2027, targetCareer: 'Full Stack Developer',  readinessScore: 72, status: 'IN_PROGRESS' },
+    { id: 's001', name: 'Suraj',           email: 'suraj@apex.edu',        rollNumber: '2023CSE042', department: 'CSE', graduationYear: 2027, targetCareer: 'Full Stack Developer',  readinessScore: 72, status: 'IN_PROGRESS' },
     { id: 's002', name: 'Priya Sharma',    email: 'priya.s@apex.edu',      rollNumber: '2023CSE019', department: 'CSE', graduationYear: 2027, targetCareer: 'Backend Engineer',       readinessScore: 85, status: 'IN_PROGRESS' },
     { id: 's003', name: 'Ravi Kumar',      email: 'ravi.k@apex.edu',       rollNumber: '2023ECE007', department: 'ECE', graduationYear: 2026, targetCareer: 'Embedded Systems',      readinessScore: 54, status: 'IN_PROGRESS' },
     { id: 's004', name: 'Ananya Patel',    email: 'ananya.p@apex.edu',     rollNumber: '2023IT031',  department: 'IT',  graduationYear: 2027, targetCareer: 'Data Analyst',          readinessScore: 67, status: 'IN_PROGRESS' },

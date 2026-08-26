@@ -1,26 +1,20 @@
 /**
- * InterviewSetup.jsx — AI Interview Career & Difficulty Selector
+ * InterviewSetup.jsx — AI Mock Interview Setup & History
+ * Dynamic Apple Light and Multi-Accent Yellow Graphite Dark Mode
  * APIs: GET /api/v1/careers | POST /api/v1/interviews | GET /api/v1/interviews/history
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, ChevronRight, CheckCircle2, Clock } from 'lucide-react';
+import { MessageSquare, ChevronRight, CheckCircle2, Clock, Sparkles } from 'lucide-react';
 import { studentApi } from '../../../api/student';
 import api from '../../../api/client';
-
-const T = {
-  appBg:'#F5F5F7', surface:'#FFFFFF', border:'#E5E5EA',
-  textPrimary:'#1D1D1F', textMuted:'#6E6E73', blue:'#1D1D1F',
-  emerald:'#059669', emeraldBg:'rgba(5,150,105,0.12)', emeraldText:'#059669',
-  teal:'#0D9488', tealBg:'rgba(13,148,136,0.12)', tealText:'#0D9488',
-  amber:'#D97706', amberBg:'rgba(217,119,6,0.12)', amberText:'#D97706',
-  red:'#DC2626', redBg:'rgba(220,38,38,0.12)', redText:'#DC2626',
-};
+import { useTheme } from '../../../context/ThemeContext';
+import { getTokens } from '../../../styles/themeTokens';
 
 const DIFFICULTIES = [
-  { value: 'EASY',   label: 'Easy',   sub: 'Foundational concepts, suitable for beginners' },
-  { value: 'MEDIUM', label: 'Medium', sub: 'Intermediate topics and problem solving' },
-  { value: 'HARD',   label: 'Hard',   sub: 'Advanced concepts, system design, edge cases' },
+  { value: 'EASY', label: 'Easy', sub: 'Foundational concepts, suitable for quick warm-ups' },
+  { value: 'MEDIUM', label: 'Medium', sub: 'Intermediate problem solving and real-world architectures' },
+  { value: 'HARD', label: 'Hard', sub: 'Advanced edge-cases, system design & high-scale tradeoffs' },
 ];
 
 const MOCK_HISTORY = [
@@ -29,40 +23,53 @@ const MOCK_HISTORY = [
 ];
 
 export default function InterviewSetup() {
+  const { isDark } = useTheme();
+  const T = getTokens(isDark);
+  const navigate = useNavigate();
+
   const [careers, setCareers] = useState([]);
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState(MOCK_HISTORY);
   const [selectedCareer, setSelectedCareer] = useState('');
   const [difficulty, setDifficulty] = useState('MEDIUM');
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const fetchData = useCallback(async () => {
     try {
       const [cRes, hRes] = await Promise.all([
         studentApi.getCareers(),
-        api.get('/interviews/history'),
+        api.get('/interviews/history').catch(() => ({ data: MOCK_HISTORY })),
       ]);
       setCareers(cRes.data || []);
-      setHistory(hRes.data || []);
+      setHistory(hRes.data || MOCK_HISTORY);
       if (cRes.data?.length) setSelectedCareer(cRes.data[0]._id);
     } catch {
-      const mockCareers = [{ _id: 'c1', title: 'Full Stack Developer' }, { _id: 'c2', title: 'Data Scientist' }];
+      const mockCareers = [
+        { _id: 'c1', title: 'Full Stack Developer' },
+        { _id: 'c2', title: 'Data Scientist' },
+      ];
       setCareers(mockCareers);
       setHistory(MOCK_HISTORY);
       setSelectedCareer('c1');
     }
   }, []);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleStart = async () => {
     if (!selectedCareer) return;
     setStarting(true);
     setError('');
     try {
-      const res = await studentApi.startInterview({ targetCareerId: selectedCareer, difficulty });
-      navigate('/interview/session', { state: res.data });
+      const res = await studentApi.startInterview({
+        careerId: selectedCareer,
+        targetCareerId: selectedCareer,
+        difficulty,
+      });
+      const sessionData = res.data || res;
+      navigate('/interview/session', { state: sessionData });
     } catch (err) {
       setError(err?.message || 'Failed to start interview. Please try again.');
     } finally {
@@ -71,81 +78,183 @@ export default function InterviewSetup() {
   };
 
   return (
-    <div style={{ padding: '32px 40px', background: T.appBg, minHeight: '100vh' }}>
-      <div style={{ maxWidth: 700 }}>
-        {/* Header */}
-        <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 700, color: T.textPrimary, letterSpacing: '-0.02em', margin: 0 }}>AI Mock Interview</h1>
-          <p style={{ color: T.textMuted, fontSize: 14, marginTop: 8 }}>Practice with AI-generated questions tailored to your target career. Get scored feedback after each answer.</p>
+    <div style={{ width: '100%', maxWidth: 760, margin: '0 auto' }}>
+      {/* Header */}
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: T.textPrimary, letterSpacing: '-0.03em', margin: 0 }}>
+          AI Mock Interview
+        </h1>
+        <p style={{ color: T.textMuted, fontSize: 14, margin: '6px 0 0' }}>
+          Practice technical and system design rounds tailored to your target career with instant AI evaluations
+        </p>
+      </div>
+
+      {/* Setup Card */}
+      <div
+        style={{
+          backgroundColor: T.surface,
+          border: `1px solid ${T.border}`,
+          borderRadius: 14,
+          padding: 28,
+          marginBottom: 28,
+          boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+        }}
+      >
+        <h2 style={{ color: T.textPrimary, fontSize: 16, fontWeight: 750, margin: '0 0 20px' }}>
+          Configure Mock Session
+        </h2>
+
+        {/* Target Career Selection */}
+        <div style={{ marginBottom: 22 }}>
+          <label style={{ display: 'block', fontSize: 12, color: T.textMuted, fontWeight: 650, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Target Career
+          </label>
+          <select
+            value={selectedCareer}
+            onChange={(e) => setSelectedCareer(e.target.value)}
+            style={{
+              width: '100%',
+              backgroundColor: T.surfaceSubtle,
+              border: `1px solid ${T.border}`,
+              borderRadius: 8,
+              padding: '11px 14px',
+              color: T.textPrimary,
+              fontSize: 14,
+              outline: 'none',
+            }}
+          >
+            {careers.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.title}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Setup card */}
-        <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10, padding: 28, marginBottom: 24 }}>
-          <h2 style={{ color: T.textPrimary, fontSize: 16, fontWeight: 600, margin: '0 0 20px' }}>Session Setup</h2>
-
-          {/* Career select */}
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 12, color: T.textMuted, fontWeight: 500, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Target Career</label>
-            <select value={selectedCareer} onChange={e => setSelectedCareer(e.target.value)}
-              style={{ width: '100%', background: T.appBg, border: `1px solid ${T.border}`, borderRadius: 8, padding: '10px 14px', color: T.textPrimary, fontSize: 14, outline: 'none' }}>
-              {careers.map(c => <option key={c._id} value={c._id}>{c.title}</option>)}
-            </select>
-          </div>
-
-          {/* Difficulty */}
-          <div style={{ marginBottom: 24 }}>
-            <label style={{ display: 'block', fontSize: 12, color: T.textMuted, fontWeight: 500, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Difficulty</label>
-            <div style={{ display: 'flex', gap: 10 }}>
-              {DIFFICULTIES.map(d => {
-                const active = difficulty === d.value;
-                return (
-                  <button key={d.value} onClick={() => setDifficulty(d.value)} style={{
-                    flex: 1, padding: '12px 10px', border: `2px solid ${active ? T.blue : T.border}`,
-                    borderRadius: 9, background: active ? `${T.blue}18` : T.appBg,
-                    cursor: 'pointer', textAlign: 'left',
-                  }}>
-                    <div style={{ color: active ? T.blue : T.textPrimary, fontSize: 14, fontWeight: 600, marginBottom: 4 }}>{d.label}</div>
-                    <div style={{ color: T.textMuted, fontSize: 11, lineHeight: 1.4 }}>{d.sub}</div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {error && <div style={{ color: T.redText, fontSize: 13, marginBottom: 14 }}>{error}</div>}
-
-          <button onClick={handleStart} disabled={!selectedCareer || starting} style={{
-            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            padding: '13px 0', border: 'none', borderRadius: 8,
-            background: selectedCareer ? T.blue : T.border,
-            color: selectedCareer ? '#fff' : T.textMuted,
-            fontWeight: 700, fontSize: 15, cursor: selectedCareer ? 'pointer' : 'not-allowed',
-          }}>
-            <MessageSquare size={18} /> {starting ? 'Starting Interview…' : 'Start Interview'}
-            {!starting && <ChevronRight size={16} />}
-          </button>
-        </div>
-
-        {/* History */}
-        {history.length > 0 && (
-          <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10, overflow: 'hidden' }}>
-            <div style={{ padding: '16px 24px', borderBottom: `1px solid ${T.border}` }}>
-              <h3 style={{ color: T.textPrimary, fontSize: 15, fontWeight: 600, margin: 0 }}>Past Interviews</h3>
-            </div>
-            {history.map((session, i) => {
-              const sc = session.overallScore >= 80 ? { color: T.emeraldText, bg: T.emeraldBg } : session.overallScore >= 60 ? { color: T.tealText, bg: T.tealBg } : { color: T.amberText, bg: T.amberBg };
+        {/* Difficulty Selection */}
+        <div style={{ marginBottom: 24 }}>
+          <label style={{ display: 'block', fontSize: 12, color: T.textMuted, fontWeight: 650, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Difficulty Level
+          </label>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+            {DIFFICULTIES.map((d) => {
+              const active = difficulty === d.value;
               return (
-                <div key={session._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 24px', borderTop: i > 0 ? `1px solid ${T.border}` : 'none' }}>
-                  <div style={{ display: 'flex', items: 'center', gap: 14 }}>
-                    <div>
-                      <div style={{ color: T.textPrimary, fontSize: 13, fontWeight: 500 }}>{session.targetCareer || 'Interview'}</div>
-                      <div style={{ color: T.textMuted, fontSize: 11, marginTop: 2 }}>
-                        {session.difficulty} · {new Date(session.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </div>
+                <button
+                  key={d.value}
+                  type="button"
+                  onClick={() => setDifficulty(d.value)}
+                  style={{
+                    padding: '14px 12px',
+                    border: `2px solid ${active ? T.yellow : T.border}`,
+                    borderRadius: 10,
+                    backgroundColor: active ? (isDark ? T.yellowBg : '#FFFBEB') : T.surfaceSubtle,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <div style={{ color: active ? T.yellowText : T.textPrimary, fontSize: 14, fontWeight: 750, marginBottom: 4 }}>
+                    {d.label}
+                  </div>
+                  <div style={{ color: T.textMuted, fontSize: 11, lineHeight: 1.4 }}>
+                    {d.sub}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {error && (
+          <div style={{ color: T.roseText, backgroundColor: T.roseBg, border: `1px solid ${T.roseBorder}`, padding: '10px 14px', borderRadius: 8, fontSize: 13, marginBottom: 18 }}>
+            {error}
+          </div>
+        )}
+
+        <button
+          onClick={handleStart}
+          disabled={!selectedCareer || starting}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            padding: '13px 0',
+            border: 'none',
+            borderRadius: 10,
+            backgroundColor: selectedCareer ? T.buttonPrimaryBg : T.border,
+            color: selectedCareer ? T.buttonPrimaryText : T.textMuted,
+            fontWeight: 750,
+            fontSize: 15,
+            cursor: selectedCareer ? 'pointer' : 'not-allowed',
+            boxShadow: selectedCareer ? '0 4px 14px rgba(245,158,11,0.25)' : 'none',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          <MessageSquare size={18} /> {starting ? 'Generating AI Questions…' : 'Start Mock Interview'}
+          {!starting && <ChevronRight size={16} />}
+        </button>
+      </div>
+
+      {/* History */}
+      {history.length > 0 && (
+        <div
+          style={{
+            backgroundColor: T.surface,
+            border: `1px solid ${T.border}`,
+            borderRadius: 14,
+            overflow: 'hidden',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+          }}
+        >
+          <div style={{ padding: '16px 24px', borderBottom: `1px solid ${T.border}`, backgroundColor: T.surfaceSubtle }}>
+            <h3 style={{ color: T.textPrimary, fontSize: 15, fontWeight: 750, margin: 0 }}>
+              Past Mock Interview Records
+            </h3>
+          </div>
+
+          <div>
+            {history.map((session, i) => {
+              const sc = session.overallScore >= 80
+                ? { color: T.emeraldText, bg: T.emeraldBg, border: T.emeraldBorder }
+                : session.overallScore >= 60
+                ? { color: T.tealText, bg: T.tealBg, border: T.tealBorder }
+                : { color: T.yellowText, bg: T.yellowBg, border: T.yellowBorder };
+
+              return (
+                <div
+                  key={session._id || i}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '14px 24px',
+                    borderBottom: i < history.length - 1 ? `1px solid ${T.border}` : 'none',
+                  }}
+                >
+                  <div>
+                    <div style={{ color: T.textPrimary, fontSize: 14, fontWeight: 650 }}>
+                      {session.targetCareer || 'Interview'}
+                    </div>
+                    <div style={{ color: T.textMuted, fontSize: 11.5, marginTop: 2 }}>
+                      {session.difficulty} · {new Date(session.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </div>
                   </div>
+
                   {session.overallScore != null && (
-                    <span style={{ fontSize: 13, fontWeight: 700, color: sc.color, background: sc.bg, padding: '4px 12px', borderRadius: 9999 }}>
+                    <span
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 750,
+                        color: sc.color,
+                        backgroundColor: sc.bg,
+                        border: `1px solid ${sc.border}`,
+                        padding: '4px 12px',
+                        borderRadius: 9999,
+                      }}
+                    >
                       {session.overallScore}%
                     </span>
                   )}
@@ -153,8 +262,8 @@ export default function InterviewSetup() {
               );
             })}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

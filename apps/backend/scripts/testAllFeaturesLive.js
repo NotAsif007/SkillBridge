@@ -35,9 +35,9 @@ async function runLiveVerification() {
     const studentAuth = await req(`${BASE}/auth/dev-login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'alex.chen@adtu.edu.in', role: 'STUDENT' }),
+      body: JSON.stringify({ email: 'suraj@adtu.edu.in', role: 'STUDENT' }),
     });
-    assert(studentAuth.status === 200 && studentAuth.data.data.token, 'Student Authentication (Alex Chen - ADTU)');
+    assert(studentAuth.status === 200 && studentAuth.data.data.token, 'Student Authentication (Suraj - ADTU)');
     const studentToken = studentAuth.data.data.token;
     const studentHeaders = {
       'Authorization': `Bearer ${studentToken}`,
@@ -48,9 +48,9 @@ async function runLiveVerification() {
     const adminAuth = await req(`${BASE}/auth/dev-login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'admin@adtu.edu.in', role: 'COLLEGE_ADMIN' }),
+      body: JSON.stringify({ email: 'asif@adtu.edu.in', role: 'COLLEGE_ADMIN' }),
     });
-    assert(adminAuth.status === 200 && adminAuth.data.data.token, 'Admin Authentication (Dr. Sarah Jenkins - ADTU)');
+    assert(adminAuth.status === 200 && adminAuth.data.data.token, 'Admin Authentication (Asif - ADTU)');
     const adminToken = adminAuth.data.data.token;
     const adminHeaders = {
       'Authorization': `Bearer ${adminToken}`,
@@ -86,8 +86,8 @@ async function runLiveVerification() {
       method: 'POST',
       headers: studentHeaders,
       body: JSON.stringify({
-        resumeText: 'Alex Chen, Senior Computer Science student at Assam Down Town University (ADTU). Experienced with React, Node.js, Express, MongoDB, Docker, REST APIs, TypeScript, and Data Structures.',
-        fileName: 'alex_chen_adtu.pdf',
+        resumeText: 'Suraj, Senior Computer Science student at Assam Down Town University (ADTU). Experienced with React, Node.js, Express, MongoDB, Docker, REST APIs, TypeScript, and Data Structures.',
+        fileName: 'suraj_adtu.pdf',
       }),
     });
     const atsScore = resume.data.data?.score ?? resume.data.data?.atsScore ?? 0;

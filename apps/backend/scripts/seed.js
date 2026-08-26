@@ -71,7 +71,7 @@ export async function seedDatabase() {
     organizationId: adtuOrg._id,
     name: 'Computer Science & Engineering',
     code: 'CSE',
-    headOfDepartment: 'Dr. Sarah Jenkins',
+    headOfDepartment: 'Dr. Asif',
   });
 
   const itDept = await Department.create({
@@ -97,8 +97,8 @@ export async function seedDatabase() {
   });
 
   const collegeAdmin = await User.create({
-    name: 'Dr. Sarah Jenkins',
-    email: 'admin@adtu.edu.in',
+    name: 'Asif',
+    email: 'asif@adtu.edu.in',
     role: 'COLLEGE_ADMIN',
     organizationId: adtuOrg._id,
     departmentId: cseDept._id,
@@ -106,8 +106,8 @@ export async function seedDatabase() {
   });
 
   const studentAlex = await User.create({
-    name: 'Alex Chen',
-    email: 'alex.chen@adtu.edu.in',
+    name: 'Suraj',
+    email: 'suraj@adtu.edu.in',
     role: 'STUDENT',
     organizationId: adtuOrg._id,
     departmentId: cseDept._id,
@@ -287,7 +287,7 @@ export async function seedDatabase() {
     title: 'Real-Time Collaborative Workspace',
     description: 'Engineered a collaborative canvas using WebSockets, Node.js, and Redis Pub/Sub.',
     technologies: ['React', 'Node.js', 'Socket.io', 'Redis'],
-    githubUrl: 'https://github.com/alexchen/collab-canvas',
+    githubUrl: 'https://github.com/suraj/collab-canvas',
     liveUrl: 'https://collab-canvas.apex-demo.app',
     evaluationScore: 85,
   });

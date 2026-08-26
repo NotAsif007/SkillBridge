@@ -78,7 +78,7 @@ const MOCK_DEPARTMENTS = [
     _id: '65e01f29b4e87a2130e9d050',
     name: 'Computer Science & Engineering',
     code: 'CSE',
-    headOfDepartment: 'Dr. Sarah Jenkins',
+    headOfDepartment: 'Dr. Asif',
     studentCount: 450,
   },
   {

@@ -81,8 +81,8 @@ export default function LoginPage() {
             <button disabled={submitting || isLoading} type="submit">{submitting ? <Loader2 size={17} className="spin" /> : <>Continue <ArrowRight size={17} /></>}</button>
           </form>
           <button className="demo-entry" disabled={submitting || isLoading} onClick={() => signIn(role === 'STUDENT'
-            ? { email: 'alex.chen@adtu.edu.in', name: 'Alex Chen', role: 'STUDENT' }
-            : { email: 'admin@adtu.edu.in', name: 'Dr. Sarah Jenkins', role: 'COLLEGE_ADMIN' })}>
+            ? { email: 'suraj@adtu.edu.in', name: 'Suraj', role: 'STUDENT' }
+            : { email: 'asif@adtu.edu.in', name: 'Asif', role: 'COLLEGE_ADMIN' })}>
             Open {role === 'STUDENT' ? 'student' : 'administrator'} demo <ArrowRight size={15} />
           </button>
         </section>

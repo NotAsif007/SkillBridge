@@ -43,6 +43,11 @@ export class ProfileService {
   static async updateProfile(userId, updateData) {
     const profile = await this.getOrCreateProfile(userId);
 
+    // If name is updated, persist to User document
+    if (updateData.name && updateData.name.trim()) {
+      await User.findByIdAndUpdate(userId, { name: updateData.name.trim() });
+    }
+
     // If departmentId is provided, verify it belongs to user's organization
     if (updateData.departmentId) {
       if (profile.organizationId) {

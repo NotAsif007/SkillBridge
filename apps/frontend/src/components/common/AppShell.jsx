@@ -3,9 +3,11 @@ import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   BarChart3, BriefcaseBusiness, Building2, ClipboardCheck, Compass, FileText,
   FolderKanban, GraduationCap, LayoutDashboard, LogOut, Map, Menu, MessageSquare,
-  User, Users, X,
+  User, Users, X, Settings, Sun, Moon
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import ProfileSettingsModal from '../common/ProfileSettingsModal';
 
 const studentNavigation = [
   ['Overview', '/dashboard', LayoutDashboard],
@@ -37,7 +39,9 @@ const routeLabels = Object.fromEntries(
 
 export default function AppShell({ portal }) {
   const [open, setOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { theme, toggleTheme, isDark } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const navigation = portal === 'admin' ? adminNavigation : studentNavigation;
@@ -46,9 +50,7 @@ export default function AppShell({ portal }) {
   /* Derive current page title from the pathname */
   const pageTitle = useMemo(() => {
     const { pathname } = location;
-    /* Exact match first */
     if (routeLabels[pathname]) return routeLabels[pathname];
-    /* Prefix match for dynamic routes like /careers/:id */
     const parent = Object.keys(routeLabels)
       .filter((p) => pathname.startsWith(p) && p !== '/')
       .sort((a, b) => b.length - a.length)[0];
@@ -90,6 +92,12 @@ export default function AppShell({ portal }) {
 
   return (
     <div className="app-shell">
+      {/* ── Settings & Profile Modal ── */}
+      <ProfileSettingsModal
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+      />
+
       {open && (
         <button
           className="shell-backdrop"
@@ -98,6 +106,7 @@ export default function AppShell({ portal }) {
         />
       )}
 
+      {/* ── Sidebar ── */}
       <aside className={`app-sidebar ${open ? 'is-open' : ''}`}>
         <div className="brand-lockup">
           <span className="brand-mark">
@@ -129,18 +138,32 @@ export default function AppShell({ portal }) {
           ))}
         </nav>
 
-        <div className="sidebar-user">
+        {/* ── Bottom-Left User Card (Clickable to Edit Profile & Theme) ── */}
+        <div
+          className="sidebar-user"
+          onClick={() => setSettingsOpen(true)}
+          style={{ cursor: 'pointer', transition: 'background-color 0.15s ease' }}
+          title="Click to edit profile, adjust credentials, and toggle theme"
+        >
           {avatarContent}
           <div>
             <strong>{user?.name || 'CareerOS user'}</strong>
             <span>{portal === 'admin' ? 'Administrator' : 'Student'}</span>
           </div>
-          <button onClick={handleLogout} aria-label="Sign out">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleLogout();
+            }}
+            aria-label="Sign out"
+            title="Sign out"
+          >
             <LogOut size={17} />
           </button>
         </div>
       </aside>
 
+      {/* ── Main App Content ── */}
       <section className="app-main">
         <header className="shell-header">
           <button
@@ -162,11 +185,42 @@ export default function AppShell({ portal }) {
               portalLabel
             )}
           </div>
-          <div className="header-profile">
-            <span>{user?.name || 'CareerOS user'}</span>
-            {avatarContent}
+
+          {/* ── Top-Right Header Actions (Theme Toggle, Settings Gear & Clickable Profile) ── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
+            {/* Quick 1-Click Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="header-icon-btn"
+              aria-label="Toggle theme"
+              title={`Switch to ${isDark ? 'Light' : 'Dark'} mode`}
+            >
+              {isDark ? <Sun size={17} style={{ color: '#F59E0B' }} /> : <Moon size={17} style={{ color: '#6E6E73' }} />}
+            </button>
+
+            {/* Quick Settings Gear Button */}
+            <button
+              onClick={() => setSettingsOpen(true)}
+              className="header-icon-btn"
+              aria-label="Profile and Settings"
+              title="Adjust Profile & Settings"
+            >
+              <Settings size={17} style={{ color: isDark ? '#94A3B8' : '#6E6E73' }} />
+            </button>
+
+            {/* Clickable Profile Badge */}
+            <div
+              className="header-profile"
+              onClick={() => setSettingsOpen(true)}
+              style={{ cursor: 'pointer' }}
+              title="Click to edit profile"
+            >
+              <span>{user?.name || 'CareerOS user'}</span>
+              {avatarContent}
+            </div>
           </div>
         </header>
+
         <main className="app-content">
           <Outlet />
         </main>

@@ -50,8 +50,8 @@ async function runSmokeTest() {
   console.log('\n------------------------------------------------------');
   console.log('TEST 2: Student Dev-Login (POST /auth/dev-login)');
   const studentLoginRes = await apiCall('POST', '/auth/dev-login', {
-    email: 'alex.chen@apex.edu',
-    name: 'Alex Chen',
+    email: 'suraj@apex.edu',
+    name: 'Suraj',
     role: 'STUDENT',
   });
   console.log(`Status: ${studentLoginRes.status}`);
@@ -110,8 +110,8 @@ async function runSmokeTest() {
   console.log('\n------------------------------------------------------');
   console.log('TEST 8: College Admin Dev-Login (POST /auth/dev-login)');
   const adminLoginRes = await apiCall('POST', '/auth/dev-login', {
-    email: 'admin@apex.edu',
-    name: 'Dr. Sarah Jenkins',
+    email: 'asif@apex.edu',
+    name: 'Asif',
     role: 'COLLEGE_ADMIN',
   });
   console.log(`Status: ${adminLoginRes.status}`);

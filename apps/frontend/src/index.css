@@ -47,7 +47,7 @@
 .header-sep { margin: 0 6px; color: #d2d2d7; }
 .header-page { color: #1d1d1f; font-weight: 700; }
 .header-profile { display: flex; align-items: center; gap: 9px; margin-left: auto; color: #6e6e73; font-size: 12px; font-weight: 600; }
-.app-content { width: 100%; max-width: 1520px; margin: 0 auto; padding: 28px 32px 42px; }
+.app-content { width: 100%; max-width: 1200px; margin: 0 auto; padding: 28px 24px 48px; min-height: calc(100vh - 62px); display: flex; flex-direction: column; }
 .menu-trigger, .mobile-close { display: none; }
 .shell-backdrop { display: none; }
 
@@ -129,9 +129,254 @@
   .toast-item { min-width: 0; max-width: none; }
 }
 
+.header-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #e5e5ea;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all .16s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.header-icon-btn:hover {
+  background: #f5f5f7;
+  border-color: #d2d2d7;
+}
+.sidebar-user {
+  transition: background .16s ease, border-color .16s ease;
+  border-radius: 10px;
+}
+.sidebar-user:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; transform: scale(0.97) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Yellow Graphite Dark Theme (html.dark)
+   ═══════════════════════════════════════════════════════════════════════════ */
+html.dark, body.dark {
+  background-color: #121316 !important;
+  color: #F4F4F6 !important;
+}
+
+html.dark .app-shell {
+  background-color: #121316 !important;
+  color: #F4F4F6 !important;
+}
+
+html.dark .app-sidebar {
+  background-color: #18191E !important;
+  border-right: 1px solid #262830 !important;
+}
+
+html.dark .brand-lockup {
+  border-bottom: 1px solid #262830 !important;
+}
+
+html.dark .brand-mark {
+  background-color: #F59E0B !important;
+  color: #121316 !important;
+  font-weight: 800;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+}
+
+html.dark .brand-lockup strong {
+  color: #F4F4F6 !important;
+}
+
+html.dark .brand-lockup small {
+  color: #9CA3AF !important;
+}
+
+html.dark .shell-nav a {
+  color: #9CA3AF !important;
+}
+
+html.dark .shell-nav a:hover {
+  background-color: #22242C !important;
+  color: #FBBF24 !important;
+}
+
+html.dark .shell-nav a.active {
+  background: #F59E0B !important;
+  color: #121316 !important;
+  font-weight: 750 !important;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.28) !important;
+}
+
+html.dark .sidebar-user {
+  border-top: 1px solid #262830 !important;
+}
+
+html.dark .sidebar-user:hover {
+  background-color: #22242C !important;
+}
+
+html.dark .sidebar-user strong {
+  color: #F4F4F6 !important;
+}
+
+html.dark .sidebar-user span {
+  color: #9CA3AF !important;
+}
+
+html.dark .sidebar-user button {
+  color: #9CA3AF !important;
+}
+
+html.dark .sidebar-user button:hover {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #F87171 !important;
+}
+
+html.dark .shell-header {
+  background-color: rgba(24, 25, 30, 0.85) !important;
+  border-bottom: 1px solid #262830 !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+html.dark .header-context {
+  color: #9CA3AF !important;
+}
+
+html.dark .header-dot {
+  background-color: #F59E0B !important;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+html.dark .header-page {
+  color: #F4F4F6 !important;
+}
+
+html.dark .header-profile {
+  color: #F4F4F6 !important;
+}
+
+html.dark .header-icon-btn {
+  background-color: #1E2028 !important;
+  border: 1px solid #2C303B !important;
+  color: #F4F4F6 !important;
+}
+
+html.dark .header-icon-btn:hover {
+  background-color: #262934 !important;
+  border-color: #F59E0B !important;
+  color: #F59E0B !important;
+}
+
+/* Automatic Card & Surface Styling in Yellow Graphite Dark Mode */
+html.dark .bg-white,
+html.dark .bg-\[\#FFFFFF\],
+html.dark .bg-\[\#F8F8FA\],
+html.dark .bg-gradient-to-b {
+  background: #1A1C23 !important;
+  background-color: #1A1C23 !important;
+}
+
+html.dark .border,
+html.dark .border-\[\#E5E5EA\],
+html.dark .border-stone-200 {
+  border-color: #2C303B !important;
+}
+
+html.dark .text-\[\#1D1D1F\],
+html.dark .text-slate-900,
+html.dark .text-stone-900,
+html.dark .text-gray-900 {
+  color: #F4F4F6 !important;
+}
+
+html.dark .text-\[\#424245\],
+html.dark .text-slate-700,
+html.dark .text-stone-700 {
+  color: #D4D4D8 !important;
+}
+
+html.dark .text-\[\#6E6E73\],
+html.dark .text-\[\#86868B\],
+html.dark .text-slate-500,
+html.dark .text-stone-500 {
+  color: #9CA3AF !important;
+}
+
+html.dark .bg-stone-50,
+html.dark .bg-slate-50,
+html.dark .bg-gray-50 {
+  background-color: #22242D !important;
+}
+
+html.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+
+html.dark .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.14) !important;
+}
+
+html.dark .bg-teal-50 {
+  background-color: rgba(45, 212, 191, 0.12) !important;
+}
+
+html.dark .bg-cyan-50 {
+  background-color: rgba(56, 189, 248, 0.12) !important;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #141519 !important;
+  border-color: #2C303B !important;
+  color: #F4F4F6 !important;
+}
+
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus {
+  border-color: #F59E0B !important;
+}
+
+html.dark button.bg-emerald-600 {
+  background-color: #F59E0B !important;
+  color: #121316 !important;
+  font-weight: 750 !important;
+}
+
+html.dark button.bg-emerald-600:hover {
+  background-color: #FBBF24 !important;
+}
+
+html.dark a.bg-emerald-600 {
+  background-color: #F59E0B !important;
+  color: #121316 !important;
+  font-weight: 750 !important;
+}
+
+html.dark a.bg-emerald-600:hover {
+  background-color: #FBBF24 !important;
+}
+
+/* Smooth Global Theme Transition */
+body,
+.app-shell,
+.app-sidebar,
+.shell-header,
+.app-content,
+.app-main {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.15s ease;
+}
+
 @media (max-width: 760px) {
   .trust-label { display: none; }
   .login-main { grid-template-columns: 1fr; gap: 42px; padding-top: 30px; }
   .login-intro h1 { font-size: 48px; }
   .login-card { padding: 24px; }
 }
+
+
