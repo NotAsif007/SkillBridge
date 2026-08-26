@@ -8,6 +8,7 @@ import { notFound, badRequest } from '../utils/errors.js';
 export class ProfileService {
   /**
    * Retrieves or initializes student profile for a given user ID.
+   * Automatically assigns a default target career if none is chosen yet.
    */
   static async getOrCreateProfile(userId) {
     let profile = await StudentProfile.findOne({ userId })
@@ -21,16 +22,31 @@ export class ProfileService {
         throw notFound('User not found');
       }
 
+      // Find default active career
+      const defaultCareer = await Career.findOne({ isActive: true }).sort({ createdAt: 1 });
+
       profile = await StudentProfile.create({
         userId: user._id,
         organizationId: user.organizationId || null,
         departmentId: user.departmentId || null,
+        targetCareerId: defaultCareer?._id || null,
       });
 
       profile = await StudentProfile.findById(profile._id)
         .populate('targetCareerId', 'title slug category overview averageSalaryRange')
         .populate('organizationId', 'name slug domain')
         .populate('departmentId', 'name code');
+    } else if (!profile.targetCareerId) {
+      // If profile exists without targetCareerId, link first active career
+      const defaultCareer = await Career.findOne({ isActive: true }).sort({ createdAt: 1 });
+      if (defaultCareer) {
+        profile.targetCareerId = defaultCareer._id;
+        await profile.save();
+        profile = await StudentProfile.findById(profile._id)
+          .populate('targetCareerId', 'title slug category overview averageSalaryRange')
+          .populate('organizationId', 'name slug domain')
+          .populate('departmentId', 'name code');
+      }
     }
 
     return profile;
