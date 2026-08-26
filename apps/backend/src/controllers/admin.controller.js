@@ -56,4 +56,28 @@ export class AdminController {
       next(err);
     }
   }
+
+  /**
+   * GET /api/v1/admin/assessments/analytics
+   */
+  static async getAssessmentAnalytics(req, res, next) {
+    try {
+      const data = await AdminService.getAssessmentAnalytics(req.user.organizationId);
+      return success(res, data, 'Assessment analytics retrieved');
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  /**
+   * GET /api/v1/admin/interviews/analytics
+   */
+  static async getInterviewAnalytics(req, res, next) {
+    try {
+      const data = await AdminService.getInterviewAnalytics(req.user.organizationId);
+      return success(res, data, 'Interview analytics retrieved');
+    } catch (err) {
+      next(err);
+    }
+  }
 }

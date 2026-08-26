@@ -186,6 +186,7 @@ export class AssessmentService {
       passed,
       passingScore: assessment.passingScore,
       skillUpdate,
+      skillUpdated: skillUpdate,
       feedback: passed
         ? `Congratulations! You passed the ${assessment.difficulty.toLowerCase()} assessment for ${assessment.skillId.name}.`
         : `You scored ${percentage}%. Passing threshold is ${assessment.passingScore}%. Keep practicing!`,
@@ -196,9 +197,13 @@ export class AssessmentService {
    * Retrieves past assessment attempts for a student.
    */
   static async getStudentAttempts(studentId) {
-    return AssessmentAttempt.find({ studentId })
+    return AssessmentAttempt.find({ studentId, isCompleted: true })
       .populate('assessmentId', 'title difficulty durationMinutes')
       .populate('skillId', 'name category')
       .sort({ createdAt: -1 });
+  }
+
+  static async getMyAttempts(studentId) {
+    return this.getStudentAttempts(studentId);
   }
 }
