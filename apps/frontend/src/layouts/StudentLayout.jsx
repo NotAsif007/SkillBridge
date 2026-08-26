@@ -2,10 +2,11 @@
  * StudentLayout.jsx
  * Visual shell for all student portal pages.
  * Fixed 260px sidebar + top header + <Outlet /> content area.
- * Design: docs/DESIGN.md | Auth: swap user prop for useAuth() when providers.jsx is ready.
+ * Integrated with AuthContext for live user session and logout.
  */
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, User, Compass, BarChart2, ClipboardCheck,
   Map, FolderOpen, FileText, MessageSquare, Briefcase,
@@ -192,15 +193,13 @@ function StudentHeader({ onMenuClick, user }) {
   );
 }
 
-export default function StudentLayout({ user }) {
+export default function StudentLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    try {
-      const { authApi } = await import('../api/auth');
-      await authApi.logout();
-    } catch (_) {}
+    await logout();
     navigate('/login');
   };
 

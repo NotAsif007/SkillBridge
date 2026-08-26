@@ -2,34 +2,13 @@
  * AdminLayout.jsx
  *
  * The visual shell for all admin portal pages.
- * Renders:  fixed sidebar (260px desktop) + top header + <Outlet /> content area.
- *
- * Design source: docs/DESIGN.md
- * API source:    docs/API_CONTRACT.md  (auth/me response shape)
- *
- * ─── Extraction note ────────────────────────────────────────────────────────
- * The AdminSidebar and AdminHeader sub-components defined below are intentionally
- * local to this file.  When shared components (src/components/common/Sidebar.jsx
- * and Navbar.jsx) are implemented by the shared-component owner, replace:
- *
- *   import AdminSidebar from './AdminSidebar'; // local
- *   →  import Sidebar from '../components/common/Sidebar';
- *
- *   import AdminHeader  from './AdminHeader';  // local
- *   →  import Navbar   from '../components/common/Navbar';
- *
- * The page structure (<div> shell, <Outlet />) does NOT change.
- * ────────────────────────────────────────────────────────────────────────────
- *
- * Auth integration note:
- * This layout currently accepts an optional `user` prop for forward-compatibility.
- * Once providers.jsx delivers AuthContext, swap the prop for:
- *   const { user, logout } = useAuth();
- * No structural changes to the layout are required.
+ * Renders: fixed sidebar (260px desktop) + top header + <Outlet /> content area.
+ * Integrated with AuthContext for live user session and logout.
  */
 
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard,
   Users,
@@ -45,11 +24,6 @@ import {
   GraduationCap,
 } from 'lucide-react';
 
-// ─── Design tokens (from docs/DESIGN.md) ────────────────────────────────────
-// Using Tailwind arbitrary values so this layout works before tailwind.config.js
-// custom theme extensions are in place.  Once the config is set up, these can
-// be replaced with semantic class names (bg-app, bg-surface, etc.).
-
 const COLORS = {
   appBg:       '#0B0F17',   // Deep Obsidian
   surface:     '#111827',   // Card Dark
@@ -62,7 +36,6 @@ const COLORS = {
   emerald:     '#059669',
 };
 
-// ─── Navigation items ────────────────────────────────────────────────────────
 const NAV_ITEMS = [
   { label: 'Dashboard',    href: '/admin',              icon: LayoutDashboard, end: true },
   { label: 'Students',     href: '/admin/students',     icon: Users },
@@ -73,8 +46,6 @@ const NAV_ITEMS = [
   { label: 'Jobs',         href: '/admin/jobs',         icon: Briefcase },
 ];
 
-// ─── AdminSidebar ─────────────────────────────────────────────────────────────
-// Extract to src/components/common/Sidebar.jsx when shared component is ready.
 function AdminSidebar({ isOpen, onClose, user, onLogout }) {
   return (
     <>
@@ -186,18 +157,12 @@ function AdminSidebar({ isOpen, onClose, user, onLogout }) {
         </nav>
 
         {/* Profile / Logout footer */}
-        {/*
-         * Auth integration point:
-         * `user` is currently passed as a prop.  Replace with `const { user, logout } = useAuth()`
-         * inside AdminLayout once providers.jsx is ready — no changes needed here.
-         */}
         <div
           className="px-3 py-4"
           style={{ borderTop: `1px solid ${COLORS.border}` }}
         >
           {user ? (
             <div className="flex items-center gap-3 px-3 py-2">
-              {/* Avatar */}
               {user.profileImage ? (
                 <img
                   src={user.profileImage}
@@ -229,7 +194,6 @@ function AdminSidebar({ isOpen, onClose, user, onLogout }) {
               </div>
             </div>
           ) : (
-            /* Skeleton placeholder — shown while auth loads */
             <div className="flex items-center gap-3 px-3 py-2">
               <div
                 className="w-8 h-8 rounded-full animate-pulse flex-shrink-0"
@@ -268,8 +232,6 @@ function AdminSidebar({ isOpen, onClose, user, onLogout }) {
   );
 }
 
-// ─── AdminHeader ──────────────────────────────────────────────────────────────
-// Extract to src/components/common/Navbar.jsx when shared component is ready.
 function AdminHeader({ onMenuOpen, pageTitle }) {
   return (
     <header
@@ -281,7 +243,6 @@ function AdminHeader({ onMenuOpen, pageTitle }) {
       }}
       role="banner"
     >
-      {/* Mobile hamburger */}
       <button
         className="lg:hidden rounded-lg p-1.5 transition-colors"
         style={{ color: COLORS.textMuted }}
@@ -293,7 +254,6 @@ function AdminHeader({ onMenuOpen, pageTitle }) {
         <Menu size={20} aria-hidden="true" />
       </button>
 
-      {/* Page title — populated via pageTitle prop (future: from route meta) */}
       {pageTitle && (
         <h1
           className="text-sm font-semibold hidden sm:block"
@@ -307,11 +267,8 @@ function AdminHeader({ onMenuOpen, pageTitle }) {
         </h1>
       )}
 
-      {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Right-side header actions placeholder.
-          When auth is wired, add notification bell, user avatar menu here. */}
       <div className="flex items-center gap-2">
         <div
           className="text-xs px-2 py-1 rounded-full font-medium"
@@ -330,29 +287,14 @@ function AdminHeader({ onMenuOpen, pageTitle }) {
   );
 }
 
-// ─── AdminLayout (main export) ────────────────────────────────────────────────
-/**
- * @param {object} props
- * @param {object|null} [props.user]    - Authenticated user object from /auth/me.
- *                                        Shape: { name, email, profileImage, organization: { name } }
- *                                        Pass null / undefined while auth is loading.
- * @param {Function}   [props.onLogout] - Logout handler.  Pass authApi.logout or useAuth().logout.
- * @param {string}     [props.pageTitle] - Optional current page title for the header.
- *
- * Once useAuth() is available, call this component without props and read auth
- * state internally. See inline "Auth integration point" comments.
- */
-export default function AdminLayout({ user = null, onLogout, pageTitle }) {
+export default function AdminLayout({ pageTitle }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // ── Logout handler ──────────────────────────────────────────────────────────
-  // Replace with useAuth().logout once providers.jsx is ready.
   async function handleLogout() {
     try {
-      if (typeof onLogout === 'function') {
-        await onLogout();
-      }
+      await logout();
     } finally {
       navigate('/login', { replace: true });
     }
@@ -381,7 +323,6 @@ export default function AdminLayout({ user = null, onLogout, pageTitle }) {
         className="flex flex-col flex-1 min-w-0 transition-all duration-300"
         style={{ paddingLeft: '0' }}
       >
-        {/* Apply sidebar offset only on lg+ */}
         <style>{`
           @media (min-width: 1024px) {
             .admin-main-column { padding-left: 260px; }
@@ -389,27 +330,20 @@ export default function AdminLayout({ user = null, onLogout, pageTitle }) {
         `}</style>
 
         <div className="admin-main-column flex flex-col flex-1 min-w-0">
-          {/* ── Header ── */}
           <AdminHeader
             onMenuOpen={() => setSidebarOpen(true)}
             pageTitle={pageTitle}
           />
 
-          {/* ── Page content ── */}
           <main
             className="flex-1 px-4 sm:px-6 lg:px-8 py-6"
             id="main-content"
             role="main"
             style={{ maxWidth: '1440px', width: '100%', alignSelf: 'center' }}
           >
-            {/*
-             * <Outlet /> renders the matched child route component.
-             * Each admin page (AdminDashboard, StudentList, etc.) is rendered here.
-             */}
             <Outlet />
           </main>
 
-          {/* ── Footer ── */}
           <footer
             className="px-4 sm:px-6 lg:px-8 py-4 text-xs"
             style={{

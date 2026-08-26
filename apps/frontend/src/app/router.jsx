@@ -1,9 +1,13 @@
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 
-// ─── Layouts ─────────────────────────────────────────────────────────────────
+// ─── Layouts & Guards ────────────────────────────────────────────────────────
 import StudentLayout from '../layouts/StudentLayout';
 import AdminLayout   from '../layouts/AdminLayout';
+import { RequireAuth, RequireRole } from '../components/common/RouteGuards';
+
+// ─── Pages ───────────────────────────────────────────────────────────────────
+import LoginPage from '../pages/LoginPage';
 
 // ─── Student Feature Pages (Person 2) ─────────────────────────────────────────
 import StudentDashboard   from '../features/student/dashboard/StudentDashboard';
@@ -23,7 +27,7 @@ import InterviewSession   from '../features/student/interview/InterviewSession';
 import InterviewReport    from '../features/student/interview/InterviewReport';
 import JobList            from '../features/student/jobs/JobList';
 
-// ─── Admin Feature Pages (Person 3 — do NOT modify) ──────────────────────────
+// ─── Admin Feature Pages (Person 3) ──────────────────────────────────────────
 import AdminDashboard    from '../features/admin/dashboard/AdminDashboard';
 import StudentList       from '../features/admin/students/StudentList';
 import DepartmentList    from '../features/admin/departments/DepartmentList';
@@ -35,12 +39,18 @@ export const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: <div className="p-8 text-center" style={{ color: '#F9FAFB', background: '#0B0F17', minHeight: '100vh' }}>Login Page</div>,
+    element: <LoginPage />,
   },
 
-  // ─── Student Portal (Person 2) — wrapped in StudentLayout ─────────────────
+  // ─── Student Portal (Person 2) — Protected by RequireAuth & RequireRole ──
   {
-    element: <StudentLayout />,
+    element: (
+      <RequireAuth>
+        <RequireRole allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
+          <StudentLayout />
+        </RequireRole>
+      </RequireAuth>
+    ),
     children: [
       { path: '/dashboard',        element: <StudentDashboard /> },
       { path: '/profile',          element: <StudentProfile /> },
@@ -61,9 +71,15 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // ─── Admin Portal (Person 3) — wrapped in AdminLayout ────────────────────
+  // ─── Admin Portal (Person 3) — Protected by RequireAuth & RequireRole ────
   {
-    element: <AdminLayout />,
+    element: (
+      <RequireAuth>
+        <RequireRole allowedRoles={['COLLEGE_ADMIN', 'SUPER_ADMIN']}>
+          <AdminLayout />
+        </RequireRole>
+      </RequireAuth>
+    ),
     children: [
       { path: '/admin',             element: <AdminDashboard /> },
       { path: '/admin/students',    element: <StudentList /> },
