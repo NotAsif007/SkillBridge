@@ -57,8 +57,11 @@ export function errorHandler(err, req, res, next) {
 
   // Log 5xx errors with stack trace
   if (statusCode >= 500) {
-    logger.error(`${req.method} ${req.originalUrl} → ${statusCode} ${message}`);
-    if (config.isDev) logger.error(err.stack);
+    logger.error(`${req.method} ${req.originalUrl} → ${statusCode} ${message}`, {
+      requestId: req.requestId,
+      errorName: err.name,
+      stack: config.isDev ? err.stack : undefined,
+    });
   }
 
   // Never expose stack traces in production
@@ -69,5 +72,6 @@ export function errorHandler(err, req, res, next) {
  * 404 handler for unmatched routes.
  */
 export function notFoundHandler(req, res) {
+  logger.warn(`Route not found: ${req.method} ${req.originalUrl}`, { requestId: req.requestId });
   return failure(res, 404, 'NOT_FOUND', `Route ${req.method} ${req.originalUrl} not found`);
 }

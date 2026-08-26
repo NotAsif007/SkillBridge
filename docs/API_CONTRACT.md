@@ -7,6 +7,8 @@
 
 ## 1. Response Standard
 
+Every response carries a unique `X-Request-ID` correlation identifier in response headers (exposed through CORS), aiding end-to-end client-to-server tracing.
+
 ### 1.1 Success Response
 ```json
 {
@@ -49,7 +51,27 @@
 
 ---
 
-## 2. Authentication & Identity (`/auth`)
+## 2. Health & System Diagnostics (`/health`)
+
+### `GET /api/v1/health`
+System liveness check and runtime diagnostic status.
+- **Headers:** Optional `X-Request-ID` (will be echoed or generated)
+- **Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "status": "UP",
+    "timestamp": "2026-08-26T12:00:00.000Z",
+    "database": "CONNECTED",
+    "requestId": "65e01f29b4e87a2130e9d001"
+  }
+}
+```
+
+---
+
+## 3. Authentication & Identity (`/auth`)
 
 ### `GET /api/v1/auth/me`
 Fetches authenticated user identity and role.
@@ -92,7 +114,9 @@ Terminates user session.
 
 ---
 
-## 3. Student Profile (`/profile`)
+## 4. Student Profile (`/profile`)
+
+> **Note:** A newly created student profile has `targetCareer: null`. The student must explicitly choose their career via `PUT /api/v1/profile/target-career`.
 
 ### `GET /api/v1/profile`
 Fetches student profile and target career setup.
@@ -165,7 +189,7 @@ Sets the active target career for gap analysis.
 
 ---
 
-## 4. Careers & Master Skills (`/careers`, `/skills`)
+## 5. Careers & Master Skills (`/careers`, `/skills`)
 
 ### `GET /api/v1/careers`
 Lists all available career paths.
@@ -244,11 +268,15 @@ Lists all standardized skills across categories.
 
 ---
 
-## 5. Career Gap Engine (`/career-analysis`)
+## 6. Career Gap Engine (`/career-analysis`)
 
 ### `GET /api/v1/career-analysis`
-Computes complete deterministic gap analysis against target career.
-- **Response (200 OK):**
+Computes complete deterministic gap analysis against the student's configured target career.
+- **Scoring Engine Details:**
+  - Assessment readiness relies on the latest completed attempt for each required skill.
+  - Duplicate skill entries resolve to the highest proficiency level.
+  - Weights are merged with the canonical 6-pillar defaults and normalized to 100%.
+- **Response (200 OK — Target Career Configured):**
 ```json
 {
   "success": true,
@@ -283,10 +311,20 @@ Computes complete deterministic gap analysis against target career.
   }
 }
 ```
+- **Error Response (400 Bad Request — No Target Career Configured):**
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Target career is required to run career gap analysis. Please select a target career first."
+  }
+}
+```
 
 ---
 
-## 6. Skill Assessments (`/assessments`)
+## 7. Skill Assessments (`/assessments`)
 
 ### `GET /api/v1/assessments`
 Lists available assessments.
@@ -366,7 +404,7 @@ Submits answers and calculates score.
 
 ---
 
-## 7. Roadmaps (`/roadmaps`)
+## 8. Roadmaps (`/roadmaps`)
 
 ### `GET /api/v1/roadmaps/me`
 Retrieves student personalized roadmap.
@@ -415,7 +453,7 @@ Marks a task as completed or incomplete.
 
 ---
 
-## 8. Projects (`/projects`)
+## 9. Projects (`/projects`)
 
 ### `GET /api/v1/projects`
 Lists student projects.
@@ -452,10 +490,10 @@ Creates a new project record.
 
 ---
 
-## 9. Resumes (`/resumes`)
+## 10. Resumes (`/resumes`)
 
 ### `POST /api/v1/resumes/upload`
-Uploads a resume for Gemini parsing and scoring.
+Uploads a resume for in-memory PDF parsing, Gemini analysis, and scoring.
 - **Request:** `multipart/form-data` with `file`
 - **Response (200 OK):**
 ```json
@@ -486,7 +524,7 @@ Uploads a resume for Gemini parsing and scoring.
 
 ---
 
-## 10. AI Mock Interviews (`/interviews`)
+## 11. AI Mock Interviews (`/interviews`)
 
 ### `POST /api/v1/interviews`
 Creates a new AI interview session.
@@ -545,7 +583,7 @@ Submits student's voice/text answer and receives AI critique + next question.
 
 ---
 
-## 11. Jobs & Applications (`/jobs`, `/applications`)
+## 12. Jobs & Applications (`/jobs`, `/applications`)
 
 ### `GET /api/v1/jobs`
 Fetches matching campus and platform jobs with student match score.
@@ -572,7 +610,7 @@ Fetches matching campus and platform jobs with student match score.
 ```
 
 ### `POST /api/v1/jobs/:id/apply`
-Applies to a job.
+Applies to a job. Validates that the job has not expired and that the student meets all configured criteria (minimum `profile.cgpa`, graduation year, and department).
 - **Response (201 Created):**
 ```json
 {
@@ -585,10 +623,20 @@ Applies to a job.
   }
 }
 ```
+- **Error Response (400 Bad Request — Deadline Expired / Ineligible):**
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "This job application deadline has passed."
+  }
+}
+```
 
 ---
 
-## 12. Student Dashboard Aggregation (`/dashboard/student`)
+## 13. Student Dashboard Aggregation (`/dashboard/student`)
 
 ### `GET /api/v1/dashboard/student`
 Single aggregated query returning all essential metrics for the student dashboard.
@@ -633,7 +681,7 @@ Single aggregated query returning all essential metrics for the student dashboar
 
 ---
 
-## 13. College Admin Dashboard & Analytics (`/dashboard/admin`, `/admin/*`)
+## 14. College Admin Dashboard & Analytics (`/dashboard/admin`, `/admin/*`)
 
 ### `GET /api/v1/dashboard/admin`
 College administrator overview metrics scoped strictly to admin's organization.

@@ -6,8 +6,8 @@ import React, { useState } from 'react';
 import { CheckCircle2, Circle, ChevronDown, ChevronRight } from 'lucide-react';
 
 const T = {
-  surface:'#111827', border:'#1F2937', textPrimary:'#F9FAFB', textMuted:'#9CA3AF',
-  blue:'#2563EB', emerald:'#059669', emeraldBg:'rgba(5,150,105,0.12)', emeraldText:'#34D399',
+  surface:'#FFFFFF', border:'#E5E5EA', textPrimary:'#1D1D1F', textMuted:'#6E6E73',
+  blue:'#1D1D1F', emerald:'#059669', emeraldBg: '#ECFDF5', emeraldText: '#059669',
 };
 
 export default function MilestoneTimeline({ milestones = [], onToggleTask }) {

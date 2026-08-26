@@ -25,6 +25,14 @@ describe('GET /api/v1/health', () => {
     expect(res.body.data.services.database).toBe('connected');
     expect(typeof res.body.data.uptime).toBe('number');
     expect(typeof res.body.data.timestamp).toBe('string');
+    expect(res.headers['x-request-id']).toMatch(/^[a-f0-9-]{36}$/i);
+  });
+
+  it('preserves a valid client supplied request id for log correlation', async () => {
+    const requestId = 'debug-session-20260826';
+    const res = await request(app).get('/api/v1/health').set('X-Request-ID', requestId);
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['x-request-id']).toBe(requestId);
   });
 
   it('returns 404 for unknown routes', async () => {

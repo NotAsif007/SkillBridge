@@ -13,11 +13,11 @@ export function RequireAuth({ children }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0B0F17] flex flex-col items-center justify-center p-4">
-        <div className="flex items-center space-x-3 text-emerald-400">
+      <div className="min-h-screen bg-[#F5F5F7] flex flex-col items-center justify-center p-4">
+        <div className="flex items-center space-x-3 text-emerald-600">
           <Loader2 className="w-8 h-8 animate-spin" />
-          <span className="text-slate-300 font-medium text-sm tracking-wide">
-            Verifying SkillBridge Session...
+          <span className="text-[#6E6E73] font-medium text-sm tracking-wide">
+            Verifying CareerOS Session...
           </span>
         </div>
       </div>
@@ -39,8 +39,8 @@ export function RequireRole({ allowedRoles = [], children }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0B0F17] flex items-center justify-center p-4">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
+      <div className="min-h-screen bg-[#F5F5F7] flex items-center justify-center p-4">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     );
   }

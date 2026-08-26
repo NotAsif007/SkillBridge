@@ -194,6 +194,32 @@ describe('POST /api/v1/jobs/:id/apply', () => {
     expect(duplicateRes.statusCode).toBe(409);
     expect(duplicateRes.body.success).toBe(false);
   });
+
+  it('enforces CGPA eligibility using the profile schema field', async () => {
+    sampleJob.eligibility.minCgpa = 8.5;
+    await sampleJob.save();
+
+    const res = await request(app)
+      .post(`/api/v1/jobs/${sampleJob._id}/apply`)
+      .set('Authorization', `Bearer ${studentToken}`)
+      .send({ coverLetter: 'I would like to apply.' });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error.message).toMatch(/CGPA/);
+  });
+
+  it('does not accept applications after a job deadline', async () => {
+    sampleJob.deadline = new Date('2020-01-01');
+    await sampleJob.save();
+
+    const res = await request(app)
+      .post(`/api/v1/jobs/${sampleJob._id}/apply`)
+      .set('Authorization', `Bearer ${studentToken}`)
+      .send({ coverLetter: 'I would like to apply.' });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error.message).toMatch(/deadline/);
+  });
 });
 
 describe('GET /api/v1/jobs/applications/me', () => {

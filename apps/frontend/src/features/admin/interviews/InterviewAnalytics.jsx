@@ -45,11 +45,11 @@ export default function InterviewAnalytics() {
   const avgScore = data?.averageScore || 74;
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto text-slate-100 font-sans">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+    <div className="space-y-6 max-w-7xl mx-auto text-[#1D1D1F] font-sans">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E5EA] pb-5">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">AI Mock Interview Telemetry</h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <h1 className="text-2xl font-bold text-[#1D1D1F] tracking-tight">AI Mock Interview Telemetry</h1>
+          <p className="text-xs text-[#6E6E73] mt-1">
             Automated technical evaluation, voice scoring, and rubric completion metrics
           </p>
         </div>
@@ -63,28 +63,28 @@ export default function InterviewAnalytics() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-        <div className="bg-[#111827] border border-slate-800 rounded-xl p-5 shadow-lg">
-          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Total Mock Sessions</span>
-          <p className="text-3xl font-extrabold text-white mt-2">{total}</p>
-          <p className="text-xs text-slate-500 mt-1">Simulated technical interviews</p>
+        <div className="bg-[#111827] border border-[#E5E5EA] rounded-xl p-5 shadow-sm">
+          <span className="text-xs text-[#6E6E73] font-medium uppercase tracking-wider">Total Mock Sessions</span>
+          <p className="text-3xl font-extrabold text-[#1D1D1F] mt-2">{total}</p>
+          <p className="text-xs text-[#6E6E73] mt-1">Simulated technical interviews</p>
         </div>
 
-        <div className="bg-[#111827] border border-slate-800 rounded-xl p-5 shadow-lg">
-          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Completed Sessions</span>
+        <div className="bg-[#111827] border border-[#E5E5EA] rounded-xl p-5 shadow-sm">
+          <span className="text-xs text-[#6E6E73] font-medium uppercase tracking-wider">Completed Sessions</span>
           <p className="text-3xl font-extrabold text-purple-400 mt-2">{completed}</p>
-          <p className="text-xs text-slate-500 mt-1">{completionRate}% full session completion</p>
+          <p className="text-xs text-[#6E6E73] mt-1">{completionRate}% full session completion</p>
         </div>
 
-        <div className="bg-[#111827] border border-slate-800 rounded-xl p-5 shadow-lg">
-          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Average Score</span>
-          <p className="text-3xl font-extrabold text-emerald-400 mt-2">{avgScore}%</p>
-          <p className="text-xs text-slate-500 mt-1">Technical communication & correctness</p>
+        <div className="bg-[#111827] border border-[#E5E5EA] rounded-xl p-5 shadow-sm">
+          <span className="text-xs text-[#6E6E73] font-medium uppercase tracking-wider">Average Score</span>
+          <p className="text-3xl font-extrabold text-emerald-600 mt-2">{avgScore}%</p>
+          <p className="text-xs text-[#6E6E73] mt-1">Technical communication & correctness</p>
         </div>
 
-        <div className="bg-[#111827] border border-slate-800 rounded-xl p-5 shadow-lg">
-          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Instant Rubric Reports</span>
-          <p className="text-3xl font-extrabold text-teal-400 mt-2">100%</p>
-          <p className="text-xs text-slate-500 mt-1">Diagnostic breakdown generated</p>
+        <div className="bg-[#111827] border border-[#E5E5EA] rounded-xl p-5 shadow-sm">
+          <span className="text-xs text-[#6E6E73] font-medium uppercase tracking-wider">Instant Rubric Reports</span>
+          <p className="text-3xl font-extrabold text-teal-600 mt-2">100%</p>
+          <p className="text-xs text-[#6E6E73] mt-1">Diagnostic breakdown generated</p>
         </div>
       </div>
     </div>

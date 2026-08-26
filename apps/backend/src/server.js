@@ -1,38 +1,63 @@
 import { config } from './config/env.js';
-import { connectDB } from './config/db.js';
+import { connectDB, disconnectDB } from './config/db.js';
 import { logger } from './utils/logger.js';
 import app from './app.js';
 
-const PORT = config.port;
+let server;
+let shuttingDown = false;
+
+async function shutdown(signal, exitCode = 0) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  logger.info(`${signal} received — starting graceful shutdown`);
+
+  const forceExit = setTimeout(() => {
+    logger.error('Graceful shutdown timed out; forcing exit');
+    process.exit(1);
+  }, 10_000);
+  forceExit.unref();
+
+  try {
+    if (server) await new Promise((resolve) => server.close(resolve));
+    await disconnectDB();
+    logger.info('CareerOS server stopped cleanly');
+    process.exit(exitCode);
+  } catch (err) {
+    logger.error('Graceful shutdown failed', { errorName: err.name, message: err.message, stack: err.stack });
+    process.exit(1);
+  }
+}
 
 async function start() {
-  // Connect to MongoDB first
-  await connectDB();
-
-  const server = app.listen(PORT, () => {
-    logger.info(`SkillBridge API running in [${config.nodeEnv}] mode on port ${PORT}`);
-    logger.info(`Health: http://localhost:${PORT}/api/v1/health`);
-  });
-
-  // Graceful shutdown
-  const shutdown = async (signal) => {
-    logger.info(`${signal} received — shutting down gracefully`);
-    server.close(async () => {
-      const { disconnectDB } = await import('./config/db.js');
-      await disconnectDB();
-      logger.info('Server closed');
-      process.exit(0);
+  try {
+    await connectDB();
+    server = app.listen(config.port, () => {
+      logger.info(`CareerOS API listening on port ${config.port}`, {
+        environment: config.nodeEnv,
+        healthUrl: `http://localhost:${config.port}/api/v1/health`,
+        devLoginEnabled: config.allowDevLogin,
+        geminiConfigured: Boolean(config.gemini.apiKey),
+      });
     });
-  };
-
-  process.on('SIGTERM', () => shutdown('SIGTERM'));
-  process.on('SIGINT',  () => shutdown('SIGINT'));
-
-  // Unhandled rejection guard
-  process.on('unhandledRejection', (reason) => {
-    logger.error(`Unhandled Rejection: ${reason}`);
-    shutdown('unhandledRejection');
-  });
+    server.on('error', (err) => {
+      logger.error('HTTP server failed', { errorName: err.name, message: err.message, stack: err.stack });
+      shutdown('serverError', 1);
+    });
+  } catch (err) {
+    logger.error('CareerOS server failed during startup', { errorName: err.name, message: err.message, stack: err.stack });
+    process.exit(1);
+  }
 }
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('unhandledRejection', (reason) => {
+  logger.error('Unhandled promise rejection', { reason: reason instanceof Error ? reason.message : String(reason), stack: reason?.stack });
+  shutdown('unhandledRejection', 1);
+});
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught exception', { errorName: err.name, message: err.message, stack: err.stack });
+  shutdown('uncaughtException', 1);
+});
 
 start();

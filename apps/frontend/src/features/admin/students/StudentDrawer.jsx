@@ -69,16 +69,16 @@ import {
 
 // ─── Design tokens (docs/DESIGN.md) — identical to AdminLayout / AdminDashboard
 const T = {
-  appBg:       '#0B0F17',
-  surface:     '#111827',
+  appBg:       '#F5F5F7',
+  surface:     '#FFFFFF',
   surfaceHigh: '#1A2235',   // slightly elevated surface for inner cards
-  border:      '#1F2937',
+  border:      '#E5E5EA',
   borderLight: '#2D3748',
-  textPrimary: '#F9FAFB',
-  textMuted:   '#9CA3AF',
+  textPrimary: '#1D1D1F',
+  textMuted:   '#6E6E73',
   textFaint:   '#6B7280',
-  blue:        '#2563EB',
-  blueHover:   '#1D4ED8',
+  blue:        '#1D1D1F',
+  blueHover:   '#000000',
   emerald:     '#059669',
   emeraldBg:   'rgba(5,150,105,0.12)',
   emeraldText: '#34D399',
@@ -380,7 +380,7 @@ export default function StudentDrawer({ student, open, onClose }) {
               {/* Avatar — initials fallback (no profileImage in roster API) */}
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-base font-bold"
-                style={{ backgroundColor: 'rgba(37,99,235,0.15)', color: '#93C5FD' }}
+                style={{ backgroundColor: 'rgba(37,99,235,0.15)', color: '#177245' }}
                 aria-hidden="true"
               >
                 {student.name?.charAt(0)?.toUpperCase() ?? '?'}

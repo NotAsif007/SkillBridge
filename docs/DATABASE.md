@@ -49,6 +49,7 @@ Represents an academic institution (e.g., college or university).
   settings: {
     allowedDomains: [String],
     defaultPlacementWeightages: {
+      // Organization weights are merged with defaults and normalized to 100%
       technicalSkills: { type: Number, default: 30 },
       assessmentPerformance: { type: Number, default: 20 },
       projects: { type: Number, default: 15 },
@@ -106,8 +107,8 @@ Extended student academic and career tracking document.
   departmentId: { type: ObjectId, ref: 'Department', index: true },
   rollNumber: String,
   graduationYear: Number,
-  cgpa: Number,
-  targetCareerId: { type: ObjectId, ref: 'Career', index: true },
+  cgpa: Number, // Authoritative academic CGPA used in job eligibility
+  targetCareerId: { type: ObjectId, ref: 'Career', index: true, default: null }, // Explicitly chosen by student; null on profile creation
   skills: [
     {
       skillId: { type: ObjectId, ref: 'Skill', required: true },
@@ -125,7 +126,7 @@ Extended student academic and career tracking document.
     overall: { type: Number, default: 0 },
     breakdown: {
       technicalSkills: { type: Number, default: 0 },
-      assessmentPerformance: { type: Number, default: 0 },
+      assessmentPerformance: { type: Number, default: 0 }, // Based on latest attempt per required skill
       projects: { type: Number, default: 0 },
       resume: { type: Number, default: 0 },
       interviewPerformance: { type: Number, default: 0 },
@@ -426,7 +427,10 @@ Campus placement and external job listings.
     currency: { type: String, default: 'INR' }
   },
   applicationUrl: String,
-  deadline: Date,
+  deadline: Date, // Applications after deadline are rejected
+  minCgpa: Number, // Minimum CGPA requirement checked against student profile
+  allowedDepartments: [{ type: ObjectId, ref: 'Department' }], // Eligibility filter
+  allowedGraduationYears: [Number], // Eligibility filter
   isActive: { type: Boolean, default: true },
   createdAt: Date,
   updatedAt: Date

@@ -8,13 +8,35 @@ servers:
     description: V1 REST API Endpoint
 
 paths:
+  /health:
+    get:
+      summary: System liveness and diagnostic status
+      tags: [System]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
+      responses:
+        '200':
+          description: System operational status
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
   /auth/me:
     get:
       summary: Get current authenticated user
       tags: [Authentication]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: User profile and organizational membership
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
           content:
             application/json:
               schema:
@@ -24,36 +46,80 @@ paths:
     post:
       summary: Invalidate user session
       tags: [Authentication]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: Logout confirmation
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /profile:
     get:
       summary: Get student profile
       tags: [Profile]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: Student profile with skills and target career
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
     put:
       summary: Update student profile
       tags: [Profile]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: Updated student profile
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
+
+  /profile/target-career:
+    put:
+      summary: Explicitly set student's active target career
+      tags: [Profile]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [careerId]
+              properties:
+                careerId:
+                  type: string
+      responses:
+        '200':
+          description: Target career updated successfully
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /careers:
     get:
       summary: List all careers
       tags: [Careers]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: List of standard careers
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
   /careers/{id}:
     get:
       summary: Get career details with required skill weightings
       tags: [Careers]
       parameters:
+        - $ref: '#/components/parameters/XRequestId'
         - name: id
           in: path
           required: true
@@ -62,12 +128,16 @@ paths:
       responses:
         '200':
           description: Career details with requirements
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /skills:
     get:
       summary: List skills
       tags: [Skills]
       parameters:
+        - $ref: '#/components/parameters/XRequestId'
         - name: category
           in: query
           schema:
@@ -75,27 +145,47 @@ paths:
       responses:
         '200':
           description: List of skills
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /career-analysis:
     get:
       summary: Calculate Career Gap & Placement Readiness
+      description: Deterministically evaluates readiness against target career. Returns 400 if no target career is configured.
       tags: [Career Gap Engine]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: Gap analysis and score breakdown
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
+        '400':
+          description: Target career required error
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /assessments:
     get:
       summary: List assessments
       tags: [Assessments]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: List of assessments
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
   /assessments/{id}:
     get:
       summary: Start assessment session
       tags: [Assessments]
       parameters:
+        - $ref: '#/components/parameters/XRequestId'
         - name: id
           in: path
           required: true
@@ -104,11 +194,15 @@ paths:
       responses:
         '200':
           description: Assessment questions
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
   /assessments/{id}/submit:
     post:
       summary: Submit assessment answers
       tags: [Assessments]
       parameters:
+        - $ref: '#/components/parameters/XRequestId'
         - name: id
           in: path
           required: true
@@ -117,33 +211,53 @@ paths:
       responses:
         '200':
           description: Evaluation and updated skill proficiency
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /roadmaps/me:
     get:
       summary: Get student learning roadmap
       tags: [Roadmaps]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: Milestone tasks and completion state
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /projects:
     get:
       summary: List student portfolio projects
       tags: [Projects]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: Projects list
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
     post:
       summary: Add a portfolio project
       tags: [Projects]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '201':
           description: Project created
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /resumes/upload:
     post:
       summary: Upload resume for AI parsing and scoring
       tags: [Resumes]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       requestBody:
         content:
           multipart/form-data:
@@ -156,19 +270,28 @@ paths:
       responses:
         '200':
           description: Resume analysis and extracted skills
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /interviews:
     post:
       summary: Start AI mock interview session
       tags: [Interviews]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '201':
           description: Interview initialized with first question
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
   /interviews/{id}/answer:
     post:
       summary: Submit answer to current interview question
       tags: [Interviews]
       parameters:
+        - $ref: '#/components/parameters/XRequestId'
         - name: id
           in: path
           required: true
@@ -177,41 +300,120 @@ paths:
       responses:
         '200':
           description: Feedback and next question / final score
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /jobs:
     get:
       summary: List job openings with student skill match percentage
       tags: [Jobs]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: Jobs list
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
+
+  /jobs/{id}/apply:
+    post:
+      summary: Apply to a job posting
+      description: Validates deadline has not expired and checks student eligibility (CGPA, department, graduation year).
+      tags: [Jobs]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Application submitted
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
+        '400':
+          description: Application deadline passed or student ineligible
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /dashboard/student:
     get:
       summary: Aggregated student dashboard data
       tags: [Dashboard]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: Readiness, progress, and activity summary
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /dashboard/admin:
     get:
       summary: Aggregated college admin dashboard data
       tags: [Admin]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: Institutional placement readiness and skill gaps
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
   /admin/students:
     get:
       summary: Search and paginate organization students
       tags: [Admin]
+      parameters:
+        - $ref: '#/components/parameters/XRequestId'
       responses:
         '200':
           description: Paginated student roster
+          headers:
+            X-Request-ID:
+              $ref: '#/components/headers/XRequestIdHeader'
 
 components:
+  headers:
+    XRequestIdHeader:
+      schema:
+        type: string
+      description: Unique correlation request ID
+
+  parameters:
+    XRequestId:
+      name: X-Request-ID
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Optional caller-supplied correlation ID
+
   schemas:
+    HealthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+            timestamp:
+              type: string
+            database:
+              type: string
+            requestId:
+              type: string
+
     AuthMeResponse:
       type: object
       properties:

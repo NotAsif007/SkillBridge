@@ -3,7 +3,7 @@ import { JobApplication } from '../models/jobApplication.model.js';
 import { Resume } from '../models/resume.model.js';
 import { StudentProfile } from '../models/studentProfile.model.js';
 import { ProfileService } from './profile.service.js';
-import { notFound, badRequest, conflict } from '../utils/errors.js';
+import { notFound, badRequest, conflict, forbidden } from '../utils/errors.js';
 import { escapeRegex } from '../utils/regex.js';
 
 export class JobService {
@@ -170,12 +170,30 @@ export class JobService {
     const profile = await ProfileService.getOrCreateProfile(studentId);
 
     // Eligibility check
-    if (job.eligibility?.minCgpa && profile.academicDetails?.cgpa) {
-      if (profile.academicDetails.cgpa < job.eligibility.minCgpa) {
+    if (job.deadline && new Date(job.deadline) < new Date()) {
+      throw badRequest('The application deadline for this position has passed');
+    }
+
+    if (job.eligibility?.minCgpa) {
+      if (profile.cgpa == null || profile.cgpa < job.eligibility.minCgpa) {
         throw badRequest(
-          `Minimum CGPA requirement is ${job.eligibility.minCgpa}, but your profile has ${profile.academicDetails.cgpa}`
+          `Minimum CGPA requirement is ${job.eligibility.minCgpa}, but your profile has ${profile.cgpa ?? 'not been provided'}`
         );
       }
+    }
+
+    const eligibleDepartments = job.eligibility?.eligibleDepartments || [];
+    if (eligibleDepartments.length > 0) {
+      const isEligibleDepartment = profile.departmentId && eligibleDepartments
+        .some((departmentId) => departmentId.toString() === profile.departmentId.toString());
+      if (!isEligibleDepartment) {
+        throw forbidden('Your department is not eligible for this position');
+      }
+    }
+
+    const graduationYears = job.eligibility?.graduationYears || [];
+    if (graduationYears.length > 0 && !graduationYears.includes(profile.graduationYear)) {
+      throw forbidden('Your graduation year is not eligible for this position');
     }
 
     const { matchPercentage } = this.calculateJobMatch(profile.skills, job.requiredSkills);

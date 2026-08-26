@@ -6,26 +6,26 @@ import JobCard, { MOCK_JOB } from './JobCard';
 
 // ─── Design tokens ───────────────────────────────────────────────────────────
 const T = {
-  appBg:       '#0B0F17',
-  surface:     '#111827',
-  border:      '#1F2937',
-  textPrimary: '#F9FAFB',
-  textMuted:   '#9CA3AF',
-  blue:        '#2563EB',
-  blueHover:   '#1D4ED8',
-  cobalt:      '#1E3A8A',
+  appBg:       '#F5F5F7',
+  surface:     '#FFFFFF',
+  border:      '#E5E5EA',
+  textPrimary: '#1D1D1F',
+  textMuted:   '#6E6E73',
+  blue:        '#1D1D1F',
+  blueHover:   '#000000',
+  cobalt:      '#1D1D1F',
   emerald:     '#059669',
   emeraldBg:   'rgba(5,150,105,0.12)',
-  emeraldText: '#34D399',
+  emeraldText: '#059669',
   teal:        '#0D9488',
   tealBg:      'rgba(13,148,136,0.12)',
-  tealText:    '#2DD4BF',
+  tealText:    '#0D9488',
   amber:       '#D97706',
   amberBg:     'rgba(217,119,6,0.12)',
-  amberText:   '#FBBF24',
+  amberText:   '#D97706',
   red:         '#DC2626',
   redBg:       'rgba(220,38,38,0.12)',
-  redText:     '#F87171',
+  redText:     '#DC2626',
 };
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
@@ -254,7 +254,7 @@ function ApplicationsTable({ applications, loading }) {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
             <thead>
-              <tr style={{ background: 'rgba(31,41,55,0.5)' }}>
+              <tr style={{ background: '#F5F5F7' }}>
                 {['Job Title', 'Company', 'Applied Date', 'Status'].map((col) => (
                   <th
                     key={col}
@@ -282,11 +282,11 @@ function ApplicationsTable({ applications, loading }) {
                   <tr
                     key={app._id}
                     style={{
-                      background: idx % 2 === 0 ? 'transparent' : 'rgba(31,41,55,0.2)',
+                      background: idx % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.02)',
                       transition: 'background 0.15s',
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(37,99,235,0.05)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 0 ? 'transparent' : 'rgba(31,41,55,0.2)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = idx % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.02)'; }}
                   >
                     <td style={{ padding: '12px 20px', color: T.textPrimary, fontWeight: 500 }}>
                       {app.job?.title || '—'}

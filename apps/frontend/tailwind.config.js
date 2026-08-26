@@ -4,38 +4,32 @@ export default {
     './index.html',
     './src/**/*.{js,jsx,ts,tsx}',
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // Design system tokens from docs/DESIGN.md
-        'app-dark': '#0B0F17',
-        'app-light': '#F8FAFC',
-        'card-dark': '#111827',
-        'card-light': '#FFFFFF',
-        'border-dark': '#1F2937',
-        'border-light': '#E2E8F0',
+        /* ─── Apple-inspired Light Design System ──────────────────────── */
+        canvas:   '#F5F5F7',
+        surface:  '#FFFFFF',
+        graphite: '#1D1D1F',
+        muted:    '#6E6E73',
+        divider:  '#E5E5EA',
+        subtle:   '#86868B',
+
+        /* ─── Semantic tokens ────────────────────────────────────────── */
         readiness: {
           DEFAULT: '#059669',
-          badge: 'rgba(5, 150, 105, 0.15)',
-          text: '#34D399',
-          'badge-light': '#ECFDF5',
-          'text-light': '#065F46',
-        },
-        cobalt: {
-          DEFAULT: '#1E3A8A',
-          interactive: '#2563EB',
-          hover: '#1D4ED8',
+          bg:      '#ECFDF5',
+          text:    '#065F46',
         },
         gap: {
           DEFAULT: '#D97706',
-          badge: 'rgba(217, 119, 6, 0.15)',
-          text: '#FBBF24',
+          bg:      '#FFFBEB',
+          text:    '#92400E',
         },
         danger: {
           DEFAULT: '#DC2626',
-          badge: 'rgba(220, 38, 38, 0.15)',
-          text: '#F87171',
+          bg:      '#FEF2F2',
+          text:    '#991B1B',
         },
         analytics: {
           DEFAULT: '#0D9488',
@@ -47,7 +41,7 @@ export default {
       },
       borderRadius: {
         card: '10px',
-        btn: '8px',
+        btn:  '8px',
         pill: '9999px',
       },
       maxWidth: {

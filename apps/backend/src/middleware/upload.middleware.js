@@ -3,7 +3,10 @@ import { createRequire } from 'module';
 import { badRequest } from '../utils/errors.js';
 
 const require = createRequire(import.meta.url);
-const pdfParse = require('pdf-parse');
+// Import the parser implementation directly. The package entry point runs a
+// bundled debug fixture when it is loaded through Jest's ESM bridge, which
+// makes every API test fail before the app is even initialized.
+const pdfParse = require('pdf-parse/lib/pdf-parse.js');
 
 const storage = multer.memoryStorage();
 

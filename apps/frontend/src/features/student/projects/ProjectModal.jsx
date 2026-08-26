@@ -7,9 +7,9 @@ import { X, Plus, Github, Globe } from 'lucide-react';
 import { studentApi } from '../../../api/student';
 
 const T = {
-  appBg:'#0B0F17', surface:'#111827', border:'#1F2937',
-  textPrimary:'#F9FAFB', textMuted:'#9CA3AF', blue:'#2563EB',
-  red:'#DC2626', redBg:'rgba(220,38,38,0.12)', redText:'#F87171',
+  appBg:'#F5F5F7', surface:'#FFFFFF', border:'#E5E5EA',
+  textPrimary:'#1D1D1F', textMuted:'#6E6E73', blue:'#1D1D1F',
+  red:'#DC2626', redBg:'rgba(220,38,38,0.12)', redText:'#DC2626',
 };
 
 function Field({ label, children }) {

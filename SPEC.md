@@ -460,6 +460,8 @@ GET    /api/v1/dashboard/admin
 
 # 12. API Response Format
 
+All API responses include a correlation identifier header: `X-Request-ID` (generated or caller-supplied), exposed via CORS for frontend/client tracing.
+
 ## Success
 
 ```json
@@ -497,6 +499,8 @@ GET    /api/v1/dashboard/admin
   }
 }
 ```
+
+Error envelopes must never leak raw internal stack traces in production (stack traces are logged in development server logs only).
 
 ---
 
@@ -631,7 +635,7 @@ StudentProfile
 ├── preferredRoles
 ├── preferredLocations
 ├── experience
-└── targetCareerId
+└── targetCareerId (explicitly selected via PUT /api/v1/profile/target-career; not auto-assigned on profile creation)
 ```
 
 ---
@@ -730,9 +734,9 @@ Input:
 ```text
 Student Profile
 Current Skills
-Target Career
+Target Career (Required: GET /api/v1/career-analysis returns 400 if no target career is selected)
 Career Requirements
-Assessment Results
+Assessment Results (uses latest completed attempt per required skill)
 Projects
 ```
 
@@ -777,13 +781,17 @@ Example:
 
 The initial readiness score must be deterministic.
 
+- Assessment readiness uses the latest completed attempt for each required skill, ensuring retake volume does not distort scores.
+- Duplicate student skill records resolve deterministically to the highest recorded proficiency.
+- `GET /api/v1/career-analysis` returns `400 Bad Request` until an active target career is explicitly configured.
+
 AI should enhance recommendations and explanations rather than being the sole source of truth.
 
 ---
 
 # 22. Placement Readiness Score
 
-Initial scoring:
+Authoritative 6-pillar canonical weight distribution:
 
 ```text
 Technical Skills        30%
@@ -794,9 +802,9 @@ Interview Performance   15%
 Roadmap Progress        10%
 ```
 
-Weights must be configurable.
-
-The backend calculates the authoritative score.
+Rules for readiness calculation:
+- Organization-specific custom weights are dynamically merged with canonical defaults and normalized to 100% prior to calculating composite scores.
+- The backend calculates the authoritative score; frontend never computes or overrides business readiness metrics.
 
 ---
 
@@ -1054,6 +1062,9 @@ salaryRange
 applicationUrl
 deadline
 organizationId
+allowedDepartments
+allowedGraduationYears
+minCgpa
 ```
 
 Students can:
@@ -1065,6 +1076,11 @@ match
 save
 apply
 ```
+
+Application Eligibility Rules:
+- Applications to expired jobs (past `deadline`) are rejected with `400 Bad Request`.
+- Candidate eligibility checks student profile `cgpa` (authoritative schema field) against `job.minCgpa`.
+- Department (`user.departmentId` / `profile.departmentId`) and `graduationYear` are validated against job criteria when configured.
 
 ---
 
@@ -1217,22 +1233,24 @@ Reject malformed requests before business logic.
 
 ---
 
-# 38. Security
+# 38. Security, Observability & Lifecycle
 
 Required:
 
-* secure HTTP headers
-* CORS
-* request size limits
-* rate limiting
-* input validation
-* secure authentication
-* role-based authorization
-* organization isolation
-* safe MongoDB queries
-* secure file validation
-* environment-based secrets
-* standardized error handling
+* secure HTTP headers & CORS
+* request correlation via `X-Request-ID` (generated UUID or caller-supplied, returned in response headers and CORS-exposed)
+* structured request/response logging (method, path, status, duration, actor context)
+* sensitive metadata redaction (passwords, secrets, tokens, cookies, auth headers)
+* request size limits & rate limiting
+* input validation with Zod
+* secure authentication (Google Identity Services / session cookies / JWT versioning)
+* role-based authorization (STUDENT, COLLEGE_ADMIN, SUPER_ADMIN)
+* organization data isolation
+* safe MongoDB queries & ReDoS sanitization
+* secure file validation & direct PDF parser extraction
+* environment-based secrets management
+* standardized error handling (no leaked internal stack traces in production)
+* guarded graceful server shutdown (closing HTTP connections, disconnecting MongoDB with 10s safety timeout)
 
 Never expose:
 
@@ -1494,9 +1512,20 @@ Implement:
 
 ---
 
-# 42. Frontend Development
+# 42. Frontend Development & Design System
 
-The frontend should consume the backend through documented REST APIs.
+The frontend is built with React 18 + Vite (dev server running on port `5173`) and consumes backend endpoints through documented REST APIs.
+
+### Visual Design System
+- **Apple-Inspired Aesthetic**: Bright neutral surfaces (`#F5F5F7` background, `#FFFFFF` cards), graphite typography and controls (`#1D1D1F`), crisp dividers (`#E5E5EA`), and restrained emerald feedback (`#059669`).
+- **No AI Visual Tropes**: Strictly no dark-blue/purple glowing gradients, rainbow badges, or floating magic wands. AI insights are formatted as clear analytical diagnostic reports.
+
+### Shell & Layout Architecture
+- `apps/frontend/src/components/common/AppShell.jsx` serves as the sole responsive shell for both Student and Admin workspaces.
+  - Role-specific sidebar and mobile navigation drawer.
+  - Account identity pill and session logout.
+- `StudentLayout.jsx` and `AdminLayout.jsx` are thin wrappers providing context to `AppShell`.
+- `LoginPage.jsx` provides clean Google Identity Services (GSI) OAuth, email authentication, and 1-click sandbox demo persona logins.
 
 Student frontend:
 
@@ -1514,7 +1543,7 @@ Shared:
 
 ```text
 api/
-components/
+components/ (including common/AppShell.jsx)
 layouts/
 app/
 ```

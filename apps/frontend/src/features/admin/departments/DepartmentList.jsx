@@ -47,13 +47,13 @@ import { adminApi } from '../../../api/admin';
 
 // ─── Design tokens (docs/DESIGN.md) ───────────────────────────────────────────
 const T = {
-  appBg:       '#0B0F17',
-  surface:     '#111827',
-  border:      '#1F2937',
-  textPrimary: '#F9FAFB',
-  textMuted:   '#9CA3AF',
-  blue:        '#2563EB',
-  blueHover:   '#1D4ED8',
+  appBg:       '#F5F5F7',
+  surface:     '#FFFFFF',
+  border:      '#E5E5EA',
+  textPrimary: '#1D1D1F',
+  textMuted:   '#6E6E73',
+  blue:        '#1D1D1F',
+  blueHover:   '#000000',
   emerald:     '#059669',
   emeraldBg:   'rgba(5,150,105,0.12)',
   emeraldText: '#34D399',
@@ -66,7 +66,7 @@ const T = {
   red:         '#DC2626',
   redBg:       'rgba(220,38,38,0.12)',
   redText:     '#F87171',
-  cobalt:      '#1E3A8A',
+  cobalt:      '#1D1D1F',
 };
 
 // ─── DEVELOPMENT FALLBACK DATA ──────────────────────────────────────────────────
@@ -200,7 +200,7 @@ function DepartmentEmpty() {
         style={{ backgroundColor: 'rgba(37,99,235,0.12)' }}
         aria-hidden="true"
       >
-        <Building2 size={24} style={{ color: '#93C5FD' }} />
+        <Building2 size={24} style={{ color: '#177245' }} />
       </div>
       <div>
         <p className="font-semibold mb-1" style={{ color: T.textPrimary, fontSize: '1rem' }}>
@@ -235,13 +235,13 @@ function DepartmentCard({ department }) {
           style={{ backgroundColor: 'rgba(37,99,235,0.12)' }}
           aria-hidden="true"
         >
-          <GraduationCap size={20} style={{ color: '#93C5FD' }} strokeWidth={1.75} />
+          <GraduationCap size={20} style={{ color: '#177245' }} strokeWidth={1.75} />
         </div>
         <span
           className="inline-block text-xs font-bold px-2.5 py-1 rounded"
           style={{
             backgroundColor: 'rgba(37,99,235,0.10)',
-            color: '#93C5FD',
+            color: '#177245',
             fontFamily: 'JetBrains Mono, Fira Code, monospace',
             letterSpacing: '0.02em',
           }}
@@ -321,7 +321,7 @@ function SummaryStats({ departments }) {
           style={{ backgroundColor: 'rgba(37,99,235,0.12)' }}
           aria-hidden="true"
         >
-          <Building2 size={22} style={{ color: '#93C5FD' }} strokeWidth={1.75} />
+          <Building2 size={22} style={{ color: '#177245' }} strokeWidth={1.75} />
         </div>
         <div>
           <p
