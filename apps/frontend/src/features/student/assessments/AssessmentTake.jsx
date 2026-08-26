@@ -8,10 +8,10 @@ import { Clock, ChevronRight, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { studentApi } from '../../../api/student';
 
 const T = {
-  appBg:'#0B0F17', surface:'#111827', border:'#1F2937',
-  textPrimary:'#F9FAFB', textMuted:'#9CA3AF', blue:'#2563EB',
-  emerald:'#059669', emeraldBg:'rgba(5,150,105,0.12)', emeraldText:'#34D399',
-  amber:'#D97706', amberBg:'rgba(217,119,6,0.12)', amberText:'#FBBF24',
+  appBg:'#F5F5F7', surface:'#FFFFFF', border:'#E5E5EA',
+  textPrimary:'#1D1D1F', textMuted:'#6E6E73', blue:'#1D1D1F',
+  emerald:'#059669', emeraldBg: '#ECFDF5', emeraldText: '#059669',
+  amber:'#D97706', amberBg: '#FFFBEB', amberText: '#D97706',
   red:'#DC2626',
 };
 

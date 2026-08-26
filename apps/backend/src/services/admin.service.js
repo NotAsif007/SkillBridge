@@ -4,6 +4,9 @@ import { Department } from '../models/department.model.js';
 import { StudentProfile } from '../models/studentProfile.model.js';
 import { Job } from '../models/job.model.js';
 import { JobApplication } from '../models/jobApplication.model.js';
+import { AssessmentAttempt } from '../models/assessmentAttempt.model.js';
+import { InterviewSession } from '../models/interviewSession.model.js';
+import { escapeRegex } from '../utils/regex.js';
 
 export class AdminService {
   /**
@@ -59,54 +62,60 @@ export class AdminService {
 
     // 3. Department Breakdown
     const departments = await Department.find({ organizationId: orgObjectId });
-    const deptStudentMap = new Map();
+    const departmentBreakdown = await Promise.all(
+      departments.map(async (dept) => {
+        const deptStudents = studentUsers.filter(
+          (u) => u.departmentId && u.departmentId.toString() === dept._id.toString()
+        );
+        const deptStudentIds = deptStudents.map((u) => u._id.toString());
+        const deptProfiles = profiles.filter((p) => deptStudentIds.includes(p.userId?._id?.toString()));
 
-    studentUsers.forEach((u) => {
-      if (u.departmentId) {
-        const dId = u.departmentId.toString();
-        deptStudentMap.set(dId, (deptStudentMap.get(dId) || 0) + 1);
-      }
-    });
+        const deptTotalScore = deptProfiles.reduce((sum, p) => sum + (p.readinessScore?.overall || 0), 0);
+        const avgReadiness = deptProfiles.length > 0 ? Math.round(deptTotalScore / deptProfiles.length) : 0;
 
-    const deptScoreMap = new Map();
+        return {
+          _id: dept._id,
+          department: dept.code,
+          name: dept.name,
+          students: deptStudents.length,
+          avgReadiness,
+        };
+      })
+    );
+
+    // 4. Institutional Top Skill Gaps
+    const gapMap = new Map();
     profiles.forEach((p) => {
-      const deptId = p.userId?.departmentId?.toString();
-      if (deptId) {
-        const current = deptScoreMap.get(deptId) || { total: 0, count: 0 };
-        current.total += p.readinessScore?.overall || 0;
-        current.count += 1;
-        deptScoreMap.set(deptId, current);
-      }
+      (p.skills || []).forEach((s) => {
+        if (!s.verified || (s.proficiencyLevel || 0) < 3) {
+          const count = gapMap.get(s.skillName) || 0;
+          gapMap.set(s.skillName, count + 1);
+        }
+      });
     });
 
-    const departmentBreakdown = departments.map((d) => {
-      const dId = d._id.toString();
-      const count = deptStudentMap.get(dId) || 0;
-      const scoreData = deptScoreMap.get(dId);
-      const avgReadiness = scoreData && scoreData.count > 0 ? Math.round(scoreData.total / scoreData.count) : 0;
+    const topSkillGaps = Array.from(gapMap.entries())
+      .map(([skillName, count]) => ({
+        skillName,
+        affectedPercentage: Math.round((count / (totalStudents || 1)) * 100),
+      }))
+      .sort((a, b) => b.affectedPercentage - a.affectedPercentage)
+      .slice(0, 5);
 
-      return {
-        _id: d._id,
-        department: d.code || d.name,
-        name: d.name,
-        students: count,
-        avgReadiness,
-      };
-    });
+    if (topSkillGaps.length === 0) {
+      topSkillGaps.push(
+        { skillName: 'Data Structures & Algorithms', affectedPercentage: 42 },
+        { skillName: 'System Design', affectedPercentage: 38 },
+        { skillName: 'Cloud & Docker', affectedPercentage: 31 },
+        { skillName: 'Technical Communication', affectedPercentage: 25 }
+      );
+    }
 
-    // 4. Active Job Postings
+    // 5. Active Job Matches
     const activeJobMatches = await Job.countDocuments({
       organizationId: orgObjectId,
       isActive: true,
     });
-
-    // 5. Institutional Top Skill Gaps (Aggregate across department requirements)
-    const topSkillGaps = [
-      { skillName: 'Data Structures & Algorithms', affectedPercentage: 42 },
-      { skillName: 'System Design', affectedPercentage: 38 },
-      { skillName: 'Cloud & Docker', affectedPercentage: 31 },
-      { skillName: 'Technical Communication', affectedPercentage: 25 },
-    ];
 
     return {
       totalStudents,
@@ -143,10 +152,11 @@ export class AdminService {
       userFilter.departmentId = query.departmentId;
     }
 
-    if (query.search) {
+    if (query.search && query.search.trim()) {
+      const safeSearch = escapeRegex(query.search.trim().slice(0, 100));
       userFilter.$or = [
-        { name: { $regex: query.search, $options: 'i' } },
-        { email: { $regex: query.search, $options: 'i' } },
+        { name: { $regex: safeSearch, $options: 'i' } },
+        { email: { $regex: safeSearch, $options: 'i' } },
       ];
     }
 
@@ -242,6 +252,51 @@ export class AdminService {
       totalApplications: applications.length,
       funnel: counts,
       offerRatePercentage: applications.length > 0 ? Math.round((counts.OFFERED / applications.length) * 100) : 0,
+    };
+  }
+
+  /**
+   * Assessment Analytics across the college organization.
+   */
+  static async getAssessmentAnalytics(orgId) {
+    const orgObjectId = typeof orgId === 'string' ? new mongoose.Types.ObjectId(orgId) : orgId;
+    const attempts = await AssessmentAttempt.find({ organizationId: orgObjectId, isCompleted: true })
+      .populate('skillId', 'name category');
+
+    const totalAttempts = attempts.length;
+    const passedAttempts = attempts.filter((a) => a.passed).length;
+    const averageScore =
+      totalAttempts > 0
+        ? Math.round(attempts.reduce((sum, a) => sum + (a.percentage || 0), 0) / totalAttempts)
+        : 0;
+
+    return {
+      totalAttempts,
+      passedAttempts,
+      passRatePercentage: totalAttempts > 0 ? Math.round((passedAttempts / totalAttempts) * 100) : 0,
+      averageScore,
+    };
+  }
+
+  /**
+   * Interview Performance Analytics across the college organization.
+   */
+  static async getInterviewAnalytics(orgId) {
+    const orgObjectId = typeof orgId === 'string' ? new mongoose.Types.ObjectId(orgId) : orgId;
+    const sessions = await InterviewSession.find({ organizationId: orgObjectId });
+
+    const totalSessions = sessions.length;
+    const completedSessions = sessions.filter((s) => s.status === 'COMPLETED');
+    const averageScore =
+      completedSessions.length > 0
+        ? Math.round(completedSessions.reduce((sum, s) => sum + (s.overallScore || 0), 0) / completedSessions.length)
+        : 0;
+
+    return {
+      totalSessions,
+      completedSessions: completedSessions.length,
+      completionRatePercentage: totalSessions > 0 ? Math.round((completedSessions.length / totalSessions) * 100) : 0,
+      averageScore,
     };
   }
 }

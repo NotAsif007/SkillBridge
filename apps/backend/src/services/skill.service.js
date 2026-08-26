@@ -1,5 +1,6 @@
 import { Skill } from '../models/skill.model.js';
 import { notFound } from '../utils/errors.js';
+import { escapeRegex } from '../utils/regex.js';
 
 export class SkillService {
   /**
@@ -12,8 +13,9 @@ export class SkillService {
       query.category = category;
     }
 
-    if (search) {
-      query.name = { $regex: search.trim(), $options: 'i' };
+    if (search && search.trim()) {
+      const safeSearch = escapeRegex(search.trim().slice(0, 100));
+      query.name = { $regex: safeSearch, $options: 'i' };
     }
 
     return Skill.find(query).sort({ category: 1, name: 1 });

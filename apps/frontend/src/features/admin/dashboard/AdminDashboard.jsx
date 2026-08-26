@@ -67,12 +67,12 @@ import { adminApi } from '../../../api/admin';
 
 // ─── Design tokens ─────────────────────────────────────────────────────────────
 const T = {
-  appBg:       '#0B0F17',
-  surface:     '#111827',
-  border:      '#1F2937',
-  textPrimary: '#F9FAFB',
-  textMuted:   '#9CA3AF',
-  blue:        '#2563EB',
+  appBg:       '#F5F5F7',
+  surface:     '#FFFFFF',
+  border:      '#E5E5EA',
+  textPrimary: '#1D1D1F',
+  textMuted:   '#6E6E73',
+  blue:        '#1D1D1F',
   emerald:     '#059669',
   emeraldBg:   'rgba(5,150,105,0.12)',
   emeraldText: '#34D399',
@@ -85,7 +85,7 @@ const T = {
   red:         '#DC2626',
   redBg:       'rgba(220,38,38,0.12)',
   redText:     '#F87171',
-  cobalt:      '#1E3A8A',
+  cobalt:      '#1D1D1F',
 };
 
 // ─── Readiness helpers ─────────────────────────────────────────────────────────
@@ -342,7 +342,7 @@ function DashboardError({ error, onRetry }) {
         onClick={onRetry}
         className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
         style={{ backgroundColor: T.blue, color: '#ffffff' }}
-        onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#1D4ED8'; }}
+        onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#000000'; }}
         onMouseLeave={e => { e.currentTarget.style.backgroundColor = T.blue; }}
       >
         <RefreshCw size={15} aria-hidden="true" />
@@ -364,7 +364,7 @@ function DashboardEmpty() {
         style={{ backgroundColor: 'rgba(37,99,235,0.12)' }}
         aria-hidden="true"
       >
-        <Users size={24} style={{ color: '#93C5FD' }} />
+        <Users size={24} style={{ color: '#177245' }} />
       </div>
       <div>
         <p className="font-semibold mb-1" style={{ color: T.textPrimary, fontSize: '1rem' }}>
@@ -470,7 +470,7 @@ function ReadinessDistribution({ distribution }) {
       sub:   'Placement Emerging',
       value: distribution.ready60To74 ?? 0,
       color: T.blue,
-      text:  '#93C5FD',
+      text:  '#177245',
       bg:    'rgba(37,99,235,0.12)',
     },
     {
@@ -588,7 +588,7 @@ export default function AdminDashboard() {
     ? [
         {
           icon:      Users,
-          iconColor: '#93C5FD',
+          iconColor: '#177245',
           iconBg:    'rgba(37,99,235,0.12)',
           label:     'Total Students',
           value:     (state.data.totalStudents ?? 0).toLocaleString(),

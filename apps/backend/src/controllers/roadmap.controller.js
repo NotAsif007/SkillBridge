@@ -21,7 +21,11 @@ export class RoadmapController {
    */
   static async generateRoadmap(req, res, next) {
     try {
-      const roadmap = await RoadmapService.generateRoadmap(req.user.id, req.body);
+      const roadmap = await RoadmapService.generateRoadmap(
+        req.user.id,
+        req.user.organizationId,
+        req.body
+      );
       return success(res, roadmap, 'Roadmap generated successfully');
     } catch (err) {
       next(err);

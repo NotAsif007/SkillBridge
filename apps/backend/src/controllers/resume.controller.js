@@ -44,4 +44,17 @@ export class ResumeController {
       next(err);
     }
   }
+
+  /**
+   * DELETE /api/v1/resumes/:id
+   * Delete specific resume record
+   */
+  static async deleteResume(req, res, next) {
+    try {
+      const result = await ResumeService.deleteResume(req.user.id, req.params.id);
+      return success(res, result, 'Resume deleted successfully');
+    } catch (err) {
+      next(err);
+    }
+  }
 }

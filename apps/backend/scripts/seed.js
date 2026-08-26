@@ -19,7 +19,7 @@ import { Job } from '../src/models/job.model.js';
 import { JobApplication } from '../src/models/jobApplication.model.js';
 
 export async function seedDatabase() {
-  logger.info('🌱 Starting CareerOS Database Seeding...');
+  logger.info('🌱 Starting SkillBridge Database Seeding...');
 
   // 1. Clear existing collections
   await Organization.deleteMany({});
@@ -41,20 +41,20 @@ export async function seedDatabase() {
   logger.info('🧹 Cleaned existing records.');
 
   // 2. Create Sample Organization
-  const apexOrg = await Organization.create({
-    name: 'Apex Institute of Technology',
-    slug: 'apex-tech',
-    domain: 'apex.edu',
+  const adtuOrg = await Organization.create({
+    name: 'Assam Down Town University',
+    slug: 'adtu',
+    domain: 'adtu.edu.in',
     logoUrl: 'https://images.unsplash.com/photo-1562774053-701939374585?w=200',
     address: {
-      street: '100 Innovation Parkway',
-      city: 'Bangalore',
-      state: 'Karnataka',
+      street: 'Sankar Madhab Path, Gandhi Nagar, Panikhaiti',
+      city: 'Guwahati',
+      state: 'Assam',
       country: 'India',
-      zipCode: '560100',
+      zipCode: '781026',
     },
     settings: {
-      allowedDomains: ['apex.edu', 'student.apex.edu'],
+      allowedDomains: ['adtu.edu.in', 'student.adtu.edu.in'],
       defaultPlacementWeightages: {
         technicalSkills: 30,
         assessmentPerformance: 20,
@@ -68,21 +68,21 @@ export async function seedDatabase() {
 
   // 3. Create Departments
   const cseDept = await Department.create({
-    organizationId: apexOrg._id,
+    organizationId: adtuOrg._id,
     name: 'Computer Science & Engineering',
     code: 'CSE',
     headOfDepartment: 'Dr. Sarah Jenkins',
   });
 
   const itDept = await Department.create({
-    organizationId: apexOrg._id,
+    organizationId: adtuOrg._id,
     name: 'Information Technology',
     code: 'IT',
     headOfDepartment: 'Dr. Ramesh Kumar',
   });
 
   const eceDept = await Department.create({
-    organizationId: apexOrg._id,
+    organizationId: adtuOrg._id,
     name: 'Electronics & Communication Engineering',
     code: 'ECE',
     headOfDepartment: 'Dr. Anita Desai',
@@ -91,25 +91,25 @@ export async function seedDatabase() {
   // 4. Create Standard Users
   const superAdmin = await User.create({
     name: 'Platform SuperAdmin',
-    email: 'superadmin@careeros.com',
+    email: 'superadmin@skillbridge.com',
     role: 'SUPER_ADMIN',
     isActive: true,
   });
 
   const collegeAdmin = await User.create({
     name: 'Dr. Sarah Jenkins',
-    email: 'admin@apex.edu',
+    email: 'admin@adtu.edu.in',
     role: 'COLLEGE_ADMIN',
-    organizationId: apexOrg._id,
+    organizationId: adtuOrg._id,
     departmentId: cseDept._id,
     isActive: true,
   });
 
   const studentAlex = await User.create({
     name: 'Alex Chen',
-    email: 'alex.chen@apex.edu',
+    email: 'alex.chen@adtu.edu.in',
     role: 'STUDENT',
-    organizationId: apexOrg._id,
+    organizationId: adtuOrg._id,
     departmentId: cseDept._id,
     profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
     isActive: true,
@@ -182,6 +182,13 @@ export async function seedDatabase() {
     { careerId: fullStackCareer._id, skillId: skillMap['REST APIs']._id, importance: 'High', requiredProficiency: 4, weight: 7 },
     { careerId: fullStackCareer._id, skillId: skillMap['Docker']._id, importance: 'Medium', requiredProficiency: 2, weight: 6 },
     { careerId: fullStackCareer._id, skillId: skillMap['System Design']._id, importance: 'Medium', requiredProficiency: 3, weight: 6 },
+
+    { careerId: backendCareer._id, skillId: skillMap['Node.js']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: backendCareer._id, skillId: skillMap['System Design']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: backendCareer._id, skillId: skillMap['MongoDB']._id, importance: 'High', requiredProficiency: 3, weight: 8 },
+    { careerId: backendCareer._id, skillId: skillMap['REST APIs']._id, importance: 'High', requiredProficiency: 4, weight: 8 },
+    { careerId: backendCareer._id, skillId: skillMap['Docker']._id, importance: 'High', requiredProficiency: 3, weight: 7 },
+    { careerId: backendCareer._id, skillId: skillMap['Data Structures & Algorithms']._id, importance: 'High', requiredProficiency: 4, weight: 8 },
   ]);
 
   logger.info('✨ Seeded careers and requirements.');
@@ -215,7 +222,7 @@ export async function seedDatabase() {
   // 8. Student Profile for Alex Chen
   await StudentProfile.create({
     userId: studentAlex._id,
-    organizationId: apexOrg._id,
+    organizationId: adtuOrg._id,
     departmentId: cseDept._id,
     rollNumber: '2023CSE042',
     graduationYear: 2027,
@@ -276,7 +283,7 @@ export async function seedDatabase() {
   // 10. Sample Project
   await Project.create({
     studentId: studentAlex._id,
-    organizationId: apexOrg._id,
+    organizationId: adtuOrg._id,
     title: 'Real-Time Collaborative Workspace',
     description: 'Engineered a collaborative canvas using WebSockets, Node.js, and Redis Pub/Sub.',
     technologies: ['React', 'Node.js', 'Socket.io', 'Redis'],
@@ -287,7 +294,7 @@ export async function seedDatabase() {
 
   // 11. Sample Job Vacancies
   const sampleJob = await Job.create({
-    organizationId: apexOrg._id,
+    organizationId: adtuOrg._id,
     title: 'Software Engineer - Full Stack',
     company: 'TechCorp Solutions',
     location: 'Bangalore, India',
@@ -309,13 +316,13 @@ export async function seedDatabase() {
   await JobApplication.create({
     jobId: sampleJob._id,
     studentId: studentAlex._id,
-    organizationId: apexOrg._id,
+    organizationId: adtuOrg._id,
     coverLetter: 'Excited to apply for the Full Stack Engineer position at TechCorp.',
     matchScoreAtApplication: 78,
     status: 'UNDER_REVIEW',
   });
 
-  logger.info('🎉 CareerOS database seed successfully completed with full 14-phase demo data!');
+  logger.info('🎉 SkillBridge database seed successfully completed with full 14-phase demo data!');
 }
 
 // Standalone execution support

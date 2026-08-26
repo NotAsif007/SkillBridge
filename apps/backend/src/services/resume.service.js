@@ -3,6 +3,7 @@ import { StudentProfile } from '../models/studentProfile.model.js';
 import { GapEngineService } from './gapEngine.service.js';
 import { GeminiService } from '../integrations/gemini/gemini.service.js';
 import { ProfileService } from './profile.service.js';
+import { notFound, forbidden } from '../utils/errors.js';
 
 export class ResumeService {
   /**
@@ -65,9 +66,24 @@ export class ResumeService {
   }
 
   /**
-   * Retrieves full history of resume evaluations.
+   * Retrieves history of resume evaluations (redacting raw text for privacy/bandwidth).
    */
   static async getResumeHistory(studentId) {
-    return Resume.find({ studentId }).sort({ createdAt: -1 });
+    return Resume.find({ studentId })
+      .select('-resumeText')
+      .sort({ createdAt: -1 });
+  }
+
+  /**
+   * Deletes a resume evaluation for data retention/privacy compliance.
+   */
+  static async deleteResume(studentId, resumeId) {
+    const resume = await Resume.findOne({ _id: resumeId, studentId });
+    if (!resume) {
+      throw notFound('Resume record not found');
+    }
+
+    await Resume.deleteOne({ _id: resume._id });
+    return { id: resumeId, deleted: true };
   }
 }

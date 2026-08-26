@@ -7,10 +7,10 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { CheckCircle2, XCircle, TrendingUp, Map } from 'lucide-react';
 
 const T = {
-  appBg:'#0B0F17', surface:'#111827', border:'#1F2937',
-  textPrimary:'#F9FAFB', textMuted:'#9CA3AF', blue:'#2563EB',
-  emerald:'#059669', emeraldBg:'rgba(5,150,105,0.12)', emeraldText:'#34D399',
-  red:'#DC2626', redBg:'rgba(220,38,38,0.12)', redText:'#F87171',
+  appBg:'#F5F5F7', surface:'#FFFFFF', border:'#E5E5EA',
+  textPrimary:'#1D1D1F', textMuted:'#6E6E73', blue:'#1D1D1F',
+  emerald:'#059669', emeraldBg: '#ECFDF5', emeraldText: '#059669',
+  red:'#DC2626', redBg: '#FEF2F2', redText: '#DC2626',
 };
 
 function ScoreGauge({ score, passed }) {

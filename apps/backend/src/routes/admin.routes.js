@@ -11,6 +11,9 @@ router.use(requireRole('COLLEGE_ADMIN', 'SUPER_ADMIN'));
 
 router.get('/students', AdminController.getStudents);
 router.get('/departments', AdminController.getDepartments);
+router.get('/analytics', AdminController.getPlacementPipeline);
 router.get('/analytics/placements', AdminController.getPlacementPipeline);
+router.get('/assessments/analytics', AdminController.getAssessmentAnalytics);
+router.get('/interviews/analytics', AdminController.getInterviewAnalytics);
 
 export default router;

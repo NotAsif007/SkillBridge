@@ -21,7 +21,7 @@ export class AssessmentService {
   }
 
   /**
-   * Starts an assessment attempt and returns questions without answer leaks.
+   * Starts or resumes an assessment attempt and returns questions without answer leaks.
    */
   static async startAssessment(studentId, assessmentId, orgId = null) {
     const assessment = await Assessment.findById(assessmentId).populate('skillId', 'name category');
@@ -33,15 +33,26 @@ export class AssessmentService {
       throw badRequest('Assessment does not have questions available yet');
     }
 
-    // Create a new in-progress attempt record
-    const attempt = await AssessmentAttempt.create({
+    // Reuse existing active (uncompleted) attempt if recent (within duration + 10 mins grace)
+    const durationMs = (assessment.durationMinutes + 10) * 60 * 1000;
+    let attempt = await AssessmentAttempt.findOne({
       assessmentId: assessment._id,
       studentId,
-      organizationId: orgId,
-      skillId: assessment.skillId._id,
       isCompleted: false,
-      startedAt: new Date(),
+      startedAt: { $gte: new Date(Date.now() - durationMs) },
     });
+
+    if (!attempt) {
+      // Create a new in-progress attempt record
+      attempt = await AssessmentAttempt.create({
+        assessmentId: assessment._id,
+        studentId,
+        organizationId: orgId,
+        skillId: assessment.skillId._id,
+        isCompleted: false,
+        startedAt: new Date(),
+      });
+    }
 
     // Sanitize questions (strip correctOptionIndex and explanation)
     const sanitizedQuestions = assessment.questions.map((q, idx) => ({
@@ -68,6 +79,7 @@ export class AssessmentService {
 
   /**
    * Evaluates student answers, records score, and verifies skill proficiency on pass.
+   * Strictly binds attemptId to the route assessmentId and handles concurrency.
    */
   static async submitAssessment(studentId, assessmentId, { attemptId, answers }) {
     const assessment = await Assessment.findById(assessmentId).populate('skillId', 'name category');
@@ -80,8 +92,13 @@ export class AssessmentService {
       throw notFound('Assessment attempt not found');
     }
 
+    // Strict validation of attempt ownership and bound assessment
     if (attempt.studentId.toString() !== studentId.toString()) {
       throw forbidden('You are not authorized to submit this assessment attempt');
+    }
+
+    if (attempt.assessmentId.toString() !== assessment._id.toString()) {
+      throw badRequest('This attempt was not generated for the specified assessment');
     }
 
     if (attempt.isCompleted) {
@@ -96,7 +113,7 @@ export class AssessmentService {
       const qPoints = q.points || 10;
       maxScore += qPoints;
 
-      const studentAns = answers.find((a) => a.questionIndex === idx);
+      const studentAns = (answers || []).find((a) => a.questionIndex === idx);
       const selectedIndex = studentAns ? studentAns.selectedOptionIndex : -1;
       const isCorrect = selectedIndex === q.correctOptionIndex;
 
@@ -138,31 +155,26 @@ export class AssessmentService {
         (s) => s.skillId.toString() === assessment.skillId._id.toString()
       );
 
-      const newLevel = existingSkill
-        ? Math.max(existingSkill.proficiencyLevel, targetProficiency)
-        : targetProficiency;
-
-      await ProfileService.addOrUpdateSkill(studentId, {
-        skillId: assessment.skillId._id.toString(),
-        proficiencyLevel: newLevel,
-      });
-
-      // Mark verified
-      const updatedProfile = await StudentProfile.findOne({ userId: studentId });
-      const targetIdx = updatedProfile.skills.findIndex(
-        (s) => s.skillId.toString() === assessment.skillId._id.toString()
-      );
-      if (targetIdx > -1) {
-        updatedProfile.skills[targetIdx].verified = true;
-        updatedProfile.skills[targetIdx].lastAssessedAt = new Date();
-        await updatedProfile.save();
+      if (existingSkill) {
+        existingSkill.verified = true;
+        if (existingSkill.proficiencyLevel < targetProficiency) {
+          existingSkill.proficiencyLevel = targetProficiency;
+        }
+      } else {
+        profile.skills.push({
+          skillId: assessment.skillId._id,
+          skillName: assessment.skillId.name,
+          proficiencyLevel: targetProficiency,
+          verified: true,
+        });
       }
 
+      await profile.save();
+
       skillUpdate = {
-        skillId: assessment.skillId._id,
         skillName: assessment.skillId.name,
-        newProficiencyLevel: newLevel,
         verified: true,
+        proficiencyLevel: targetProficiency,
       };
     }
 
@@ -173,20 +185,25 @@ export class AssessmentService {
       percentage,
       passed,
       passingScore: assessment.passingScore,
-      feedback: passed
-        ? `Congratulations! You passed the ${assessment.title} evaluation.`
-        : `You scored ${percentage}%. Passing threshold is ${assessment.passingScore}%. Keep practicing!`,
+      skillUpdate,
       skillUpdated: skillUpdate,
+      feedback: passed
+        ? `Congratulations! You passed the ${assessment.difficulty.toLowerCase()} assessment for ${assessment.skillId.name}.`
+        : `You scored ${percentage}%. Passing threshold is ${assessment.passingScore}%. Keep practicing!`,
     };
   }
 
   /**
-   * Retrieves completed attempt history for student.
+   * Retrieves past assessment attempts for a student.
    */
-  static async getMyAttempts(studentId) {
+  static async getStudentAttempts(studentId) {
     return AssessmentAttempt.find({ studentId, isCompleted: true })
-      .populate('assessmentId', 'title difficulty durationMinutes passingScore')
+      .populate('assessmentId', 'title difficulty durationMinutes')
       .populate('skillId', 'name category')
-      .sort({ completedAt: -1 });
+      .sort({ createdAt: -1 });
+  }
+
+  static async getMyAttempts(studentId) {
+    return this.getStudentAttempts(studentId);
   }
 }

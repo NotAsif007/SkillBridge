@@ -167,6 +167,36 @@ describe('GET /api/v1/career-analysis', () => {
     expect(res.body.data.breakdown.assessmentPerformance).toBe(90);
   });
 
+  it('uses the latest completed result per required skill so retakes do not skew readiness', async () => {
+    await StudentProfile.create({
+      userId: user._id,
+      targetCareerId: fullStackCareer._id,
+    });
+
+    await AssessmentAttempt.create([
+      {
+        assessmentId: new mongoose.Types.ObjectId(), studentId: user._id, skillId: jsSkill._id,
+        percentage: 95, isCompleted: true, completedAt: new Date('2026-01-01'),
+      },
+      {
+        assessmentId: new mongoose.Types.ObjectId(), studentId: user._id, skillId: jsSkill._id,
+        percentage: 40, isCompleted: true, completedAt: new Date('2026-02-01'),
+      },
+      {
+        assessmentId: new mongoose.Types.ObjectId(), studentId: user._id, skillId: reactSkill._id,
+        percentage: 80, isCompleted: true, completedAt: new Date('2026-02-01'),
+      },
+    ]);
+
+    const res = await request(app)
+      .get('/api/v1/career-analysis')
+      .set('Authorization', `Bearer ${token}`);
+
+    // Latest JavaScript retake (40) and React (80) -> 60. Node/Docker have no attempt.
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data.breakdown.assessmentPerformance).toBe(60);
+  });
+
   it('allows temporary analysis of an override career without changing primary target career', async () => {
     const mlCareer = await Career.create({
       title: 'ML Engineer',

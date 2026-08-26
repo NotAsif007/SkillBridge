@@ -1,27 +1,25 @@
 import { Roadmap } from '../models/roadmap.model.js';
-import { StudentProfile } from '../models/studentProfile.model.js';
 import { Career } from '../models/career.model.js';
-import { GapEngineService } from './gapEngine.service.js';
+import { StudentProfile } from '../models/studentProfile.model.js';
 import { GeminiService } from '../integrations/gemini/gemini.service.js';
+import { GapEngineService } from './gapEngine.service.js';
 import { ProfileService } from './profile.service.js';
 import { notFound, badRequest } from '../utils/errors.js';
 
 export class RoadmapService {
   /**
-   * Retrieves active roadmap for student.
+   * Retrieves currently active or completed roadmap for student.
    */
   static async getActiveRoadmap(studentId) {
-    const roadmap = await Roadmap.findOne({ studentId, status: 'ACTIVE' })
-      .populate('careerId', 'title slug category overview')
+    return Roadmap.findOne({ studentId, status: { $in: ['ACTIVE', 'COMPLETED'] } })
+      .populate('careerId', 'title slug category overview averageSalaryRange')
       .sort({ createdAt: -1 });
-
-    return roadmap;
   }
 
   /**
-   * Generates a tailored learning roadmap using Gap Engine & Gemini AI.
+   * Generates a personalized career milestone roadmap via Gemini AI.
    */
-  static async generateRoadmap(studentId, { careerId = null, durationWeeks = 8 } = {}) {
+  static async generateRoadmap(studentId, orgId, { careerId = null, durationWeeks = 8 } = {}) {
     const profile = await ProfileService.getOrCreateProfile(studentId);
 
     const targetCareerId = careerId || profile.targetCareerId?._id || profile.targetCareerId;
@@ -34,35 +32,50 @@ export class RoadmapService {
       throw notFound('Target career path not found or inactive');
     }
 
-    // 1. Calculate gap to know exact missing and weak skills
-    const gapAnalysis = await GapEngineService.calculateCareerGap(studentId, career._id);
+    // 1. Calculate gap analysis to feed into AI prompt
+    const gapAnalysis = await GapEngineService.calculateCareerGap(studentId, targetCareerId);
 
-    // 2. Generate roadmap structure via Gemini AI
+    // 2. Invoke Gemini AI to generate weekly milestone plan
     const aiRoadmap = await GeminiService.generateRoadmap({
-      targetCareer: { title: career.title },
+      targetCareer: career.title,
       missingSkills: gapAnalysis.missingSkills,
       weakSkills: gapAnalysis.weakSkills,
       durationWeeks,
       userId: studentId,
-      orgId: profile.organizationId,
+      orgId,
     });
 
-    // 3. Archive any prior active roadmaps
+    // 3. Atomically archive existing active roadmaps
     await Roadmap.updateMany(
       { studentId, status: 'ACTIVE' },
       { $set: { status: 'ARCHIVED' } }
     );
 
-    // 4. Create new Active Roadmap
+    // Ensure all milestones and tasks strictly adhere to schema
+    const sanitizedMilestones = (aiRoadmap.milestones || []).map((m, mIdx) => ({
+      weekNumber: m.weekNumber || mIdx + 1,
+      title: m.title || `Week ${mIdx + 1}`,
+      description: m.description || '',
+      skillsCovered: m.skillsCovered || [],
+      isCompleted: false,
+      tasks: (m.tasks || []).map((t, tIdx) => ({
+        taskId: t.taskId || `w${m.weekNumber || mIdx + 1}_t${tIdx + 1}`,
+        title: t.title || 'Complete milestone practice task',
+        resourceLink: t.resourceLink || '',
+        isCompleted: false,
+      })),
+    }));
+
+    // 4. Persist new roadmap
     const newRoadmap = await Roadmap.create({
       studentId,
-      organizationId: profile.organizationId,
+      organizationId: orgId,
       careerId: career._id,
       title: `${durationWeeks}-Week Career Readiness Plan for ${career.title}`,
       totalWeeks: durationWeeks,
-      progressPercentage: 0,
       status: 'ACTIVE',
-      milestones: aiRoadmap.milestones || [],
+      progressPercentage: 0,
+      milestones: sanitizedMilestones,
     });
 
     // 5. Reset roadmapProgress in student profile
@@ -75,12 +88,16 @@ export class RoadmapService {
   }
 
   /**
-   * Toggles completion status of a roadmap task and updates overall progress.
+   * Toggles completion status of a roadmap task and updates overall progress reversibly.
    */
   static async toggleTask(studentId, taskId, isCompleted) {
-    const roadmap = await Roadmap.findOne({ studentId, status: 'ACTIVE' });
+    const roadmap = await Roadmap.findOne({
+      studentId,
+      status: { $in: ['ACTIVE', 'COMPLETED'] },
+    }).sort({ createdAt: -1 });
+
     if (!roadmap) {
-      throw notFound('No active roadmap found for student');
+      throw notFound('No active or completed roadmap found for student');
     }
 
     let taskFound = false;
@@ -117,6 +134,8 @@ export class RoadmapService {
     roadmap.progressPercentage = progressPercentage;
     if (progressPercentage === 100) {
       roadmap.status = 'COMPLETED';
+    } else {
+      roadmap.status = 'ACTIVE';
     }
 
     await roadmap.save();

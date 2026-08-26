@@ -1,161 +1,120 @@
-# CareerOS — Development Context File
+# CareerOS — Continuation Context
 
-> ⚠️ IMPORTANT: Read this file first whenever switching IDEs or resuming work.
-> Update this file after every phase completes.
+**Updated:** 2026-08-26
+**Workspace:** `C:\Users\ASUS\Desktop\careerOS`
+**Purpose:** Read this before continuing implementation. It records the current state, decisions, and verification so another agent can continue safely.
 
----
+## Product and guardrails
 
-## Current Status
+CareerOS is a multi-tenant student placement-readiness platform (React/Vite, Express, MongoDB). The authoritative requirements are in `SPEC.md` and `docs/`.
 
-- **Active Branch**: `backend/core`
-- **Active Developer**: Person 1 (Backend & AI)
-- **Status**: ALL BACKEND PHASES (0–14) COMPLETED & 100% TESTED
-- **Total Passing Tests**: 79 across 14 Test Suites
-- **Last Updated**: 2026-08-25
+- Backend readiness and job matching must remain deterministic; AI only enriches recommendations.
+- Organization scope and role checks are backend authority. Do not recreate business logic in React.
+- Keep the interface professional and Apple-inspired: bright neutral surfaces, graphite controls, restrained emerald feedback. Do not add dark-blue, purple, gradients-as-decoration, or generic AI visual clutter.
+- Do not invent new product modules unless they solve a documented requirement.
 
----
+## Current state
 
-## Completed Phases Summary
+The requested reliability and visual-system pass is complete. The shared frontend shell, login page, and existing feature screens now use a coherent light, neutral presentation. Core engine and application eligibility defects found in the audit are fixed and the final verification run passed. The follow-up backend debugging pass is also complete: every API response carries a correlation ID, logs are structured and redacted, and server lifecycle failures are diagnosable.
 
-### ✅ Phase 0 — Repository Foundation & Contracts
-- Monorepo structure, Git branches (`main`, `develop`, `backend/core`)
-- Complete docs: `SPEC.md`, `docs/API_CONTRACT.md`, `docs/openapi.yaml`, `docs/DATABASE.md`, `docs/ARCHITECTURE.md`, `docs/DESIGN.md`
-- Scaffolded folder tree across backend and frontend workspaces
+## Changes made in this pass
 
-### ✅ Phase 1 — Backend Foundation
-- Express server, MongoDB connection manager (`src/config/db.js`)
-- Security middleware (Helmet, CORS, Rate Limiters)
-- Centralized Error Handling & AppError (`src/utils/errors.js`)
-- Response envelope standard (`src/utils/responseEnvelope.js`)
-- Zod Request Validator middleware (`src/middleware/validate.middleware.js`)
-- Health Check (`GET /api/v1/health`)
+### Frontend
 
-### ✅ Phase 2 — Authentication & Multi-Tenancy
-- Models: `User`, `Organization`, `Department`
-- Google OAuth / OpenID Connect token verification (`src/integrations/google/oauthClient.js`)
-- JWT session issuance & verification (`src/services/auth.service.js`)
-- Role & Organization access control (`src/middleware/auth.middleware.js`, `role.middleware.js`, `organizationScope.middleware.js`)
-- Endpoints: `POST /api/v1/auth/google`, `POST /api/v1/auth/dev-login`, `GET /api/v1/auth/me`, `POST /api/v1/auth/logout`
+- Added `apps/frontend/src/components/common/AppShell.jsx` as the sole responsive shell for student and admin workspaces.
+  - Role-specific navigation, responsive mobile drawer, account identity, and logout are centralized here.
+- Replaced `apps/frontend/src/layouts/StudentLayout.jsx` and `apps/frontend/src/layouts/AdminLayout.jsx` with thin wrappers around `AppShell`.
+- Rebuilt `apps/frontend/src/pages/LoginPage.jsx`.
+  - Google Identity Services support, demo/email login, role selection, error state, and redirect restoration are preserved.
+- Replaced `apps/frontend/src/index.css` with a light design system and shell/login styles.
+  - Uses #F5F5F7 / white surfaces, #1D1D1F graphite, #E5E5EA dividers, emerald status accent.
+  - Includes temporary legacy feature normalization, allowing all existing student/admin pages to inherit the new theme without contract or feature rewrites.
+- Updated existing frontend modules’ hard-coded dark-blue/purple tokens and visible SkillBridge labels to CareerOS. This was a mechanical visual migration; it did not change API use or feature behavior.
+- Preserved the existing `apps/frontend/vite.config.js` change to port `5173` (it predated this pass).
 
-### ✅ Phase 3 — Profiles & Organizations
-- `StudentProfile` Model with multi-tenant scoping
-- Profile Service with auto-initialization (`src/services/profile.service.js`)
-- Endpoints: `GET /api/v1/profile`, `PUT /api/v1/profile`, `POST /api/v1/profile/skills`, `PUT /api/v1/profile/target-career`
+### Backend logic and reliability
 
-### ✅ Phase 4 — Careers & Skills + Database Seed
-- Models: `Skill`, `Career`, `CareerRequirement`
-- Career and Skill Services & Controllers
-- Comprehensive Seed Script (`scripts/seed.js` with Apex Institute, 4 depts, 37 skills, 6 careers with weighted requirements)
-- Endpoints: `GET /api/v1/careers`, `GET /api/v1/careers/:id`, `GET /api/v1/skills`
+- `apps/backend/src/services/profile.service.js`
+  - A new profile no longer receives the first active career automatically.
+  - A career target is now explicit, through `PUT /api/v1/profile/target-career`.
+  - This keeps career analysis honest: `GET /api/v1/career-analysis` returns `400` until a target or override is present.
+- `apps/backend/src/services/gapEngine.service.js`
+  - Assessment readiness uses the latest completed attempt for each required skill, preventing retake volume from distorting scores.
+  - Organization weights merge with the six canonical defaults and are normalized before the weighted score is calculated.
+  - Duplicate skill records resolve to the highest recorded proficiency.
+- `apps/backend/src/services/job.service.js`
+  - Application eligibility now uses `profile.cgpa` (the real schema field), rejects expired jobs, and enforces configured department and graduation-year criteria.
+- `apps/backend/src/middleware/upload.middleware.js`
+  - Uses the PDF parser implementation directly rather than the package debug entrypoint, fixing a Jest/ESM fixture-load crash that stopped most suites at module import.
+- New regression tests:
+  - `apps/backend/tests/gapEngine.test.js`: no-target rejection and latest-per-skill assessment scoring.
+  - `apps/backend/tests/job.test.js`: CGPA and deadline rejection.
 
-### ✅ Phase 5 — Skill Assessments & Anti-Leak Evaluation
-- Models: `Assessment`, `AssessmentAttempt`
-- Question sanitization (stripping answers during attempt), automated grading, proficiency upgrade on pass
-- Endpoints: `GET /api/v1/assessments`, `GET /api/v1/assessments/:id`, `POST /api/v1/assessments/:id/submit`, `GET /api/v1/assessments/attempts/me`
+### Backend debugging and operations
 
-### ✅ Phase 6 — Deterministic Career Gap Engine
-- Deterministic weighted scoring algorithm evaluating student skills against career requirements
-- Dynamic categorization of `matchedSkills`, `weakSkills`, and `missingSkills`
-- Gap-weighted priority ranking: `weight * (gap + 1)`
-- Institutional weight customization (`technicalSkills` 30%, `assessments` 20%, `projects` 15%, `resume` 10%, `interviews` 15%, `roadmap` 10%)
-- Endpoint: `GET /api/v1/career-analysis` (supports `?careerId=...`)
+- `apps/backend/src/utils/logger.js`
+  - Added a generated or caller-supplied `X-Request-ID` for each request, returned in the response so a browser/API failure can be matched to server logs.
+  - Replaced unstructured request logging with correlation-aware entries containing method, URL, status, duration, and authenticated user/role/organization context when available.
+  - Redacts sensitive metadata keys such as authorization, cookies, passwords, secrets, tokens, and API keys before logging.
+  - Keeps debug-level logging development-only and omits routine health-check request logs.
+- `apps/backend/src/app.js`
+  - Enables request correlation before request parsing and logging.
+  - Allows and exposes `X-Request-ID` through CORS for frontend and external API debugging.
+- `apps/backend/src/middleware/error.middleware.js`
+  - Logs route-not-found and server-error events with their request ID.
+  - Includes stack traces only in development server logs; API error envelopes remain contract-compatible and do not leak internals.
+- `apps/backend/src/server.js`
+  - Startup, HTTP-server, unhandled-rejection, and uncaught-exception failures now emit structured diagnostics.
+  - Signal and failure shutdowns close the HTTP server, disconnect MongoDB, prevent overlapping shutdown attempts, and force exit only after a 10-second timeout.
+- `apps/backend/tests/health.test.js`
+  - Added regression coverage for generated and caller-supplied request IDs.
 
-### ✅ Phase 7 — Gemini AI Integration
-- `AIGeneration` Model for token audit logs
-- `GeminiClient` singleton and `GeminiService` structured JSON engine for career insights, roadmap plans, resume diagnostics, project recommendations, and interview critique with non-blocking fallbacks
+## Verification record
 
-### ✅ Phase 8 — Roadmaps
-- `Roadmap` Model with milestones, task IDs, resource links, and progress percentages
-- AI roadmap generation targeting identified skill gaps
-- Endpoints: `GET /api/v1/roadmaps/active`, `GET /api/v1/roadmaps/me`, `POST /api/v1/roadmaps/generate`, `PATCH /api/v1/roadmaps/tasks/:taskId`, `PUT /api/v1/roadmaps/tasks/:taskId/toggle`
+- Frontend production build: `npm run build` from `apps/frontend` — **passed**.
+- Focused tests:
+  - `tests/gapEngine.test.js` — **5/5 passed**.
+  - `tests/job.test.js` — **9/9 passed**.
+- Browser validation, using local frontend `http://127.0.0.1:5173` and backend port `5000`:
+  - redesigned login page rendered correctly;
+  - student demo login reached `/dashboard` and populated live aggregate data;
+  - visual dashboard review passed;
+  - navigation to `/jobs` succeeded with job data and no browser console errors.
+- Full backend suite after the profile-service correction: **15/15 suites passed; 92/92 tests passed** in 85.8 seconds.
+- Backend debugging regression test: `tests/health.test.js` — **4/4 passed**.
+- Final full backend suite after the debugging improvements: **15/15 suites passed; 93/93 tests passed** in 85.6 seconds. The Gemini test path may log a rate-limit warning when external quota is unavailable; its intended fallback completed and the suite passed.
+- Final frontend production build: **passed**.
+- Final browser console check on `/jobs`: **no errors**.
+- `git diff --check`: no source whitespace errors. (The only newline warnings are Git's CRLF conversion notices.)
+- The production bundle retains Vite’s >500 kB warning. This is non-blocking optimization work; it was intentionally not expanded into a code-splitting project.
 
-### ✅ Phase 9 — Projects
-- `Project` Model for student portfolio items
-- AI project recommendations closing target career gaps
-- Deterministic project scoring algorithm synced to placement readiness
-- Endpoints: `GET /api/v1/projects`, `POST /api/v1/projects`, `PUT /api/v1/projects/:id`, `DELETE /api/v1/projects/:id`, `GET /api/v1/projects/recommendations`
+## Four-step completion checklist
 
-### ✅ Phase 10 — Resumes
-- `Resume` Model storing ATS, formatting, and impact scores, extracted skills, and recommendations
-- Resume parsing & ATS scoring via Gemini AI with placement readiness sync
-- Endpoints: `POST /api/v1/resumes/analyze`, `POST /api/v1/resumes/upload`, `GET /api/v1/resumes/latest`, `GET /api/v1/resumes/history`
+- [x] **1. Audit current engine, API, and frontend implementation against the specification.**
+  - Audited against `SPEC.md`, architecture/API/database/design documents, and current tests. Corrected issues were limited to verified defects.
+- [x] **2. Fix verified core logic issues and add regression coverage.**
+  - Fixed target-career assignment, assessment aggregation, readiness weight normalization, duplicate-skill handling, job eligibility/deadline enforcement, and PDF parser test initialization. Added coverage for the new engine and job behavior.
+- [x] **3. Rebuild shared UI/UX into a polished Apple-inspired light interface.**
+  - Added the shared AppShell, rebuilt sign-in, standardized neutral/emerald styling, migrated visible CareerOS branding, and removed dark-blue/purple visual treatment across the existing feature modules.
+- [x] **4. Run test suites, validate in a browser, and update context.**
+  - Full backend suite: 15 suites / 92 tests passed. Frontend production build passed. Browser validation passed for sign-in, dashboard data, navigation, jobs, visual review, and console errors. This file is updated with the complete final state.
 
-### ✅ Phase 11 — AI Mock Interviews
-- `InterviewSession` Model storing multi-turn question flows, answers, and rubrics
-- State machine generating next questions and scoring overall performance
-- Endpoints: `POST /api/v1/interviews/start`, `POST /api/v1/interviews`, `POST /api/v1/interviews/:sessionId/answer`, `GET /api/v1/interviews/:sessionId`, `GET /api/v1/interviews/history`
+## Backend debugging extension checklist
 
-### ✅ Phase 12 — Jobs & Applications
-- `Job` and `JobApplication` Models with compound unique constraint
-- Deterministic skill match percentage engine (`calculateJobMatch`)
-- Endpoints: `GET /api/v1/jobs`, `GET /api/v1/jobs/:id`, `POST /api/v1/jobs/:id/apply`, `GET /api/v1/jobs/applications/me`, `POST /api/v1/jobs`
+- [x] **1. Add correlated request logging and safe structured error context.**
+  - Request IDs, request duration, authenticated actor context, CORS support, and sensitive-value redaction are implemented without changing API response envelopes.
+- [x] **2. Harden server lifecycle diagnostics and shutdown behavior.**
+  - Startup and runtime failures are logged consistently; termination signals, promise rejections, and uncaught exceptions follow one guarded graceful-shutdown path.
+- [x] **3. Add regression coverage and update `CONTEXT.md`.**
+  - Health endpoint tests verify request-ID generation and propagation. The final backend suite is 15 suites / 93 tests passed, and this handoff document contains the completed work and verification.
 
-### ✅ Phase 13 — Student Dashboard Aggregation
-- Single-round-trip composite query powering Person 2's Student Frontend
-- Aggregates readiness score, skill progress, roadmap progress, projects, interviews, active job matches, target career, top skill gaps, and recent activity
-- Endpoint: `GET /api/v1/dashboard/student`
+## Remaining work
 
-### ✅ Phase 14 — College Admin Analytics & Management
-- Single-round-trip composite query powering Person 3's Admin Frontend
-- Aggregates total students, placement ready counts & percentages, average readiness, active jobs, department breakdown, institutional skill gaps, and score distributions
-- Paginated student roster, department list, and placement conversion pipeline
-- Endpoints: `GET /api/v1/dashboard/admin`, `GET /api/v1/admin/students`, `GET /api/v1/admin/departments`, `GET /api/v1/admin/analytics/placements`
+None for the requested implementation or backend-debugging passes. Optional future optimization: split the frontend production bundle to address Vite's non-blocking >500 kB chunk warning.
 
----
+## Local runtime notes
 
-## Complete API Surface Directory
-
-| Method | Path | Auth / Role | Description |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/v1/health` | Public | System and DB health check |
-| `POST` | `/api/v1/auth/google` | Public | Google OAuth login |
-| `POST` | `/api/v1/auth/dev-login` | Public | Development login bypassing Google OAuth |
-| `GET` | `/api/v1/auth/me` | Auth | Current user profile & identity |
-| `POST` | `/api/v1/auth/logout` | Auth | End session |
-| `GET` | `/api/v1/profile` | Auth | Get student profile |
-| `PUT` | `/api/v1/profile` | Auth | Update profile details |
-| `POST` | `/api/v1/profile/skills` | Auth | Add or update student skill level |
-| `PUT` | `/api/v1/profile/target-career`| Auth | Set active target career |
-| `GET` | `/api/v1/careers` | Auth | List all careers |
-| `GET` | `/api/v1/careers/:id` | Auth | Get career with weighted requirements |
-| `GET` | `/api/v1/skills` | Auth | List master skills |
-| `GET` | `/api/v1/skills/:id` | Auth | Get single skill details |
-| `GET` | `/api/v1/career-analysis` | Auth | Deterministic skill gap & readiness score |
-| `GET` | `/api/v1/assessments` | Auth | List assessments |
-| `GET` | `/api/v1/assessments/:id` | Auth | Start assessment (anti-leak sanitized) |
-| `POST` | `/api/v1/assessments/:id/submit` | Auth | Submit assessment & grade answers |
-| `GET` | `/api/v1/assessments/attempts/me` | Auth | List user's assessment attempts |
-| `GET` | `/api/v1/roadmaps/active`, `/me` | Auth | Get active personalized roadmap |
-| `POST` | `/api/v1/roadmaps/generate` | Auth | AI roadmap generator targeting gaps |
-| `PATCH`/`PUT` | `/api/v1/roadmaps/tasks/:taskId` | Auth | Toggle milestone task completion |
-| `GET` | `/api/v1/projects` | Auth | List student portfolio projects |
-| `POST` | `/api/v1/projects` | Auth | Add project & update project readiness |
-| `GET` | `/api/v1/projects/recommendations` | Auth | AI project recommendations for gaps |
-| `PUT` | `/api/v1/projects/:id` | Auth | Update project |
-| `DELETE`| `/api/v1/projects/:id` | Auth | Delete project |
-| `POST` | `/api/v1/resumes/analyze`, `/upload` | Auth | ATS resume scoring via Gemini AI |
-| `GET` | `/api/v1/resumes/latest` | Auth | Fetch latest resume analysis |
-| `GET` | `/api/v1/resumes/history` | Auth | List past resume evaluations |
-| `POST` | `/api/v1/interviews/start`, `/` | Auth | Start AI mock interview session |
-| `POST` | `/api/v1/interviews/:sessionId/answer` | Auth | Submit answer & advance question |
-| `GET` | `/api/v1/interviews/:sessionId` | Auth | Get interview session details |
-| `GET` | `/api/v1/interviews/history` | Auth | List past interview sessions |
-| `GET` | `/api/v1/jobs` | Auth | List jobs with match percentages |
-| `GET` | `/api/v1/jobs/:id` | Auth | Get job details with match breakdown |
-| `POST` | `/api/v1/jobs` | Admin | Post job vacancy |
-| `POST` | `/api/v1/jobs/:id/apply` | Auth | Submit job application |
-| `GET` | `/api/v1/jobs/applications/me` | Auth | List student job applications |
-| `GET` | `/api/v1/dashboard/student` | Auth | Aggregated student portal payload |
-| `GET` | `/api/v1/dashboard/admin` | Admin | Institutional executive analytics |
-| `GET` | `/api/v1/admin/students` | Admin | Paginated student roster with filters |
-| `GET` | `/api/v1/admin/departments` | Admin | Department list with student counts |
-| `GET` | `/api/v1/admin/analytics/placements` | Admin | Placement conversion pipeline stats |
-
----
-
-## Architectural Guarantees for Person 2 & Person 3
-
-1. **Zero Route Drift**: All paths, query parameters, request bodies, and response envelopes adhere 100% to `docs/API_CONTRACT.md` and `docs/openapi.yaml`.
-2. **Contract Aliases Included**: Both standard REST (`/api/v1/roadmaps/active`, `/api/v1/resumes/analyze`, `/api/v1/interviews/start`) and contract convenience routes (`/api/v1/roadmaps/me`, `/api/v1/resumes/upload`, `/api/v1/interviews`) are simultaneously active and tested.
-3. **Strict Tenancy & Role Guards**: Students cannot access `/api/v1/dashboard/admin` or `/api/v1/admin/*`, and college data is isolated strictly by `req.user.organizationId`.
-4. **Resilient AI Layer**: All AI services include deterministic fallback responses so UI dev proceeds smoothly even without a Gemini API key.
+- Frontend dev: `npm run frontend:dev` (port 5173)
+- Backend dev: `npm run backend:dev` (port 5000)
+- The previous agent session started both only for validation. A fresh terminal/agent should start them again if browser testing is needed.
+- Backend tests require the configured script because it sets `NODE_OPTIONS=--experimental-vm-modules`.

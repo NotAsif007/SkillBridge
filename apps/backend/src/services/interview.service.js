@@ -8,6 +8,27 @@ import { notFound, badRequest, forbidden } from '../utils/errors.js';
 
 export class InterviewService {
   /**
+   * Sanitizes session payload so answer keys are never leaked to students for active/unanswered questions.
+   */
+  static sanitizeSession(sessionDoc) {
+    if (!sessionDoc) return null;
+    const session = sessionDoc.toObject ? sessionDoc.toObject() : { ...sessionDoc };
+
+    if (session.questions && Array.isArray(session.questions)) {
+      session.questions = session.questions.map((q) => {
+        // If question has not been answered yet, strip model answers and expected key points
+        if (!q.studentAnswer && session.status !== 'COMPLETED') {
+          const { suggestedAnswer, ...sanitizedQ } = q;
+          return sanitizedQ;
+        }
+        return q;
+      });
+    }
+
+    return session;
+  }
+
+  /**
    * Starts a new AI Mock Interview Session and generates question 1.
    */
   static async startSession(studentId, orgId, { careerId = null, difficulty = 'MEDIUM', totalQuestions = 3 } = {}) {
@@ -53,7 +74,7 @@ export class InterviewService {
       ],
     });
 
-    return session;
+    return this.sanitizeSession(session);
   }
 
   /**
@@ -150,7 +171,7 @@ export class InterviewService {
     }
 
     await session.save();
-    return session;
+    return this.sanitizeSession(session);
   }
 
   /**
@@ -166,13 +187,14 @@ export class InterviewService {
       throw forbidden('You are not authorized to view this session');
     }
 
-    return session;
+    return this.sanitizeSession(session);
   }
 
   /**
-   * Retrieves all past interview sessions for student.
+   * Lists past interview sessions for logged-in student.
    */
   static async getHistory(studentId) {
-    return InterviewSession.find({ studentId }).sort({ createdAt: -1 });
+    const sessions = await InterviewSession.find({ studentId }).sort({ createdAt: -1 });
+    return sessions.map((s) => this.sanitizeSession(s));
   }
 }

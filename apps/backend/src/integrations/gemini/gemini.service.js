@@ -171,31 +171,49 @@ Return a JSON object:
   }
 
   /**
-   * 3. ATS Resume Parsing & Scoring
+   * 3. ATS Resume Parsing & Scoring Engine (High Precision)
    */
   static async analyzeResumeText({ resumeText, targetCareer = null, userId = null, orgId = null }) {
-    const prompt = `Analyze this student resume text for placement readiness${targetCareer ? ` targeting role: ${targetCareer}` : ''}:
-"""${resumeText.slice(0, 3000)}"""
+    const prompt = `You are an expert ATS (Applicant Tracking System) parser and senior tech hiring manager evaluating a student resume.
+${targetCareer ? `Target Industry Role: ${targetCareer}` : 'Target: Software Engineering & Technology Roles'}
 
-Return a JSON object:
+RESUME TEXT CONTENT:
+"""
+${resumeText.slice(0, 8000)}
+"""
+
+Perform a deep technical audit of this resume and return ONLY a JSON object with this exact structure:
 {
-  "score": 75,
-  "formattingScore": 80,
-  "impactScore": 70,
-  "extractedSkills": ["JavaScript", "React", "Node.js"],
-  "strengths": ["Clear section hierarchy", "Strong project descriptions"],
-  "weaknesses": ["Lack of quantifiable business/performance metrics", "Missing cloud deployment details"],
-  "recommendations": ["Add metric numbers (e.g. reduced latency by 30%)", "Include live demo links"]
+  "score": <Overall ATS compatibility score integer 0-100 based on keyword density, structure, and technical depth>,
+  "formattingScore": <Integer 0-100 evaluating standard section headers, readability, and ATS machine parseability>,
+  "impactScore": <Integer 0-100 evaluating strong action verbs, quantifiable metrics, scale, and business impact>,
+  "extractedSkills": [<Array of all distinct technical skills, languages, libraries, databases, cloud tools, frameworks, and CS concepts found in the text>],
+  "strengths": [<Array of 3-4 specific strengths identifying what the candidate did well in their resume>],
+  "weaknesses": [<Array of 3-4 specific technical or structural shortcomings that would hurt their ATS ranking or recruiter screening>],
+  "recommendations": [<Array of 4-5 specific, highly actionable improvements, including bullet point rewrite examples with XYZ formula (Accomplished [X] as measured by [Y], by doing [Z])>]
 }`;
 
     const fallbackData = {
-      score: 74,
-      formattingScore: 78,
-      impactScore: 70,
-      extractedSkills: ['JavaScript', 'React', 'Node.js', 'MongoDB', 'Git'],
-      strengths: ['Clean bullet point structure', 'Good diversity of frontend and backend technologies'],
-      weaknesses: ['Project descriptions could highlight quantifiable metrics and scale', 'Missing cloud deployment specifics (AWS/GCP)'],
-      recommendations: ['Quantify project impact with performance numbers', 'Ensure live project links and GitHub repositories are prominent'],
+      score: 75,
+      formattingScore: 82,
+      impactScore: 72,
+      extractedSkills: ['JavaScript', 'TypeScript', 'React', 'Node.js', 'Express', 'MongoDB', 'SQL', 'Git', 'REST APIs', 'Data Structures'],
+      strengths: [
+        'Clear educational background and structured academic profile.',
+        'Good diversity of foundational computing concepts and web technologies.',
+        'Clean section hierarchy compliant with ATS parsers.',
+      ],
+      weaknesses: [
+        'Bullet points lack measurable quantifiable metrics (e.g. latency reduction, user count, test coverage %).',
+        'Missing links to live deployed applications or open-source repositories.',
+        'Skills section could group technologies into categories (Languages, Frameworks, Cloud, Databases).',
+      ],
+      recommendations: [
+        'Apply the Google XYZ Formula to project bullets: "Built [X] delivering [Y% improvement] using [Z technology]".',
+        'Add live URLs for portfolio projects (Vercel, Render, AWS, or GitHub).',
+        'Include specific cloud and containerization tools (Docker, AWS, CI/CD) to meet modern hiring benchmarks.',
+        'Incorporate a concise 2-sentence Professional Summary targeting your preferred engineering role.',
+      ],
     };
 
     return this.executeJsonPrompt({

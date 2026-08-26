@@ -56,7 +56,7 @@ export class GapEngineService {
     const roadmapScore = profile.readinessScore?.breakdown?.roadmapProgress || 0;
 
     // 3. Retrieve Organization Placement Weights
-    let weights = {
+    const defaultWeights = {
       technicalSkills: 30,
       assessmentPerformance: 20,
       projects: 15,
@@ -64,30 +64,40 @@ export class GapEngineService {
       interviewPerformance: 15,
       roadmapProgress: 10,
     };
+    let weights = defaultWeights;
 
     if (profile.organizationId) {
       const org = await Organization.findById(profile.organizationId);
       if (org?.settings?.defaultPlacementWeightages) {
-        weights = org.settings.defaultPlacementWeightages;
+        // Merge instead of trusting a possibly partial document. This keeps
+        // readiness stable if an organization config predates a new pillar.
+        weights = { ...defaultWeights, ...org.settings.defaultPlacementWeightages };
       }
     }
 
+    const normalizedWeights = Object.fromEntries(
+      Object.entries(weights).map(([key, value]) => [
+        key,
+        Number.isFinite(Number(value)) && Number(value) >= 0 ? Number(value) : 0,
+      ])
+    );
+
     // 4. Calculate Authoritative Placement Readiness Score
     const totalWeight =
-      weights.technicalSkills +
-      weights.assessmentPerformance +
-      weights.projects +
-      weights.resume +
-      weights.interviewPerformance +
-      weights.roadmapProgress;
+      normalizedWeights.technicalSkills +
+      normalizedWeights.assessmentPerformance +
+      normalizedWeights.projects +
+      normalizedWeights.resume +
+      normalizedWeights.interviewPerformance +
+      normalizedWeights.roadmapProgress;
 
     const weightedSum =
-      technicalSkillScore * weights.technicalSkills +
-      assessmentScore * weights.assessmentPerformance +
-      projectScore * weights.projects +
-      resumeScore * weights.resume +
-      interviewScore * weights.interviewPerformance +
-      roadmapScore * weights.roadmapProgress;
+      technicalSkillScore * normalizedWeights.technicalSkills +
+      assessmentScore * normalizedWeights.assessmentPerformance +
+      projectScore * normalizedWeights.projects +
+      resumeScore * normalizedWeights.resume +
+      interviewScore * normalizedWeights.interviewPerformance +
+      roadmapScore * normalizedWeights.roadmapProgress;
 
     const overallReadinessScore = Math.min(
       100,
@@ -150,7 +160,12 @@ export class GapEngineService {
   static evaluateSkills(studentSkills, requirements) {
     const studentSkillMap = new Map();
     (studentSkills || []).forEach((s) => {
-      studentSkillMap.set(s.skillId.toString(), {
+      const skillId = s.skillId?.toString();
+      if (!skillId) return;
+      const existing = studentSkillMap.get(skillId);
+      // A duplicated profile entry must never lower an already recorded skill.
+      if (existing && existing.level > (s.proficiencyLevel || 1)) return;
+      studentSkillMap.set(skillId, {
         name: s.skillName,
         level: s.proficiencyLevel || 1,
         verified: s.verified || false,
@@ -257,7 +272,21 @@ export class GapEngineService {
       return 0;
     }
 
-    const totalPercentage = attempts.reduce((acc, curr) => acc + (curr.percentage || 0), 0);
-    return Math.min(100, Math.round(totalPercentage / attempts.length));
+    // One score per required skill avoids attempt volume skewing the readiness
+    // score. We use the student's latest completed assessment for each skill.
+    const latestBySkill = new Map();
+    attempts.forEach((attempt) => {
+      const skillId = attempt.skillId.toString();
+      const previous = latestBySkill.get(skillId);
+      const attemptDate = attempt.completedAt || attempt.updatedAt || attempt.createdAt;
+      const previousDate = previous && (previous.completedAt || previous.updatedAt || previous.createdAt);
+      if (!previous || new Date(attemptDate) > new Date(previousDate)) {
+        latestBySkill.set(skillId, attempt);
+      }
+    });
+
+    const totalPercentage = [...latestBySkill.values()]
+      .reduce((total, attempt) => total + Math.min(100, Math.max(0, attempt.percentage || 0)), 0);
+    return Math.round(totalPercentage / latestBySkill.size);
   }
 }

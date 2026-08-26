@@ -3,26 +3,26 @@ import { MapPin, Briefcase, CheckCircle, PlusCircle, Clock } from 'lucide-react'
 
 // ─── Design tokens ───────────────────────────────────────────────────────────
 const T = {
-  appBg:       '#0B0F17',
-  surface:     '#111827',
-  border:      '#1F2937',
-  textPrimary: '#F9FAFB',
-  textMuted:   '#9CA3AF',
-  blue:        '#2563EB',
-  blueHover:   '#1D4ED8',
-  cobalt:      '#1E3A8A',
+  appBg:       '#F5F5F7',
+  surface:     '#FFFFFF',
+  border:      '#E5E5EA',
+  textPrimary: '#1D1D1F',
+  textMuted:   '#6E6E73',
+  blue:        '#1D1D1F',
+  blueHover:   '#000000',
+  cobalt:      '#1D1D1F',
   emerald:     '#059669',
   emeraldBg:   'rgba(5,150,105,0.12)',
-  emeraldText: '#34D399',
+  emeraldText: '#059669',
   teal:        '#0D9488',
   tealBg:      'rgba(13,148,136,0.12)',
-  tealText:    '#2DD4BF',
+  tealText:    '#0D9488',
   amber:       '#D97706',
   amberBg:     'rgba(217,119,6,0.12)',
-  amberText:   '#FBBF24',
+  amberText:   '#D97706',
   red:         '#DC2626',
   redBg:       'rgba(220,38,38,0.12)',
-  redText:     '#F87171',
+  redText:     '#DC2626',
   grey:        '#374151',
   greyText:    '#6B7280',
 };
@@ -189,12 +189,12 @@ export default function JobCard({ job, onApply, applying }) {
 
       {/* ── Row 2: Chips — Location, Type, Deadline ──────────────────────── */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12, alignItems: 'center' }}>
-        <Chip chipStyle={{ background: 'rgba(31,41,55,0.8)', color: T.textMuted, border: `1px solid ${T.border}` }}>
+        <Chip chipStyle={{ background: '#F5F5F7', color: T.textMuted, border: `1px solid ${T.border}` }}>
           <MapPin size={11} />
           {location}
         </Chip>
 
-        <Chip chipStyle={{ background: 'rgba(30,58,138,0.2)', color: '#93C5FD', border: '1px solid rgba(30,64,175,0.3)' }}>
+        <Chip chipStyle={{ background: 'rgba(30,58,138,0.2)', color: '#177245', border: '1px solid rgba(30,64,175,0.3)' }}>
           <Briefcase size={11} />
           {typeLabel}
         </Chip>
@@ -347,7 +347,7 @@ export default function JobCard({ job, onApply, applying }) {
             disabled
             style={{
               background: T.cobalt,
-              color: '#93C5FD',
+              color: '#177245',
               padding: '8px 18px',
               borderRadius: 8,
               border: 'none',

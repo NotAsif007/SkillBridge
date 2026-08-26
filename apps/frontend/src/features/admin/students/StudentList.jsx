@@ -63,14 +63,14 @@ import StudentDrawer from './StudentDrawer';
 
 // ─── Design tokens (docs/DESIGN.md) ───────────────────────────────────────────
 const T = {
-  appBg:       '#0B0F17',
-  surface:     '#111827',
-  border:      '#1F2937',
+  appBg:       '#F5F5F7',
+  surface:     '#FFFFFF',
+  border:      '#E5E5EA',
   borderHover: '#374151',
-  textPrimary: '#F9FAFB',
-  textMuted:   '#9CA3AF',
-  blue:        '#2563EB',
-  blueHover:   '#1D4ED8',
+  textPrimary: '#1D1D1F',
+  textMuted:   '#6E6E73',
+  blue:        '#1D1D1F',
+  blueHover:   '#000000',
   emerald:     '#059669',
   emeraldBg:   'rgba(5,150,105,0.12)',
   emeraldText: '#34D399',
@@ -256,7 +256,7 @@ function EmptyState({ hasFilters, onClear }) {
             style={{ backgroundColor: 'rgba(37,99,235,0.10)' }}
             aria-hidden="true"
           >
-            <Users size={24} style={{ color: '#93C5FD' }} />
+            <Users size={24} style={{ color: '#177245' }} />
           </div>
           <div>
             <p className="font-medium text-sm" style={{ color: T.textPrimary }}>
@@ -272,7 +272,7 @@ function EmptyState({ hasFilters, onClear }) {
             <button
               onClick={onClear}
               className="text-xs px-3 py-1.5 rounded-lg transition-colors"
-              style={{ backgroundColor: 'rgba(37,99,235,0.12)', color: '#93C5FD' }}
+              style={{ backgroundColor: 'rgba(37,99,235,0.12)', color: '#177245' }}
             >
               Clear filters
             </button>
@@ -452,7 +452,7 @@ function StudentRow({ student, isSelected, onClick, isEven }) {
           className="inline-block text-xs font-medium px-2 py-0.5 rounded"
           style={{
             backgroundColor: 'rgba(37,99,235,0.10)',
-            color: '#93C5FD',
+            color: '#177245',
           }}
         >
           {student.department}
@@ -509,8 +509,6 @@ export default function StudentList() {
   const [deptLoading, setDeptLoading] = useState(false);
 
   // ── Selected student — drawer integration boundary ────────────────────────
-  // When StudentDrawer.jsx is implemented:
-    <StudentDrawer student={selectedStudent} onClose={() => setSelectedStudent(null)} />
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   // ── Debounce search — 350ms after user stops typing ───────────────────────
@@ -852,13 +850,13 @@ function FilterPill({ label, onRemove }) {
   return (
     <span
       className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full"
-      style={{ backgroundColor: 'rgba(37,99,235,0.12)', color: '#93C5FD', border: '1px solid rgba(37,99,235,0.25)' }}
+      style={{ backgroundColor: 'rgba(37,99,235,0.12)', color: '#177245', border: '1px solid rgba(37,99,235,0.25)' }}
     >
       {label}
       <button
         onClick={onRemove}
         className="rounded-full"
-        style={{ color: '#93C5FD' }}
+        style={{ color: '#177245' }}
         aria-label={`Remove filter: ${label}`}
       >
         <X size={11} aria-hidden="true" />
