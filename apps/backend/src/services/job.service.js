@@ -1,8 +1,10 @@
 import { Job } from '../models/job.model.js';
 import { JobApplication } from '../models/jobApplication.model.js';
+import { Resume } from '../models/resume.model.js';
 import { StudentProfile } from '../models/studentProfile.model.js';
 import { ProfileService } from './profile.service.js';
 import { notFound, badRequest, conflict } from '../utils/errors.js';
+import { escapeRegex } from '../utils/regex.js';
 
 export class JobService {
   /**
@@ -50,7 +52,7 @@ export class JobService {
   }
 
   /**
-   * Lists jobs in organization with personalized match score calculation.
+   * Lists jobs in organization with personalized match score calculation and safe regex search.
    */
   static async listJobs(studentId, orgId, query = {}) {
     const profile = await ProfileService.getOrCreateProfile(studentId);
@@ -58,10 +60,11 @@ export class JobService {
 
     if (query.jobType) filter.jobType = query.jobType;
     if (query.workplaceType) filter.workplaceType = query.workplaceType;
-    if (query.search) {
+    if (query.search && query.search.trim()) {
+      const safeSearch = escapeRegex(query.search.trim().slice(0, 100));
       filter.$or = [
-        { title: { $regex: query.search, $options: 'i' } },
-        { company: { $regex: query.search, $options: 'i' } },
+        { title: { $regex: safeSearch, $options: 'i' } },
+        { company: { $regex: safeSearch, $options: 'i' } },
       ];
     }
 
@@ -70,7 +73,7 @@ export class JobService {
       .sort({ createdAt: -1 });
 
     const appliedJobIds = new Set(
-      (await JobApplication.find({ studentId }).select('jobId')).map((a) => a.jobId.toString())
+      (await JobApplication.find({ studentId, organizationId: orgId }).select('jobId')).map((a) => a.jobId.toString())
     );
 
     const jobsWithMatch = jobs.map((job) => {
@@ -99,15 +102,15 @@ export class JobService {
   }
 
   /**
-   * Retrieves single job details and match evaluation.
+   * Retrieves single job details and match evaluation strictly scoped to organization.
    */
-  static async getJobById(jobId, studentId) {
-    const job = await Job.findById(jobId)
+  static async getJobById(jobId, studentId, orgId) {
+    const job = await Job.findOne({ _id: jobId, organizationId: orgId, isActive: true })
       .populate('requiredSkills.skillId', 'name category')
       .populate('eligibility.eligibleDepartments', 'name code');
 
-    if (!job || !job.isActive) {
-      throw notFound('Job not found or inactive');
+    if (!job) {
+      throw notFound('Job not found in your institution or is inactive');
     }
 
     const profile = await ProfileService.getOrCreateProfile(studentId);
@@ -116,7 +119,7 @@ export class JobService {
       job.requiredSkills
     );
 
-    const existingApplication = await JobApplication.findOne({ jobId, studentId });
+    const existingApplication = await JobApplication.findOne({ jobId, studentId, organizationId: orgId });
 
     return {
       ...job.toObject(),
@@ -143,17 +146,25 @@ export class JobService {
   }
 
   /**
-   * Submits a student job application.
+   * Submits a student job application strictly validated against tenant boundary.
    */
   static async applyJob(studentId, orgId, jobId, { coverLetter = '', resumeId = null } = {}) {
-    const job = await Job.findById(jobId).populate('requiredSkills.skillId');
-    if (!job || !job.isActive) {
-      throw notFound('Job not found or is no longer accepting applications');
+    const job = await Job.findOne({ _id: jobId, organizationId: orgId, isActive: true }).populate('requiredSkills.skillId');
+    if (!job) {
+      throw notFound('Job not found in your institution or is no longer accepting applications');
     }
 
-    const existing = await JobApplication.findOne({ jobId, studentId });
+    const existing = await JobApplication.findOne({ jobId, studentId, organizationId: orgId });
     if (existing) {
       throw conflict('You have already submitted an application for this position');
+    }
+
+    // Validate that resume belongs to the authenticated student
+    if (resumeId) {
+      const resume = await Resume.findOne({ _id: resumeId, studentId });
+      if (!resume) {
+        throw badRequest('Attached resume does not belong to your account');
+      }
     }
 
     const profile = await ProfileService.getOrCreateProfile(studentId);
@@ -173,7 +184,7 @@ export class JobService {
       jobId,
       studentId,
       organizationId: orgId,
-      resumeId,
+      resumeId: resumeId || null,
       coverLetter,
       matchScoreAtApplication: matchPercentage,
       status: 'APPLIED',
@@ -183,10 +194,10 @@ export class JobService {
   }
 
   /**
-   * Retrieves all job applications submitted by student.
+   * Retrieves all job applications submitted by student scoped to organization.
    */
-  static async getStudentApplications(studentId) {
-    return JobApplication.find({ studentId })
+  static async getStudentApplications(studentId, orgId) {
+    return JobApplication.find({ studentId, organizationId: orgId })
       .populate('jobId', 'title company location jobType salaryRange workplaceType')
       .populate('resumeId', 'fileName atsScore')
       .sort({ appliedAt: -1 });
@@ -195,8 +206,8 @@ export class JobService {
   /**
    * Updates application status (e.g. from Recruiter/Admin).
    */
-  static async updateApplicationStatus(applicationId, { status, notes = '' }) {
-    const application = await JobApplication.findById(applicationId);
+  static async updateApplicationStatus(applicationId, orgId, { status, notes = '' }) {
+    const application = await JobApplication.findOne({ _id: applicationId, organizationId: orgId });
     if (!application) {
       throw notFound('Application not found');
     }

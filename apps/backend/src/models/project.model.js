@@ -54,7 +54,21 @@ const projectSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform(doc, ret) {
+        delete ret.__v;
+        return ret;
+      },
+    },
+    toObject: {
+      virtuals: true,
+    },
   }
 );
+
+projectSchema.virtual('liveUrl').get(function () {
+  return this.liveDemoUrl;
+});
 
 export const Project = mongoose.model('Project', projectSchema);

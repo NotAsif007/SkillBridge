@@ -25,7 +25,7 @@ export class JobController {
    */
   static async getStudentApplications(req, res, next) {
     try {
-      const applications = await JobService.getStudentApplications(req.user.id);
+      const applications = await JobService.getStudentApplications(req.user.id, req.user.organizationId);
       return success(res, applications, 'Student applications retrieved');
     } catch (err) {
       next(err);
@@ -38,7 +38,7 @@ export class JobController {
    */
   static async getJob(req, res, next) {
     try {
-      const job = await JobService.getJobById(req.params.id, req.user.id);
+      const job = await JobService.getJobById(req.params.id, req.user.id, req.user.organizationId);
       return success(res, job, 'Job details retrieved');
     } catch (err) {
       next(err);

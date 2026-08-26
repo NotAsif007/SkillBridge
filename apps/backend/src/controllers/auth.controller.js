@@ -92,9 +92,17 @@ export class AuthController {
 
   /**
    * POST /api/v1/auth/logout
-   * Invalidate session / confirm logout
+   * Invalidate session and revoke active JWTs
    */
-  static async logout(req, res) {
-    return success(res, null, 'Logged out successfully');
+  static async logout(req, res, next) {
+    try {
+      if (req.user && req.user.id) {
+        await AuthService.logout(req.user.id);
+      }
+      res.clearCookie('token');
+      return success(res, null, 'Logged out successfully');
+    } catch (err) {
+      next(err);
+    }
   }
 }

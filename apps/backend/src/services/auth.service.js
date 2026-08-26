@@ -8,28 +8,36 @@ import { unauthorized, notFound, forbidden, badRequest } from '../utils/errors.j
 
 export class AuthService {
   /**
-   * Issues a signed JWT for a user.
+   * Issues a signed JWT for a user with audience, issuer, and tokenVersion tracking.
    */
   static signToken(user) {
     const payload = {
       userId: user._id.toString(),
       email: user.email,
       role: user.role,
+      tokenVersion: user.tokenVersion || 0,
       organizationId: user.organizationId ? user.organizationId.toString() : null,
       departmentId: user.departmentId ? user.departmentId.toString() : null,
     };
 
     return jwt.sign(payload, config.jwt.secret, {
+      algorithm: 'HS256',
+      issuer: config.jwt.issuer,
+      audience: config.jwt.audience,
       expiresIn: config.jwt.expiresIn,
     });
   }
 
   /**
-   * Verifies and decodes a JWT token.
+   * Verifies and decodes a JWT token with strict algorithm, audience, and issuer validation.
    */
   static verifyToken(token) {
     try {
-      return jwt.verify(token, config.jwt.secret);
+      return jwt.verify(token, config.jwt.secret, {
+        algorithms: ['HS256'],
+        issuer: config.jwt.issuer,
+        audience: config.jwt.audience,
+      });
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
         throw unauthorized('Session expired. Please log in again.');
@@ -75,11 +83,16 @@ export class AuthService {
 
   /**
    * Fast development / testing login without Google OAuth flow.
-   * Only allowed in non-production environments.
+   * Gated strictly behind allowDevLogin.
    */
   static async devLogin({ email, role = 'STUDENT', name, organizationId, departmentId }) {
-    if (config.isProd) {
-      throw forbidden('Dev login is not permitted in production mode');
+    if (config.isProd || !config.allowDevLogin) {
+      throw forbidden('Development login is disabled in this environment.');
+    }
+
+    // Outside of automated tests, prevent unprivileged users from minting arbitrary superadmin accounts
+    if (!config.isTest && role === 'SUPER_ADMIN') {
+      throw forbidden('Cannot mint SUPER_ADMIN accounts through dev-login.');
     }
 
     let user = await User.findOne({ email: email.toLowerCase() });
@@ -109,6 +122,18 @@ export class AuthService {
 
     const token = this.signToken(user);
     return { user, token };
+  }
+
+  /**
+   * Invalidates all active tokens for a user upon logout.
+   */
+  static async logout(userId) {
+    const user = await User.findById(userId);
+    if (user) {
+      user.lastLogoutAt = new Date();
+      user.tokenVersion = (user.tokenVersion || 0) + 1;
+      await user.save();
+    }
   }
 
   /**

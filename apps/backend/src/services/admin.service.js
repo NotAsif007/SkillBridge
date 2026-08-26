@@ -4,6 +4,7 @@ import { Department } from '../models/department.model.js';
 import { StudentProfile } from '../models/studentProfile.model.js';
 import { Job } from '../models/job.model.js';
 import { JobApplication } from '../models/jobApplication.model.js';
+import { escapeRegex } from '../utils/regex.js';
 
 export class AdminService {
   /**
@@ -143,10 +144,11 @@ export class AdminService {
       userFilter.departmentId = query.departmentId;
     }
 
-    if (query.search) {
+    if (query.search && query.search.trim()) {
+      const safeSearch = escapeRegex(query.search.trim().slice(0, 100));
       userFilter.$or = [
-        { name: { $regex: query.search, $options: 'i' } },
-        { email: { $regex: query.search, $options: 'i' } },
+        { name: { $regex: safeSearch, $options: 'i' } },
+        { email: { $regex: safeSearch, $options: 'i' } },
       ];
     }
 

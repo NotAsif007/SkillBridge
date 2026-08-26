@@ -30,6 +30,20 @@ export async function requireAuth(req, res, next) {
       throw unauthorized('User account is invalid or deactivated.');
     }
 
+    // Check token revocation / logout
+    if (user.lastLogoutAt && decoded.iat) {
+      // Allow 1 second clock drift
+      if (decoded.iat * 1000 < user.lastLogoutAt.getTime() - 1000) {
+        throw unauthorized('Session has been revoked. Please log in again.');
+      }
+    }
+
+    if (decoded.tokenVersion !== undefined && user.tokenVersion !== undefined) {
+      if (decoded.tokenVersion < user.tokenVersion) {
+        throw unauthorized('Session has expired due to account activity. Please log in again.');
+      }
+    }
+
     req.user = {
       _id: user._id,
       id: user._id.toString(),
