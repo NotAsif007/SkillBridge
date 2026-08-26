@@ -509,8 +509,6 @@ export default function StudentList() {
   const [deptLoading, setDeptLoading] = useState(false);
 
   // ── Selected student — drawer integration boundary ────────────────────────
-  // When StudentDrawer.jsx is implemented:
-    <StudentDrawer student={selectedStudent} onClose={() => setSelectedStudent(null)} />
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   // ── Debounce search — 350ms after user stops typing ───────────────────────
