@@ -28,9 +28,13 @@ import InterviewReport    from '../features/student/interview/InterviewReport';
 import JobList            from '../features/student/jobs/JobList';
 
 // ─── Admin Feature Pages (Person 3) ──────────────────────────────────────────
-import AdminDashboard    from '../features/admin/dashboard/AdminDashboard';
-import StudentList       from '../features/admin/students/StudentList';
-import DepartmentList    from '../features/admin/departments/DepartmentList';
+import AdminDashboard        from '../features/admin/dashboard/AdminDashboard';
+import StudentList           from '../features/admin/students/StudentList';
+import DepartmentList        from '../features/admin/departments/DepartmentList';
+import PlacementAnalytics    from '../features/admin/analytics/PlacementAnalytics';
+import AssessmentAnalytics   from '../features/admin/assessments/AssessmentAnalytics';
+import InterviewAnalytics    from '../features/admin/interviews/InterviewAnalytics';
+import JobManagement         from '../features/admin/jobs/JobManagement';
 
 export const router = createBrowserRouter([
   {
@@ -84,8 +88,10 @@ export const router = createBrowserRouter([
       { path: '/admin',             element: <AdminDashboard /> },
       { path: '/admin/students',    element: <StudentList /> },
       { path: '/admin/departments', element: <DepartmentList /> },
-      { path: '/admin/skills',      element: <div style={{ padding: '32px 40px', color: '#9CA3AF' }}>Institutional Skill Gaps (coming soon)</div> },
-      { path: '/admin/reports',     element: <div style={{ padding: '32px 40px', color: '#9CA3AF' }}>Placement Reports (coming soon)</div> },
+      { path: '/admin/analytics',   element: <PlacementAnalytics /> },
+      { path: '/admin/assessments', element: <AssessmentAnalytics /> },
+      { path: '/admin/interviews',  element: <InterviewAnalytics /> },
+      { path: '/admin/jobs',        element: <JobManagement /> },
     ],
   },
 ]);
