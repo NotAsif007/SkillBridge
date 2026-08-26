@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CareerOS Design Tokens (DESIGN.md §2) ─────────────────────────────── */
+@layer base {
+  :root {
+    /* App background */
+    --color-bg: #F8FAFC;
+    --color-surface: #FFFFFF;
+    --color-border: #E2E8F0;
+
+    /* Text */
+    --color-text-primary: #0F172A;
+    --color-text-muted: #64748B;
+
+    /* Readiness / Growth — Emerald */
+    --color-readiness: #059669;
+    --color-readiness-badge-bg: #ECFDF5;
+    --color-readiness-badge-text: #065F46;
+
+    /* Institutional — Deep Cobalt */
+    --color-cobalt: #1E3A8A;
+    --color-cobalt-interactive: #2563EB;
+    --color-cobalt-hover: #1D4ED8;
+
+    /* Skill Gap — Amber */
+    --color-gap: #D97706;
+    --color-gap-badge-text: #FBBF24;
+
+    /* Critical Gap — Crimson */
+    --color-danger: #DC2626;
+    --color-danger-badge-text: #F87171;
+
+    /* Analytics — Teal */
+    --color-analytics: #0D9488;
+  }
+
+  .dark {
+    /* App background */
+    --color-bg: #0B0F17;
+    --color-surface: #111827;
+    --color-border: #1F2937;
+
+    /* Text */
+    --color-text-primary: #F9FAFB;
+    --color-text-muted: #9CA3AF;
+
+    /* Readiness / Growth — Emerald (dark mode badge) */
+    --color-readiness-badge-bg: rgba(5, 150, 105, 0.15);
+    --color-readiness-badge-text: #34D399;
+
+    /* Skill Gap — Amber (dark mode badge) */
+    --color-gap-badge-bg: rgba(217, 119, 6, 0.15);
+
+    /* Critical Gap — Crimson (dark mode badge) */
+    --color-danger-badge-bg: rgba(220, 38, 38, 0.15);
+  }
+
+  html {
+    font-family: Inter, 'Plus Jakarta Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-app-light dark:bg-app-dark text-slate-900 dark:text-slate-50;
+    min-height: 100vh;
+  }
+
+  /* Sidebar fixed width defined in DESIGN.md §5 */
+  :root {
+    --sidebar-width: 260px;
+  }
+}
