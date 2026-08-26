@@ -86,14 +86,14 @@ export default function LoginPage() {
     try {
       if (role === 'STUDENT') {
         await devLogin({
-          email: 'alex.chen@apex.edu',
+          email: 'alex.chen@adtu.edu.in',
           name: 'Alex Chen',
           role: 'STUDENT',
         });
         navigate('/dashboard', { replace: true });
       } else {
         await devLogin({
-          email: 'admin@apex.edu',
+          email: 'admin@adtu.edu.in',
           name: 'Dr. Sarah Jenkins',
           role: 'COLLEGE_ADMIN',
         });
@@ -144,7 +144,7 @@ export default function LoginPage() {
               <div className="flex items-center space-x-2">
                 <span className="font-bold text-lg tracking-tight text-white">SkillBridge</span>
                 <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  Apex Tech
+                  ADTU
                 </span>
               </div>
               <p className="text-xs text-slate-400">Institutional Placement Readiness Platform</p>
@@ -346,7 +346,7 @@ export default function LoginPage() {
                       <p className="text-sm font-semibold text-white group-hover:text-emerald-300 transition-colors">
                         Alex Chen
                       </p>
-                      <p className="text-xs text-slate-400">CS Senior • Apex Institute</p>
+                      <p className="text-xs text-slate-400">CS Senior • Assam Down Town University</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-1 text-xs text-emerald-400 font-medium">
@@ -369,7 +369,7 @@ export default function LoginPage() {
                       <p className="text-sm font-semibold text-white group-hover:text-blue-300 transition-colors">
                         Dr. Sarah Jenkins
                       </p>
-                      <p className="text-xs text-slate-400">Placement Dean • Apex Institute</p>
+                      <p className="text-xs text-slate-400">Placement Dean • Assam Down Town University</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-1 text-xs text-blue-400 font-medium">
@@ -397,7 +397,7 @@ export default function LoginPage() {
                 <input
                   type="email"
                   required
-                  placeholder={activeTab === 'STUDENT' ? 'student@apex.edu' : 'admin@apex.edu'}
+                  placeholder={activeTab === 'STUDENT' ? 'student@adtu.edu.in' : 'admin@adtu.edu.in'}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-lg bg-slate-900 border border-slate-700/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm text-white placeholder-slate-500 outline-none transition-all"
@@ -441,7 +441,7 @@ export default function LoginPage() {
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                 <span>Single Sign-On (SSO) Active</span>
               </span>
-              <span className="text-slate-400">Apex Institute v1.0.4</span>
+              <span className="text-slate-400">Assam Down Town University v1.0.4</span>
             </div>
           </div>
         </div>
