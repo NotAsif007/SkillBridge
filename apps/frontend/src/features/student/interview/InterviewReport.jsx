@@ -1,145 +1,208 @@
 /**
- * InterviewReport.jsx — Final Interview Score & Report
+ * InterviewReport.jsx — Final Mock Interview Score & Diagnostic Report
+ * Dynamic Apple Light and Multi-Accent Yellow Graphite Dark Mode
  */
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Trophy, MessageSquare, LayoutDashboard, CheckCircle2, AlertTriangle } from 'lucide-react';
-
-const T = {
-  appBg:'#F5F5F7', surface:'#FFFFFF', border:'#E5E5EA',
-  textPrimary:'#1D1D1F', textMuted:'#6E6E73', blue:'#1D1D1F',
-  emerald:'#059669', emeraldBg:'rgba(5,150,105,0.12)', emeraldText:'#059669',
-  teal:'#0D9488', tealBg:'rgba(13,148,136,0.12)', tealText:'#0D9488',
-  amber:'#D97706', amberBg:'rgba(217,119,6,0.12)', amberText:'#D97706',
-};
+import { Trophy, MessageSquare, LayoutDashboard, CheckCircle2, AlertTriangle, ChevronRight } from 'lucide-react';
+import { useTheme } from '../../../context/ThemeContext';
+import { getTokens } from '../../../styles/themeTokens';
 
 const MOCK_REPORT = {
   allAnswers: [
-    { question: 'Explain the Node.js event loop and microtasks.', answer: 'The event loop has phases...', evaluation: { score: 78, feedback: 'Good understanding of phases. Mention microtask queue.' } },
-    { question: 'How would you design idempotency for payment APIs?', answer: 'Use idempotency keys...', evaluation: { score: 85, feedback: 'Excellent coverage of idempotency keys and database constraints.' } },
-    { question: 'SQL vs NoSQL — when to choose each?', answer: 'SQL for structured data...', evaluation: { score: 90, feedback: 'Comprehensive comparison with clear use-case differentiation.' } },
-    { question: 'Explain SOLID principles with a JS example.', answer: 'Single Responsibility...', evaluation: { score: 72, feedback: 'Good on SRP. Could strengthen O and L with code examples.' } },
-    { question: 'How does React\'s virtual DOM diffing work?', answer: 'React creates a virtual DOM...', evaluation: { score: 88, feedback: 'Clear explanation of reconciliation. Mention fiber architecture for bonus.' } },
+    { question: { questionText: 'Explain the Node.js event loop and microtasks.' }, answer: 'The event loop has phases...', evaluation: { score: 85, feedback: 'Good understanding of phases and microtask queue priorities.', strengths: ['Clear execution order'], improvements: [] } },
+    { question: { questionText: 'How would you design idempotency for payment APIs?' }, answer: 'Use idempotency keys...', evaluation: { score: 88, feedback: 'Excellent coverage of idempotency keys and database constraints.', strengths: ['Atomic transactions'], improvements: [] } },
+    { question: { questionText: 'SQL vs NoSQL — when to choose each?' }, answer: 'SQL for structured data...', evaluation: { score: 82, feedback: 'Comprehensive comparison with clear use-case differentiation.', strengths: ['ACID vs BASE tradeoffs'], improvements: ['Mention sharding'] } },
   ],
 };
 
-function ScoreGauge({ score }) {
+function ScoreGauge({ score, T }) {
   const r = 60, cx = 80, cy = 80;
   const circ = 2 * Math.PI * r;
   const fill = (score / 100) * circ;
-  const stroke = score >= 80 ? T.emerald : score >= 60 ? T.teal : T.amber;
-  const textColor = score >= 80 ? T.emeraldText : score >= 60 ? T.tealText : T.amberText;
+  const stroke = score >= 80 ? T.emerald : score >= 60 ? T.teal : T.yellow;
+
   return (
     <svg width={160} height={160} viewBox="0 0 160 160">
       <circle cx={cx} cy={cy} r={r} fill="none" stroke={T.border} strokeWidth={10} />
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke={stroke} strokeWidth={10}
-        strokeDasharray={`${fill} ${circ}`} strokeLinecap="round"
-        transform={`rotate(-90 ${cx} ${cy})`} />
-      <text x={cx} y={cx - 6} textAnchor="middle" fill={T.textPrimary} fontSize="30" fontWeight="800">{score}</text>
-      <text x={cx} y={cx + 14} textAnchor="middle" fill={T.textMuted} fontSize="11">/ 100</text>
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        stroke={stroke}
+        strokeWidth={10}
+        strokeDasharray={`${fill} ${circ}`}
+        strokeLinecap="round"
+        transform={`rotate(-90 ${cx} ${cy})`}
+        style={{ transition: 'stroke-dasharray 0.8s ease' }}
+      />
+      <text x={cx} y={cx - 6} textAnchor="middle" fill={T.textPrimary} fontSize="30" fontWeight="800">
+        {score}
+      </text>
+      <text x={cx} y={cx + 14} textAnchor="middle" fill={T.textMuted} fontSize="11" fontWeight="600">
+        / 100
+      </text>
     </svg>
   );
 }
 
 export default function InterviewReport() {
+  const { isDark } = useTheme();
+  const T = getTokens(isDark);
   const { state } = useLocation();
   const navigate = useNavigate();
+
   const data = state || MOCK_REPORT;
   const { allAnswers = [] } = data;
 
-  const scores = allAnswers.map(a => a.evaluation?.score || 0);
-  const avgScore = scores.length > 0 ? Math.round(scores.reduce((s, n) => s + n, 0) / scores.length) : 0;
+  const scores = allAnswers.map((a) => a.evaluation?.score || 80);
+  const avgScore = scores.length > 0 ? Math.round(scores.reduce((s, n) => s + n, 0) / scores.length) : 80;
 
-  const strengths = allAnswers.filter(a => (a.evaluation?.score || 0) >= 80);
-  const improvements = allAnswers.filter(a => (a.evaluation?.score || 0) < 70);
+  const strengths = allAnswers.filter((a) => (a.evaluation?.score || 0) >= 80);
+  const improvements = allAnswers.filter((a) => (a.evaluation?.score || 0) < 80);
 
   return (
-    <div style={{ padding: '40px 40px', background: T.appBg, minHeight: '100vh' }}>
+    <div style={{ width: '100%', maxWidth: 840, margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: 36 }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <Trophy size={28} color={T.amberText} />
-          <h1 style={{ fontSize: 28, fontWeight: 700, color: T.textPrimary, letterSpacing: '-0.02em', margin: 0 }}>Interview Complete!</h1>
+      <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+          <Trophy size={28} color={T.yellow} />
+          <h1 style={{ fontSize: 28, fontWeight: 800, color: T.textPrimary, letterSpacing: '-0.02em', margin: 0 }}>
+            Mock Interview Completed
+          </h1>
         </div>
-        <p style={{ color: T.textMuted, fontSize: 14 }}>Here's your performance breakdown across all {allAnswers.length} questions.</p>
+        <p style={{ color: T.textMuted, fontSize: 14, margin: 0 }}>
+          Performance evaluation across all {allAnswers.length} mock technical questions
+        </p>
       </div>
 
-      {/* Score */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 36 }}>
-        <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10, padding: '28px 40px', textAlign: 'center' }}>
-          <ScoreGauge score={avgScore} />
+      {/* Score Card */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
+        <div
+          style={{
+            backgroundColor: T.surface,
+            border: `1px solid ${T.border}`,
+            borderRadius: 14,
+            padding: '28px 48px',
+            textAlign: 'center',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+          }}
+        >
+          <ScoreGauge score={avgScore} T={T} />
           <div style={{ marginTop: 12 }}>
-            <div style={{ color: T.textPrimary, fontSize: 16, fontWeight: 600 }}>Overall Score</div>
-            <div style={{ color: T.textMuted, fontSize: 13, marginTop: 4 }}>Average across {allAnswers.length} answers</div>
+            <div style={{ color: T.textPrimary, fontSize: 16, fontWeight: 750 }}>
+              Overall Composite Score
+            </div>
+            <div style={{ color: T.textMuted, fontSize: 13, marginTop: 3 }}>
+              Calculated across {allAnswers.length} responses
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Strengths + Improvements */}
-      {(strengths.length > 0 || improvements.length > 0) && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
-          {strengths.length > 0 && (
-            <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10, padding: 20 }}>
-              <h3 style={{ color: T.emeraldText, fontSize: 14, fontWeight: 600, margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <CheckCircle2 size={15} /> Strong Answers
-              </h3>
-              {strengths.map((a, i) => (
-                <div key={i} style={{ padding: '8px 0', borderBottom: i < strengths.length - 1 ? `1px solid ${T.border}` : 'none' }}>
-                  <div style={{ color: T.textPrimary, fontSize: 12, fontWeight: 500, marginBottom: 2 }}>{a.evaluation?.score}% · {a.question?.slice(0, 50)}…</div>
-                  <div style={{ color: T.textMuted, fontSize: 11 }}>{a.evaluation?.feedback?.slice(0, 80)}…</div>
+      {/* Strengths & Improvements Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 18, marginBottom: 32 }}>
+        {/* Strengths */}
+        <div
+          style={{
+            backgroundColor: T.surface,
+            border: `1px solid ${T.border}`,
+            borderRadius: 12,
+            padding: 22,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+          }}
+        >
+          <h3 style={{ color: T.emeraldText, fontSize: 14, fontWeight: 750, margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <CheckCircle2 size={16} /> Strong Answers ({strengths.length})
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {strengths.map((a, i) => (
+              <div key={i} style={{ padding: '10px 12px', backgroundColor: T.emeraldBg, borderRadius: 8, border: `1px solid ${T.emeraldBorder}` }}>
+                <div style={{ color: T.textPrimary, fontSize: 13, fontWeight: 650, marginBottom: 2 }}>
+                  {a.evaluation?.score}% · {a.question?.questionText?.slice(0, 60)}…
                 </div>
-              ))}
-            </div>
-          )}
-          {improvements.length > 0 && (
-            <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10, padding: 20 }}>
-              <h3 style={{ color: T.amberText, fontSize: 14, fontWeight: 600, margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <AlertTriangle size={15} /> Areas to Improve
-              </h3>
-              {improvements.map((a, i) => (
-                <div key={i} style={{ padding: '8px 0', borderBottom: i < improvements.length - 1 ? `1px solid ${T.border}` : 'none' }}>
-                  <div style={{ color: T.textPrimary, fontSize: 12, fontWeight: 500, marginBottom: 2 }}>{a.evaluation?.score}% · {a.question?.slice(0, 50)}…</div>
-                  <div style={{ color: T.textMuted, fontSize: 11 }}>{a.evaluation?.feedback?.slice(0, 80)}…</div>
+                <div style={{ color: T.textMuted, fontSize: 11.5 }}>
+                  {a.evaluation?.feedback}
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </div>
-      )}
 
-      {/* Q&A Table */}
-      <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 28 }}>
-        <div style={{ padding: '16px 24px', borderBottom: `1px solid ${T.border}` }}>
-          <h3 style={{ color: T.textPrimary, fontSize: 15, fontWeight: 600, margin: 0 }}>Answer Breakdown</h3>
+        {/* Improvements */}
+        <div
+          style={{
+            backgroundColor: T.surface,
+            border: `1px solid ${T.border}`,
+            borderRadius: 12,
+            padding: 22,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+          }}
+        >
+          <h3 style={{ color: T.yellowText, fontSize: 14, fontWeight: 750, margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <AlertTriangle size={16} /> Key Growth Areas ({improvements.length})
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {improvements.length > 0 ? (
+              improvements.map((a, i) => (
+                <div key={i} style={{ padding: '10px 12px', backgroundColor: T.yellowBg, borderRadius: 8, border: `1px solid ${T.yellowBorder}` }}>
+                  <div style={{ color: T.textPrimary, fontSize: 13, fontWeight: 650, marginBottom: 2 }}>
+                    {a.evaluation?.score}% · {a.question?.questionText?.slice(0, 60)}…
+                  </div>
+                  <div style={{ color: T.textMuted, fontSize: 11.5 }}>
+                    {a.evaluation?.feedback}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p style={{ color: T.textMuted, fontSize: 13, margin: 0 }}>
+                No significant weaknesses detected. Excellent job!
+              </p>
+            )}
+          </div>
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead><tr style={{ background: 'rgba(255,255,255,0.03)' }}>
-            {['#', 'Question', 'Score', 'Feedback'].map(h => <th key={h} style={{ padding: '10px 20px', textAlign: 'left', fontSize: 11, color: T.textMuted, fontWeight: 600, letterSpacing: '0.05em' }}>{h.toUpperCase()}</th>)}
-          </tr></thead>
-          <tbody>
-            {allAnswers.map((a, i) => {
-              const s = a.evaluation?.score || 0;
-              const sc = s >= 80 ? { color: T.emeraldText, bg: T.emeraldBg } : s >= 60 ? { color: T.tealText, bg: T.tealBg } : { color: T.amberText, bg: T.amberBg };
-              return (
-                <tr key={i} style={{ borderTop: `1px solid ${T.border}`, background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
-                  <td style={{ padding: '12px 20px', color: T.textMuted, fontSize: 13 }}>{i + 1}</td>
-                  <td style={{ padding: '12px 20px', color: T.textPrimary, fontSize: 13, maxWidth: 300 }}>{a.question?.slice(0, 60)}{a.question?.length > 60 ? '…' : ''}</td>
-                  <td style={{ padding: '12px 20px' }}><span style={{ fontSize: 12, fontWeight: 700, color: sc.color, background: sc.bg, padding: '3px 10px', borderRadius: 9999 }}>{s}%</span></td>
-                  <td style={{ padding: '12px 20px', color: T.textMuted, fontSize: 12 }}>{a.evaluation?.feedback?.slice(0, 70)}{a.evaluation?.feedback?.length > 70 ? '…' : ''}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
       </div>
 
-      {/* CTAs */}
-      <div style={{ display: 'flex', gap: 12, maxWidth: 500 }}>
-        <button onClick={() => navigate('/interview')} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '12px 0', border: `1px solid ${T.border}`, borderRadius: 8, background: 'transparent', color: T.textPrimary, fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
-          <MessageSquare size={15} /> New Interview
+      {/* Action CTA Buttons */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 14 }}>
+        <button
+          onClick={() => navigate('/interview')}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '11px 22px',
+            borderRadius: 10,
+            border: `1px solid ${T.border}`,
+            backgroundColor: T.surface,
+            color: T.textPrimary,
+            fontWeight: 650,
+            fontSize: 14,
+            cursor: 'pointer',
+          }}
+        >
+          <MessageSquare size={15} /> Practice Again
         </button>
-        <button onClick={() => navigate('/dashboard')} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '12px 0', border: 'none', borderRadius: 8, background: T.blue, color: '#fff', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
-          <LayoutDashboard size={15} /> View Dashboard
+
+        <button
+          onClick={() => navigate('/dashboard')}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '11px 24px',
+            borderRadius: 10,
+            border: 'none',
+            backgroundColor: T.buttonPrimaryBg,
+            color: T.buttonPrimaryText,
+            fontWeight: 750,
+            fontSize: 14,
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          }}
+        >
+          <LayoutDashboard size={15} /> Return to Dashboard
         </button>
       </div>
     </div>

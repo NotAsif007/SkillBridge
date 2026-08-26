@@ -1,402 +1,219 @@
 import React from 'react';
 import { MapPin, Briefcase, CheckCircle, PlusCircle, Clock } from 'lucide-react';
+import { useTheme } from '../../../context/ThemeContext';
+import { getTokens } from '../../../styles/themeTokens';
 
-// ─── Design tokens ───────────────────────────────────────────────────────────
-const T = {
-  appBg:       '#F5F5F7',
-  surface:     '#FFFFFF',
-  border:      '#E5E5EA',
-  textPrimary: '#1D1D1F',
-  textMuted:   '#6E6E73',
-  blue:        '#1D1D1F',
-  blueHover:   '#000000',
-  cobalt:      '#1D1D1F',
-  emerald:     '#059669',
-  emeraldBg:   'rgba(5,150,105,0.12)',
-  emeraldText: '#059669',
-  teal:        '#0D9488',
-  tealBg:      'rgba(13,148,136,0.12)',
-  tealText:    '#0D9488',
-  amber:       '#D97706',
-  amberBg:     'rgba(217,119,6,0.12)',
-  amberText:   '#D97706',
-  red:         '#DC2626',
-  redBg:       'rgba(220,38,38,0.12)',
-  redText:     '#DC2626',
-  grey:        '#374151',
-  greyText:    '#6B7280',
-};
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function readinessColor(score) {
-  if (score >= 80) return { text: T.emeraldText, bg: T.emeraldBg, label: 'Strong Match' };
-  if (score >= 60) return { text: T.tealText,    bg: T.tealBg,    label: 'Good Match' };
-  return               { text: T.amberText,   bg: T.amberBg,   label: 'Partial Match' };
-}
-
-/**
- * Format INR amount (absolute rupees) to compact lakh string.
- * e.g. 1000000 → '10.0L'
- */
 function formatLakh(amount) {
   const lakhs = amount / 100000;
   return `${lakhs.toFixed(1)}L`;
 }
 
 const JOB_TYPE_LABELS = {
-  FULL_TIME:  'Full Time',
-  PART_TIME:  'Part Time',
+  FULL_TIME: 'Full Time',
+  PART_TIME: 'Part Time',
   INTERNSHIP: 'Internship',
-  CONTRACT:   'Contract',
+  CONTRACT: 'Contract',
 };
 
 function formatDate(iso) {
   if (!iso) return '—';
   return new Date(iso).toLocaleDateString('en-IN', {
-    day: '2-digit', month: 'short', year: 'numeric',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
   });
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-function Chip({ children, chipStyle }) {
-  return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 4,
-        padding: '3px 10px',
-        borderRadius: 20,
-        fontSize: 12,
-        fontWeight: 500,
-        ...chipStyle,
-      }}
-    >
-      {children}
-    </span>
-  );
-}
+export const MOCK_JOB = {
+  _id: 'job_mock_001',
+  title: 'Junior React Engineer',
+  company: 'Swiggy',
+  location: 'Bengaluru, India (Hybrid)',
+  jobType: 'FULL_TIME',
+  salaryRange: { min: 800000, max: 1400000, currency: 'INR' },
+  matchScore: 84,
+  matchedSkills: ['JavaScript', 'React', 'HTML/CSS'],
+  missingSkills: ['TypeScript', 'Jest'],
+  applicationDeadline: new Date(Date.now() + 7 * 86400000).toISOString(),
+  applied: false,
+};
 
-function MatchProgressBar({ score, color }) {
-  return (
-    <div
-      style={{
-        width: '100%',
-        height: 6,
-        background: T.border,
-        borderRadius: 99,
-        overflow: 'hidden',
-        marginTop: 12,
-      }}
-    >
-      <div
-        style={{
-          width: `${Math.min(score, 100)}%`,
-          height: '100%',
-          background: color,
-          borderRadius: 99,
-          transition: 'width 0.4s ease',
-        }}
-      />
-    </div>
-  );
-}
+export default function JobCard({
+  job = MOCK_JOB,
+  onApply,
+  isApplying = false,
+  applied = false,
+}) {
+  const { isDark } = useTheme();
+  const T = getTokens(isDark);
 
-// ─── JobCard ──────────────────────────────────────────────────────────────────
-/**
- * JobCard — pure presentational component.
- *
- * Props:
- *   job      {object}   — full job object from API
- *   onApply  {function} — called with (jobId) when Apply is clicked
- *   applying {boolean}  — true while the apply request is in-flight for this job
- */
-export default function JobCard({ job, onApply, applying }) {
   const {
     _id,
     title,
     company,
     location,
-    jobType,
+    jobType = 'FULL_TIME',
     salaryRange,
-    matchScore,
+    matchScore = 0,
     matchedSkills = [],
     missingSkills = [],
     applicationDeadline,
-    applied = false,
   } = job;
 
-  const match     = readinessColor(matchScore);
-  const typeLabel = JOB_TYPE_LABELS[jobType] || jobType;
+  const isApplied = applied || job.applied;
+  const matchColor = matchScore >= 80 ? T.emerald : matchScore >= 60 ? T.teal : T.yellow;
+  const matchBg = matchScore >= 80 ? T.emeraldBg : matchScore >= 60 ? T.tealBg : T.yellowBg;
+  const matchText = matchScore >= 80 ? T.emeraldText : matchScore >= 60 ? T.tealText : T.yellowText;
 
-  const daysLeft = applicationDeadline
-    ? Math.ceil((new Date(applicationDeadline) - Date.now()) / 86400000)
-    : null;
-  const isUrgent = daysLeft !== null && daysLeft <= 7 && daysLeft >= 0;
-
-  const totalRequired = matchedSkills.length + missingSkills.length;
+  let salaryString = null;
+  if (salaryRange && salaryRange.min != null && salaryRange.max != null) {
+    salaryString = `₹${formatLakh(salaryRange.min)} – ₹${formatLakh(salaryRange.max)}`;
+  }
 
   return (
     <div
       style={{
-        background: T.surface,
+        backgroundColor: T.surface,
         border: `1px solid ${T.border}`,
-        borderRadius: 12,
-        padding: 20,
+        borderRadius: 14,
+        padding: 22,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
         display: 'flex',
         flexDirection: 'column',
+        gap: 14,
       }}
     >
-      {/* ── Row 1: Title + Company + Match Badge ─────────────────────────── */}
+      {/* Header Row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <h3
-            style={{
-              margin: 0,
-              fontSize: 17,
-              fontWeight: 700,
-              color: T.textPrimary,
-              letterSpacing: '-0.01em',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
+        <div>
+          <h3 style={{ fontSize: 17, fontWeight: 750, color: T.textPrimary, margin: 0 }}>
             {title}
           </h3>
-          <p style={{ margin: '3px 0 0', fontSize: 14, color: T.textMuted, fontWeight: 500 }}>
-            {company}
+          <p style={{ fontSize: 13, color: T.textMuted, margin: '3px 0 0' }}>
+            {company} · {location}
           </p>
         </div>
 
-        <div
+        <span
           style={{
-            flexShrink: 0,
-            background: match.bg,
-            borderRadius: 8,
-            padding: '6px 12px',
-            textAlign: 'center',
+            fontSize: 11,
+            fontWeight: 750,
+            color: T.indigoText,
+            backgroundColor: T.indigoBg,
+            border: `1px solid ${T.indigoBorder}`,
+            padding: '3px 9px',
+            borderRadius: 6,
           }}
         >
-          <div style={{ fontSize: 18, fontWeight: 800, color: match.text, lineHeight: 1 }}>
-            {matchScore}%
-          </div>
-          <div style={{ fontSize: 10, fontWeight: 600, color: match.text, marginTop: 2, whiteSpace: 'nowrap' }}>
-            {match.label}
-          </div>
-        </div>
+          {JOB_TYPE_LABELS[jobType] || jobType}
+        </span>
       </div>
 
-      {/* ── Row 2: Chips — Location, Type, Deadline ──────────────────────── */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12, alignItems: 'center' }}>
-        <Chip chipStyle={{ background: '#F5F5F7', color: T.textMuted, border: `1px solid ${T.border}` }}>
-          <MapPin size={11} />
-          {location}
-        </Chip>
-
-        <Chip chipStyle={{ background: 'rgba(30,58,138,0.2)', color: '#177245', border: '1px solid rgba(30,64,175,0.3)' }}>
-          <Briefcase size={11} />
-          {typeLabel}
-        </Chip>
-
-        {applicationDeadline && (
-          <Chip
-            chipStyle={{
-              background: isUrgent ? T.redBg : T.amberBg,
-              color: isUrgent ? T.redText : T.amberText,
-              border: `1px solid ${isUrgent ? 'rgba(220,38,38,0.3)' : 'rgba(217,119,6,0.3)'}`,
-            }}
-          >
-            <Clock size={11} />
-            {isUrgent
-              ? daysLeft === 0
-                ? 'Last day!'
-                : `${daysLeft}d left`
-              : `Apply by ${formatDate(applicationDeadline)}`}
-          </Chip>
-        )}
-      </div>
-
-      {/* ── Salary ───────────────────────────────────────────────────────── */}
-      {salaryRange && (
-        <div style={{ marginTop: 12, fontSize: 14, fontWeight: 600, color: T.textPrimary }}>
-          <span style={{ color: T.textMuted, fontWeight: 400, fontSize: 12, marginRight: 4 }}>Salary</span>
-          ₹{formatLakh(salaryRange.min)} – ₹{formatLakh(salaryRange.max)}
-          <span style={{ color: T.textMuted, fontWeight: 400, fontSize: 12, marginLeft: 4 }}>/ year</span>
-        </div>
-      )}
-
-      {/* ── Matched Skills ───────────────────────────────────────────────── */}
-      {matchedSkills.length > 0 && (
-        <div style={{ marginTop: 14 }}>
-          <div
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              color: T.textMuted,
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              marginBottom: 6,
-            }}
-          >
-            Matched Skills
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {matchedSkills.map((skill) => {
-              const key  = typeof skill === 'string' ? skill : (skill._id || skill.name);
-              const name = typeof skill === 'string' ? skill : skill.name;
-              return (
-                <Chip
-                  key={key}
-                  chipStyle={{
-                    background: T.emeraldBg,
-                    color: T.emeraldText,
-                    border: 'rgba(5,150,105,0.25) 1px solid',
-                  }}
-                >
-                  <CheckCircle size={11} />
-                  {name}
-                </Chip>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ── Missing Skills ───────────────────────────────────────────────── */}
-      {missingSkills.length > 0 && (
-        <div style={{ marginTop: 12 }}>
-          <div
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              color: T.textMuted,
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              marginBottom: 6,
-            }}
-          >
-            Skills to Add
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {missingSkills.map((skill) => {
-              const key  = typeof skill === 'string' ? skill : (skill._id || skill.name);
-              const name = typeof skill === 'string' ? skill : skill.name;
-              return (
-                <Chip
-                  key={key}
-                  chipStyle={{
-                    background: T.amberBg,
-                    color: T.amberText,
-                    border: 'rgba(217,119,6,0.25) 1px solid',
-                  }}
-                >
-                  <PlusCircle size={11} />
-                  {name}
-                </Chip>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ── Match Progress Bar ───────────────────────────────────────────── */}
-      <MatchProgressBar score={matchScore} color={match.text} />
-
-      {/* ── Footer: skill count + Apply button ──────────────────────────── */}
+      {/* Match Score Indicator */}
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: 14,
-          paddingTop: 14,
-          borderTop: `1px solid ${T.border}`,
-          gap: 12,
+          padding: '12px 14px',
+          backgroundColor: matchBg,
+          border: `1px solid ${matchColor}35`,
+          borderRadius: 10,
         }}
       >
-        <span style={{ fontSize: 12, color: T.textMuted }}>
-          {totalRequired > 0
-            ? `${matchedSkills.length} of ${totalRequired} required skills matched`
-            : 'All required skills matched'}
-        </span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: matchText }}>
+            Profile Match Score
+          </span>
+          <span style={{ fontSize: 14, fontWeight: 800, color: matchText }}>
+            {matchScore}%
+          </span>
+        </div>
+        <div style={{ width: '100%', height: 5, backgroundColor: T.border, borderRadius: 9999, overflow: 'hidden', marginTop: 8 }}>
+          <div style={{ width: `${matchScore}%`, height: '100%', backgroundColor: matchColor, borderRadius: 9999 }} />
+        </div>
+      </div>
 
-        {applied ? (
-          <button
-            disabled
-            style={{
-              background: T.grey,
-              color: T.greyText,
-              padding: '8px 18px',
-              borderRadius: 8,
-              border: 'none',
-              cursor: 'not-allowed',
-              fontWeight: 600,
-              fontSize: 13,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              flexShrink: 0,
-            }}
-          >
-            <CheckCircle size={14} />
-            Applied ✓
-          </button>
-        ) : applying ? (
-          <button
-            disabled
-            style={{
-              background: T.cobalt,
-              color: '#177245',
-              padding: '8px 18px',
-              borderRadius: 8,
-              border: 'none',
-              cursor: 'wait',
-              fontWeight: 600,
-              fontSize: 13,
-              flexShrink: 0,
-              opacity: 0.85,
-            }}
-          >
-            Applying…
-          </button>
-        ) : (
-          <button
-            onClick={() => onApply && onApply(_id)}
-            style={{
-              background: T.blue,
-              color: '#fff',
-              padding: '8px 18px',
-              borderRadius: 8,
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: 13,
-              flexShrink: 0,
-              transition: 'background 0.15s',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = T.blueHover; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = T.blue; }}
-          >
-            Apply Now
-          </button>
+      {/* Skills breakdown */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {matchedSkills.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+            <span style={{ fontSize: 11, color: T.textMuted, fontWeight: 600 }}>Matched:</span>
+            {matchedSkills.map((s) => (
+              <span
+                key={s}
+                style={{
+                  fontSize: 11,
+                  fontWeight: 650,
+                  color: T.emeraldText,
+                  backgroundColor: T.emeraldBg,
+                  border: `1px solid ${T.emeraldBorder}`,
+                  padding: '2px 8px',
+                  borderRadius: 6,
+                }}
+              >
+                ✓ {s}
+              </span>
+            ))}
+          </div>
         )}
+
+        {missingSkills.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+            <span style={{ fontSize: 11, color: T.textMuted, fontWeight: 600 }}>Missing:</span>
+            {missingSkills.map((s) => (
+              <span
+                key={s}
+                style={{
+                  fontSize: 11,
+                  fontWeight: 650,
+                  color: T.yellowText,
+                  backgroundColor: T.yellowBg,
+                  border: `1px solid ${T.yellowBorder}`,
+                  padding: '2px 8px',
+                  borderRadius: 6,
+                }}
+              >
+                + {s}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Footer & Apply Action */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: 12, borderTop: `1px solid ${T.border}` }}>
+        <div style={{ fontSize: 12, color: T.textMuted }}>
+          {salaryString ? (
+            <span>Package: <strong style={{ color: T.textPrimary }}>{salaryString}</strong></span>
+          ) : (
+            <span>Deadline: {formatDate(applicationDeadline)}</span>
+          )}
+        </div>
+
+        <button
+          onClick={() => onApply && onApply(_id)}
+          disabled={isApplied || isApplying}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '8px 18px',
+            borderRadius: 8,
+            border: 'none',
+            backgroundColor: isApplied ? T.emeraldBg : T.buttonPrimaryBg,
+            color: isApplied ? T.emeraldText : T.buttonPrimaryText,
+            fontWeight: 750,
+            fontSize: 13,
+            cursor: isApplied ? 'default' : 'pointer',
+          }}
+        >
+          {isApplied ? (
+            <><CheckCircle size={14} /> Applied</>
+          ) : isApplying ? (
+            'Submitting…'
+          ) : (
+            'Apply Now'
+          )}
+        </button>
       </div>
     </div>
   );
 }
-
-// ─── MOCK_JOB — exported for use in JobList dev fallback ─────────────────────
-export const MOCK_JOB = {
-  _id: 'job_mock_001',
-  title: 'Frontend Engineer',
-  company: 'Razorpay',
-  location: 'Bengaluru, India',
-  jobType: 'FULL_TIME',
-  salaryRange: { min: 1000000, max: 1400000, currency: 'INR' },
-  matchScore: 82,
-  matchedSkills: ['React', 'JavaScript', 'TypeScript', 'CSS'],
-  missingSkills: ['GraphQL'],
-  applicationDeadline: new Date(Date.now() + 5 * 86400000).toISOString(),
-  applied: false,
-};

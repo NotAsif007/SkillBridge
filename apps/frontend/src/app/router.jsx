@@ -1,40 +1,64 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 
-// ─── Layouts & Guards ────────────────────────────────────────────────────────
+// ─── Layouts & Guards (Eagerly Loaded) ───────────────────────────────────────
 import StudentLayout from '../layouts/StudentLayout';
-import AdminLayout   from '../layouts/AdminLayout';
+import AdminLayout from '../layouts/AdminLayout';
 import { RequireAuth, RequireRole } from '../components/common/RouteGuards';
-
-// ─── Pages ───────────────────────────────────────────────────────────────────
 import LoginPage from '../pages/LoginPage';
 
-// ─── Student Feature Pages (Person 2) ─────────────────────────────────────────
-import StudentDashboard   from '../features/student/dashboard/StudentDashboard';
-import StudentProfile     from '../features/student/profile/StudentProfile';
-import CareerList         from '../features/student/careers/CareerList';
-import CareerDetail       from '../features/student/careers/CareerDetail';
-import CareerAnalysis     from '../features/student/careers/CareerAnalysis';
-import AssessmentList     from '../features/student/assessments/AssessmentList';
-import AssessmentTake     from '../features/student/assessments/AssessmentTake';
-import AssessmentResult   from '../features/student/assessments/AssessmentResult';
-import RoadmapView        from '../features/student/roadmap/RoadmapView';
-import ProjectList        from '../features/student/projects/ProjectList';
-import ResumeUpload       from '../features/student/resume/ResumeUpload';
-import ResumeAnalysisView from '../features/student/resume/ResumeAnalysisView';
-import InterviewSetup     from '../features/student/interview/InterviewSetup';
-import InterviewSession   from '../features/student/interview/InterviewSession';
-import InterviewReport    from '../features/student/interview/InterviewReport';
-import JobList            from '../features/student/jobs/JobList';
+// ─── Lightweight Loading Fallback ───────────────────────────────────────────
+function PageFallback() {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '40vh',
+        width: '100%',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#6E6E73', fontSize: 13, fontWeight: 500 }}>
+        <Loader2 size={18} className="animate-spin" style={{ color: '#059669' }} />
+        <span>Loading workspace…</span>
+      </div>
+    </div>
+  );
+}
 
-// ─── Admin Feature Pages (Person 3) ──────────────────────────────────────────
-import AdminDashboard        from '../features/admin/dashboard/AdminDashboard';
-import StudentList           from '../features/admin/students/StudentList';
-import DepartmentList        from '../features/admin/departments/DepartmentList';
-import PlacementAnalytics    from '../features/admin/analytics/PlacementAnalytics';
-import AssessmentAnalytics   from '../features/admin/assessments/AssessmentAnalytics';
-import InterviewAnalytics    from '../features/admin/interviews/InterviewAnalytics';
-import JobManagement         from '../features/admin/jobs/JobManagement';
+const withSuspense = (Component) => (
+  <Suspense fallback={<PageFallback />}>
+    <Component />
+  </Suspense>
+);
+
+// ─── Lazy Loaded Feature Pages (Instant Code-Splitting) ─────────────────────
+const StudentDashboard = lazy(() => import('../features/student/dashboard/StudentDashboard'));
+const StudentProfile = lazy(() => import('../features/student/profile/StudentProfile'));
+const CareerList = lazy(() => import('../features/student/careers/CareerList'));
+const CareerDetail = lazy(() => import('../features/student/careers/CareerDetail'));
+const CareerAnalysis = lazy(() => import('../features/student/careers/CareerAnalysis'));
+const AssessmentList = lazy(() => import('../features/student/assessments/AssessmentList'));
+const AssessmentTake = lazy(() => import('../features/student/assessments/AssessmentTake'));
+const AssessmentResult = lazy(() => import('../features/student/assessments/AssessmentResult'));
+const RoadmapView = lazy(() => import('../features/student/roadmap/RoadmapView'));
+const ProjectList = lazy(() => import('../features/student/projects/ProjectList'));
+const ResumeUpload = lazy(() => import('../features/student/resume/ResumeUpload'));
+const ResumeAnalysisView = lazy(() => import('../features/student/resume/ResumeAnalysisView'));
+const InterviewSetup = lazy(() => import('../features/student/interview/InterviewSetup'));
+const InterviewSession = lazy(() => import('../features/student/interview/InterviewSession'));
+const InterviewReport = lazy(() => import('../features/student/interview/InterviewReport'));
+const JobList = lazy(() => import('../features/student/jobs/JobList'));
+
+const AdminDashboard = lazy(() => import('../features/admin/dashboard/AdminDashboard'));
+const StudentList = lazy(() => import('../features/admin/students/StudentList'));
+const DepartmentList = lazy(() => import('../features/admin/departments/DepartmentList'));
+const PlacementAnalytics = lazy(() => import('../features/admin/analytics/PlacementAnalytics'));
+const AssessmentAnalytics = lazy(() => import('../features/admin/assessments/AssessmentAnalytics'));
+const InterviewAnalytics = lazy(() => import('../features/admin/interviews/InterviewAnalytics'));
+const JobManagement = lazy(() => import('../features/admin/jobs/JobManagement'));
 
 export const router = createBrowserRouter([
   {
@@ -46,7 +70,7 @@ export const router = createBrowserRouter([
     element: <LoginPage />,
   },
 
-  // ─── Student Portal (Person 2) — Protected by RequireAuth & RequireRole ──
+  // ─── Student Portal — Protected by RequireAuth & RequireRole ──────────────
   {
     element: (
       <RequireAuth>
@@ -56,26 +80,26 @@ export const router = createBrowserRouter([
       </RequireAuth>
     ),
     children: [
-      { path: '/dashboard',        element: <StudentDashboard /> },
-      { path: '/profile',          element: <StudentProfile /> },
-      { path: '/careers',          element: <CareerList /> },
-      { path: '/careers/:id',      element: <CareerDetail /> },
-      { path: '/career-analysis',  element: <CareerAnalysis /> },
-      { path: '/assessments',      element: <AssessmentList /> },
-      { path: '/assessments/:id',  element: <AssessmentTake /> },
-      { path: '/assessments/result', element: <AssessmentResult /> },
-      { path: '/roadmap',          element: <RoadmapView /> },
-      { path: '/projects',         element: <ProjectList /> },
-      { path: '/resume',           element: <ResumeUpload /> },
-      { path: '/resume/analysis',  element: <ResumeAnalysisView /> },
-      { path: '/interview',        element: <InterviewSetup /> },
-      { path: '/interview/session', element: <InterviewSession /> },
-      { path: '/interview/report', element: <InterviewReport /> },
-      { path: '/jobs',             element: <JobList /> },
+      { path: '/dashboard', element: withSuspense(StudentDashboard) },
+      { path: '/profile', element: withSuspense(StudentProfile) },
+      { path: '/careers', element: withSuspense(CareerList) },
+      { path: '/careers/:id', element: withSuspense(CareerDetail) },
+      { path: '/career-analysis', element: withSuspense(CareerAnalysis) },
+      { path: '/assessments', element: withSuspense(AssessmentList) },
+      { path: '/assessments/:id', element: withSuspense(AssessmentTake) },
+      { path: '/assessments/result', element: withSuspense(AssessmentResult) },
+      { path: '/roadmap', element: withSuspense(RoadmapView) },
+      { path: '/projects', element: withSuspense(ProjectList) },
+      { path: '/resume', element: withSuspense(ResumeUpload) },
+      { path: '/resume/analysis', element: withSuspense(ResumeAnalysisView) },
+      { path: '/interview', element: withSuspense(InterviewSetup) },
+      { path: '/interview/session', element: withSuspense(InterviewSession) },
+      { path: '/interview/report', element: withSuspense(InterviewReport) },
+      { path: '/jobs', element: withSuspense(JobList) },
     ],
   },
 
-  // ─── Admin Portal (Person 3) — Protected by RequireAuth & RequireRole ────
+  // ─── Admin Portal — Protected by RequireAuth & RequireRole ────────────────
   {
     element: (
       <RequireAuth>
@@ -85,13 +109,13 @@ export const router = createBrowserRouter([
       </RequireAuth>
     ),
     children: [
-      { path: '/admin',             element: <AdminDashboard /> },
-      { path: '/admin/students',    element: <StudentList /> },
-      { path: '/admin/departments', element: <DepartmentList /> },
-      { path: '/admin/analytics',   element: <PlacementAnalytics /> },
-      { path: '/admin/assessments', element: <AssessmentAnalytics /> },
-      { path: '/admin/interviews',  element: <InterviewAnalytics /> },
-      { path: '/admin/jobs',        element: <JobManagement /> },
+      { path: '/admin', element: withSuspense(AdminDashboard) },
+      { path: '/admin/students', element: withSuspense(StudentList) },
+      { path: '/admin/departments', element: withSuspense(DepartmentList) },
+      { path: '/admin/analytics', element: withSuspense(PlacementAnalytics) },
+      { path: '/admin/assessments', element: withSuspense(AssessmentAnalytics) },
+      { path: '/admin/interviews', element: withSuspense(InterviewAnalytics) },
+      { path: '/admin/jobs', element: withSuspense(JobManagement) },
     ],
   },
 ]);

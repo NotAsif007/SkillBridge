@@ -217,8 +217,8 @@ npm run build
 
 When running locally, you can use the pre-configured 1-click sandbox logins on the **`/login`** page:
 
-- **Student Persona**: `Alex Chen` (`alex.chen@apex.edu`) — CS Senior at Apex Institute of Technology.
-- **Admin Persona**: `Dr. Sarah Jenkins` (`admin@apex.edu`) — Placement Dean at Apex Institute of Technology.
+- **Student Persona**: `Suraj` (`suraj@adtu.edu.in`) — CS Senior at Assam Down Town University.
+- **Admin Persona**: `Asif` (`asif@adtu.edu.in`) — Placement Dean at Assam Down Town University.
 
 ---
 

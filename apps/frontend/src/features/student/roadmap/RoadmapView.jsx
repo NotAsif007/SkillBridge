@@ -1,83 +1,109 @@
 /**
  * RoadmapView.jsx — Personalized Learning Roadmap
+ * Dynamic Apple Light and Multi-Accent Yellow Graphite Dark Mode
  * API: GET /api/v1/roadmaps/me | PUT /api/v1/roadmaps/tasks/:taskId/toggle | POST /api/v1/roadmaps/generate
  */
 import React, { useState, useEffect, useCallback } from 'react';
-import { Map, RefreshCw, Zap, CheckCircle2 } from 'lucide-react';
+import { Map, RefreshCw, Zap, CheckCircle2, Sparkles } from 'lucide-react';
 import { studentApi } from '../../../api/student';
 import api from '../../../api/client';
 import MilestoneTimeline from './MilestoneTimeline';
-
-const T = {
-  appBg:'#F5F5F7', surface:'#FFFFFF', border:'#E5E5EA',
-  textPrimary:'#1D1D1F', textMuted:'#6E6E73', blue:'#1D1D1F',
-  emerald:'#059669', emeraldBg: '#ECFDF5', emeraldText: '#059669',
-  teal:'#0D9488', tealText: '#0D9488',
-  amber:'#D97706', amberBg: '#FFFBEB', amberText: '#D97706',
-};
+import { useTheme } from '../../../context/ThemeContext';
+import { getTokens } from '../../../styles/themeTokens';
 
 const MOCK_ROADMAP = {
-  _id: 'r1', targetCareer: 'Full Stack Developer',
-  overallProgress: 45, totalMilestones: 8, completedMilestones: 3,
+  _id: 'r1',
+  targetCareer: 'Full Stack Developer',
+  overallProgress: 45,
+  totalMilestones: 4,
+  completedMilestones: 1,
   milestones: [
-    { _id: 'm1', weekNumber: 1, title: 'Advanced Async JavaScript & Event Loop', isCompleted: true, tasks: [
-      { taskId: 't101', title: 'Microtasks and Promises deep dive', isCompleted: true },
-      { taskId: 't102', title: 'Web Workers and Concurrency', isCompleted: true },
-    ]},
-    { _id: 'm2', weekNumber: 2, title: 'System Design: Monolith vs Microservices & Caching', isCompleted: false, tasks: [
-      { taskId: 't201', title: 'Redis caching strategies', isCompleted: false },
-      { taskId: 't202', title: 'Database indexing and sharding', isCompleted: false },
-      { taskId: 't203', title: 'Load balancing fundamentals', isCompleted: false },
-    ]},
-    { _id: 'm3', weekNumber: 3, title: 'Docker & Containerization', isCompleted: false, tasks: [
-      { taskId: 't301', title: 'Docker images and containers', isCompleted: false },
-      { taskId: 't302', title: 'Docker Compose for local dev', isCompleted: false },
-    ]},
-    { _id: 'm4', weekNumber: 4, title: 'DSA: Trees, Graphs & Dynamic Programming', isCompleted: false, tasks: [
-      { taskId: 't401', title: 'Binary Trees: traversal and problems', isCompleted: false },
-      { taskId: 't402', title: 'Graph BFS/DFS and shortest path', isCompleted: false },
-    ]},
+    {
+      _id: 'm1',
+      weekNumber: 1,
+      title: 'Advanced Async JavaScript & Event Loop',
+      isCompleted: true,
+      tasks: [
+        { taskId: 't101', title: 'Microtasks and Promises deep dive', isCompleted: true },
+        { taskId: 't102', title: 'Web Workers and Concurrency', isCompleted: true },
+      ],
+    },
+    {
+      _id: 'm2',
+      weekNumber: 2,
+      title: 'System Design: Monolith vs Microservices & Caching',
+      isCompleted: false,
+      tasks: [
+        { taskId: 't201', title: 'Redis caching strategies', isCompleted: false },
+        { taskId: 't202', title: 'Database indexing and sharding', isCompleted: false },
+        { taskId: 't203', title: 'Load balancing fundamentals', isCompleted: false },
+      ],
+    },
+    {
+      _id: 'm3',
+      weekNumber: 3,
+      title: 'Docker & Containerization',
+      isCompleted: false,
+      tasks: [
+        { taskId: 't301', title: 'Docker images and containers', isCompleted: false },
+        { taskId: 't302', title: 'Docker Compose for local dev', isCompleted: false },
+      ],
+    },
+    {
+      _id: 'm4',
+      weekNumber: 4,
+      title: 'DSA: Trees, Graphs & Dynamic Programming',
+      isCompleted: false,
+      tasks: [
+        { taskId: 't401', title: 'Binary Trees: traversal and problems', isCompleted: false },
+        { taskId: 't402', title: 'Graph BFS/DFS and shortest path', isCompleted: false },
+      ],
+    },
   ],
 };
 
 export default function RoadmapView() {
-  const [roadmap, setRoadmap] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { isDark } = useTheme();
+  const T = getTokens(isDark);
+
+  const [roadmap, setRoadmap] = useState(MOCK_ROADMAP);
+  const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
 
   const fetchRoadmap = useCallback(async () => {
     try {
       setLoading(true);
       const res = await studentApi.getRoadmap();
-      setRoadmap(res.data);
+      if (res?.data) setRoadmap(res.data);
     } catch {
-      setRoadmap(MOCK_ROADMAP);
+      // Retain mock fallback
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => { fetchRoadmap(); }, [fetchRoadmap]);
+  useEffect(() => {
+    fetchRoadmap();
+  }, [fetchRoadmap]);
 
   const handleToggleTask = async (taskId, currentIsCompleted) => {
     const newVal = !currentIsCompleted;
-    // Optimistic update
-    setRoadmap(prev => ({
+    setRoadmap((prev) => ({
       ...prev,
-      milestones: prev.milestones.map(m => ({
+      milestones: prev.milestones.map((m) => ({
         ...m,
-        tasks: m.tasks.map(t => t.taskId === taskId ? { ...t, isCompleted: newVal } : t),
+        tasks: m.tasks.map((t) => (t.taskId === taskId ? { ...t, isCompleted: newVal } : t)),
       })),
     }));
+
     try {
       await studentApi.toggleTask(taskId, newVal);
     } catch {
-      // revert on failure
-      setRoadmap(prev => ({
+      setRoadmap((prev) => ({
         ...prev,
-        milestones: prev.milestones.map(m => ({
+        milestones: prev.milestones.map((m) => ({
           ...m,
-          tasks: m.tasks.map(t => t.taskId === taskId ? { ...t, isCompleted: currentIsCompleted } : t),
+          tasks: m.tasks.map((t) => (t.taskId === taskId ? { ...t, isCompleted: currentIsCompleted } : t)),
         })),
       }));
     }
@@ -95,68 +121,106 @@ export default function RoadmapView() {
     }
   };
 
-  if (loading) {
-    return (
-      <div style={{ padding: '32px 40px' }}>
-        {[1,2,3].map(i => <div key={i} style={{ height: 80, background: T.surface, borderRadius: 10, marginBottom: 14, opacity: 0.6 }} />)}
-      </div>
-    );
-  }
-
-  if (!roadmap) {
-    return (
-      <div style={{ padding: '80px 40px', textAlign: 'center' }}>
-        <Map size={48} color={T.textMuted} style={{ marginBottom: 16, opacity: 0.4 }} />
-        <h2 style={{ color: T.textPrimary, fontSize: 20, marginBottom: 8 }}>No Roadmap Yet</h2>
-        <p style={{ color: T.textMuted, fontSize: 14, marginBottom: 24 }}>Set a target career and generate your personalised roadmap.</p>
-        <button onClick={handleGenerate} disabled={generating} style={{ padding: '11px 24px', border: 'none', borderRadius: 8, background: T.blue, color: '#fff', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
-          <Zap size={15} style={{ marginRight: 6 }} />{generating ? 'Generating…' : 'Generate Roadmap'}
-        </button>
-      </div>
-    );
-  }
-
-  // Recalculate progress from state
-  const allTasks = roadmap.milestones.flatMap(m => m.tasks || []);
-  const doneTasks = allTasks.filter(t => t.isCompleted).length;
-  const liveProgress = allTasks.length > 0 ? Math.round((doneTasks / allTasks.length) * 100) : roadmap.overallProgress;
+  const progress = roadmap.overallProgress || 45;
 
   return (
-    <div style={{ padding: '32px 40px', background: T.appBg, minHeight: '100vh' }}>
+    <div style={{ width: '100%', maxWidth: 1040, margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <h1 style={{ fontSize: 28, fontWeight: 700, color: T.textPrimary, letterSpacing: '-0.02em', margin: 0 }}>Learning Roadmap</h1>
-          <p style={{ color: T.textMuted, fontSize: 14, marginTop: 6 }}>Target: <strong style={{ color: T.blue }}>{roadmap.targetCareer}</strong></p>
+          <h1 style={{ fontSize: 28, fontWeight: 800, color: T.textPrimary, letterSpacing: '-0.03em', margin: 0 }}>
+            Personalized Roadmap
+          </h1>
+          <p style={{ color: T.textMuted, fontSize: 14, margin: '4px 0 0' }}>
+            Structured step-by-step milestones tailored to bridge your skill gaps for <strong style={{ color: T.yellowText }}>{roadmap.targetCareer || 'Full Stack Developer'}</strong>
+          </p>
         </div>
-        <button onClick={handleGenerate} disabled={generating} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', border: `1px solid ${T.border}`, borderRadius: 8, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 13 }}>
-          <Zap size={14} />{generating ? 'Generating…' : 'Regenerate'}
-        </button>
+
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button
+            onClick={fetchRoadmap}
+            disabled={loading}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '9px 16px',
+              borderRadius: 8,
+              border: `1px solid ${T.border}`,
+              backgroundColor: T.surface,
+              color: T.textPrimary,
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            <RefreshCw size={13} className={loading ? 'animate-spin' : ''} /> Refresh
+          </button>
+
+          <button
+            onClick={handleGenerate}
+            disabled={generating}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '9px 20px',
+              borderRadius: 8,
+              border: 'none',
+              backgroundColor: T.buttonPrimaryBg,
+              color: T.buttonPrimaryText,
+              fontSize: 13,
+              fontWeight: 750,
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            }}
+          >
+            <Zap size={14} /> {generating ? 'Regenerating…' : 'Regenerate Plan'}
+          </button>
+        </div>
       </div>
 
-      {/* Progress overview */}
-      <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10, padding: 24, marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <span style={{ color: T.textPrimary, fontSize: 15, fontWeight: 600 }}>Overall Progress</span>
-          <span style={{ fontSize: 24, fontWeight: 800, color: T.emeraldText, letterSpacing: '-0.03em' }}>{liveProgress}%</span>
-        </div>
-        <div style={{ height: 10, background: T.border, borderRadius: 9999, overflow: 'hidden', marginBottom: 12 }}>
-          <div style={{ width: `${liveProgress}%`, height: '100%', background: T.emerald, borderRadius: 9999, transition: 'width 0.4s ease' }} />
-        </div>
-        <div style={{ display: 'flex', gap: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <CheckCircle2 size={14} color={T.emerald} />
-            <span style={{ color: T.textMuted, fontSize: 13 }}>{roadmap.completedMilestones} / {roadmap.totalMilestones} milestones</span>
+      {/* Progress Overview Card */}
+      <div
+        style={{
+          backgroundColor: T.surface,
+          border: `1px solid ${T.border}`,
+          borderRadius: 14,
+          padding: '24px 28px',
+          marginBottom: 32,
+          boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div>
+            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: T.indigoText, letterSpacing: '0.04em' }}>
+              Overall Progress
+            </span>
+            <div style={{ fontSize: 22, fontWeight: 800, color: T.textPrimary, marginTop: 2 }}>
+              {progress}% Completed
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <CheckCircle2 size={14} color={T.blue} />
-            <span style={{ color: T.textMuted, fontSize: 13 }}>{doneTasks} / {allTasks.length} tasks</span>
+
+          <div style={{ textAlign: 'right', fontSize: 13, color: T.textMuted }}>
+            <span>{roadmap.completedMilestones || 1} of {roadmap.totalMilestones || 4} milestones mastered</span>
           </div>
+        </div>
+
+        <div style={{ height: 8, backgroundColor: T.surfaceSubtle, borderRadius: 9999, overflow: 'hidden' }}>
+          <div
+            style={{
+              width: `${progress}%`,
+              height: '100%',
+              backgroundColor: T.yellow,
+              borderRadius: 9999,
+              transition: 'width 0.6s ease',
+            }}
+          />
         </div>
       </div>
 
-      {/* Timeline */}
-      <MilestoneTimeline milestones={roadmap.milestones} onToggleTask={handleToggleTask} />
+      {/* Milestones Timeline */}
+      <MilestoneTimeline milestones={roadmap.milestones || []} onToggleTask={handleToggleTask} />
     </div>
   );
 }

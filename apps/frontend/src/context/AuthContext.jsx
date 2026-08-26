@@ -112,6 +112,7 @@ export function AuthProvider({ children }) {
     loginWithGoogle,
     devLogin,
     logout,
+    updateUser: (updatedUser) => setUser(updatedUser),
     refreshUser: () => fetchCurrentUser(token),
   };
 
