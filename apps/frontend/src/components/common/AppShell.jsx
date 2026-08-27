@@ -196,7 +196,7 @@ export default function AppShell({ portal }) {
         </div>
       </aside>
 
-      <section className="app-main">
+      <section className={`app-main${isDrawerOpen ? ' drawer-open' : ''}`}>
         <header className="shell-header">
           <div className="header-breadcrumbs">
             <button

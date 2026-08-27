@@ -18,7 +18,40 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Application Shell — quiet, dimensional and intentionally neutral.
+   Custom Scrollbar — thin, unobtrusive, fades on hover
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* Webkit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,.15);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,.28);
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.12);
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,.24);
+}
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,.15) transparent;
+}
+html.dark * {
+  scrollbar-color: rgba(255,255,255,.12) transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Application Shell
    ═══════════════════════════════════════════════════════════════════════════ */
 .app-shell { min-height: 100vh; display: flex; background: #f5f5f7; }
 .app-sidebar { position: fixed; z-index: 30; inset: 0 auto 0 0; display: flex; width: 248px; flex-direction: column; background: rgba(255,255,255,.88); border-right: 1px solid #e5e5ea; backdrop-filter: blur(20px); }
@@ -28,30 +61,110 @@
 .brand-lockup strong { font-size: 15px; letter-spacing: -.02em; }
 .brand-lockup small { margin-top: 2px; color: #86868b; font-size: 11px; }
 .shell-nav { flex: 1; overflow-y: auto; padding: 16px 10px; position: relative; }
-.shell-nav a { display: flex; align-items: center; gap: 11px; margin: 2px 0; padding: 10px 12px; border-radius: 10px; color: #6e6e73; font-size: 13px; font-weight: 550; text-decoration: none; position: relative; z-index: 1; transition: color .2s ease, transform .15s cubic-bezier(0.34, 1.4, 0.64, 1); }
+.shell-nav a { display: flex; align-items: center; gap: 11px; margin: 2px 0; padding: 10px 12px; border-radius: 10px; color: #6e6e73; font-size: 13px; font-weight: 550; text-decoration: none; position: relative; z-index: 1; transition: color .2s ease, transform .15s cubic-bezier(0.34, 1.4, 0.64, 1), background-color .15s ease; }
 .shell-nav a:hover { background: rgba(0,0,0,.04); color: #1d1d1f; transform: translateX(1.5px); }
 .shell-nav a.active { background: transparent; box-shadow: none; color: #fff; transform: translateX(0); }
 .shell-nav a:active { transform: scale(0.97) translateX(0); transition-duration: .08s; }
-.sidebar-user { display: flex; align-items: center; gap: 10px; margin: 10px; padding: 12px 10px; border-top: 1px solid #e5e5ea; }
+.sidebar-user { display: flex; align-items: center; gap: 10px; margin: 10px; padding: 12px 10px; border-top: 1px solid #e5e5ea; border-radius: 10px; transition: background .16s ease, border-color .16s ease; }
+.sidebar-user:hover { background: rgba(0, 0, 0, 0.04); }
 .sidebar-user > div:nth-child(2) { min-width: 0; flex: 1; }
 .sidebar-user strong, .sidebar-user span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sidebar-user strong { font-size: 12px; color: #1d1d1f; }
 .sidebar-user span { margin-top: 2px; font-size: 11px; color: #86868b; }
 .avatar { width: 30px; height: 30px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; background: #e8f3ee; color: #177245; font-size: 12px; font-weight: 750; overflow: hidden; }
-.sidebar-user button, .mobile-close, .menu-trigger { border: 0; background: transparent; color: #6e6e73; cursor: pointer; }
+.sidebar-user button, .mobile-close { border: 0; background: transparent; color: #6e6e73; cursor: pointer; }
 .sidebar-user button { padding: 5px; border-radius: 7px; transition: background .15s ease, color .15s ease, transform .1s ease; }
 .sidebar-user button:hover { background: #fff1f0; color: #c0392b; }
 .sidebar-user button:active { transform: scale(0.9); }
+
+/* ── Main content area ── */
 .app-main { display: flex; min-width: 0; flex: 1; flex-direction: column; margin-left: 248px; }
-.shell-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; height: 62px; padding: 0 32px; background: rgba(245,245,247,.76); border-bottom: 1px solid rgba(229,229,234,.8); backdrop-filter: blur(18px); }
-.header-context { color: #6e6e73; font-size: 12px; font-weight: 600; }
+
+/* ── Sticky Header ── */
+.shell-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 28px;
+  background: rgba(245,245,247,.82);
+  border-bottom: 1px solid rgba(229,229,234,.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.header-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+}
+
+.header-context {
+  display: flex;
+  align-items: center;
+  color: #6e6e73;
+  font-size: 12px;
+  font-weight: 600;
+}
 .header-dot { display: inline-block; width: 7px; height: 7px; margin-right: 7px; border-radius: 50%; background: #34a66f; }
-.header-sep { margin: 0 6px; color: #d2d2d7; }
-.header-page { color: #1d1d1f; font-weight: 700; }
-.header-profile { display: flex; align-items: center; gap: 9px; margin-left: auto; color: #6e6e73; font-size: 12px; font-weight: 600; }
-.app-content { width: 100%; max-width: 1200px; margin: 0 auto; padding: 28px 24px 48px; min-height: calc(100vh - 62px); display: flex; flex-direction: column; }
-.menu-trigger, .mobile-close { display: none; }
+.header-separator { margin: 0 8px; color: #d2d2d7; font-size: 12px; font-weight: 500; }
+.header-page { color: #1d1d1f; font-size: 13px; font-weight: 700; }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.header-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #e5e5ea;
+  background: #ffffff;
+  cursor: pointer;
+  transition: background-color .16s ease, border-color .16s ease, transform .1s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.header-icon-btn:hover {
+  background: #f5f5f7;
+  border-color: #d2d2d7;
+}
+.header-icon-btn:active {
+  transform: scale(0.92);
+}
+
+.header-profile {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #6e6e73;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Hide mobile-only elements on desktop */
+.mobile-menu-btn { display: none; }
+.mobile-close { display: none; }
 .shell-backdrop { display: none; }
+
+.app-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 24px 48px;
+  min-height: calc(100vh - 56px);
+  display: flex;
+  flex-direction: column;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Login Page
@@ -109,14 +222,7 @@
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Liquid Pill — physical nav indicator that slides between active items.
-   Absolutely positioned in .shell-nav (z-index 0, below link text).
-
-   Two spring curves used:
-     Open/idle   → cubic-bezier(0.34, 1.35, 0.64, 1)  — slight overshoot,
-                   gives the "settle into place" feeling.
-     No animation → class .is-animated must be present for the transition
-                   to be active; on first load the pill just appears.
+   Liquid Pill — physical nav indicator
    ═══════════════════════════════════════════════════════════════════════════ */
 .nav-pill {
   position: absolute;
@@ -128,13 +234,11 @@
   pointer-events: none;
   will-change: transform, height;
   background: #1d1d1f;
-  /* Layered shadow: spread shadow for depth + tight glow for glass edge */
   box-shadow:
     0 4px 16px rgba(0,0,0,.18),
     0 1px 4px  rgba(0,0,0,.12),
     inset 0 1px 0 rgba(255,255,255,.06);
 }
-/* Spring transition — only active once the pill has been placed once */
 .nav-pill.is-animated {
   transition:
     transform 0.42s cubic-bezier(0.34, 1.35, 0.64, 1),
@@ -142,27 +246,18 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Page content transition — re-triggers every route change via key={location.key}.
-   Mimics iPhone scale-up reveal: content scales from 0.985→1 while fading in.
-   Duration: 340ms with an Apple-tuned spring curve (subtle overshoot).
+   Page content transition — GPU-accelerated scale-up reveal
    ═══════════════════════════════════════════════════════════════════════════ */
-.app-content { animation: page-enter 0.34s cubic-bezier(0.34, 1.2, 0.64, 1) both; }
+.app-content {
+  animation: page-enter 0.3s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
 @keyframes page-enter {
-  from { opacity: 0; transform: scale(0.985) translateY(10px); }
-  to   { opacity: 1; transform: scale(1)     translateY(0);    }
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Menu / close trigger micro-interactions
-   ═══════════════════════════════════════════════════════════════════════════ */
-.menu-trigger { transition: transform .12s cubic-bezier(0.34, 1.4, 0.64, 1); }
-.menu-trigger:active { transform: scale(0.88); }
-.mobile-close { transition: transform .12s cubic-bezier(0.34, 1.4, 0.64, 1); }
-.mobile-close:active { transform: scale(0.88) rotate(8deg); }
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   Mobile nav item stagger — slides in from left as drawer opens.
-   Each item's animationDelay is set inline by AppShell (index × 28ms).
+   Mobile nav item stagger
    ═══════════════════════════════════════════════════════════════════════════ */
 @keyframes nav-item-enter {
   from { opacity: 0; transform: translateX(-10px); }
@@ -173,31 +268,33 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Responsive — iPhone-like liquid drawer + depth effect on main content.
+   Modal
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes modal-fade-in {
+  from { opacity: 0; transform: scale(0.97) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Menu / close trigger micro-interactions
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mobile-close { transition: transform .12s cubic-bezier(0.34, 1.4, 0.64, 1); }
+.mobile-close:active { transform: scale(0.88) rotate(8deg); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Responsive — liquid drawer + depth effect
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 1023px) {
-  /*
-   * Sidebar drawer motion:
-   *   Closed  → translateX(-105%)  (fully off-screen, no shadow rendered)
-   *   Opening → spring easing in .is-open  (cubic-bezier overshoot ≈ spring)
-   *   Closing → ease-in in .is-closing     (natural deceleration into edge)
-   *
-   * Two different transition timings/easings for open vs close give the
-   * "emerges with spring / retreats smoothly" feel of iOS panels.
-   */
   .app-sidebar {
     transform: translateX(-105%);
-    /* Closing easing — default state, used when is-open is removed */
     transition: transform 0.28s cubic-bezier(0.36, 0, 0.66, 0);
     box-shadow: none;
-    /* Glass surface for the open drawer */
     background: rgba(255,255,255,.92);
     backdrop-filter: blur(28px) saturate(1.5);
     -webkit-backdrop-filter: blur(28px) saturate(1.5);
   }
   .app-sidebar.is-open {
     transform: translateX(0);
-    /* Spring easing — fires when is-open class is added */
     transition: transform 0.38s cubic-bezier(0.34, 1.25, 0.64, 1);
     box-shadow:
       24px 0 60px rgba(0,0,0,.22),
@@ -212,17 +309,8 @@
 
   .app-main { margin-left: 0; }
 
-  /*
-   * Depth effect on main content when drawer opens.
-   * Uses scale + brightness to make the content feel like it's
-   * receding behind the raised drawer panel — the "layered glass" illusion.
-   *
-   * Scale easing: spring for open (content springs back slightly) vs
-   * ease-out for close (content glides back forward).
-   */
   .app-main {
     transform-origin: center center;
-    /* Return easing — used when drawer-open is removed */
     transition:
       transform 0.3s cubic-bezier(0.36, 0, 0.66, 0),
       filter    0.3s ease;
@@ -230,21 +318,14 @@
   .app-main.drawer-open {
     transform: scale(0.93) translateX(10px);
     filter: brightness(0.76) blur(0.4px);
-    /* Spring easing while drawer is opening */
     transition:
       transform 0.38s cubic-bezier(0.34, 1.15, 0.64, 1),
       filter    0.32s ease;
   }
 
-  .menu-trigger, .mobile-close { display: inline-grid; place-items: center; }
-  .mobile-close { margin-left: auto; padding: 6px; }
-  .menu-trigger { margin-right: 14px; padding: 6px; border-radius: 8px; }
+  .mobile-menu-btn { display: inline-grid; place-items: center; padding: 6px; border-radius: 8px; margin-right: 10px; }
+  .mobile-close { display: inline-grid; place-items: center; margin-left: auto; padding: 6px; }
 
-  /*
-   * Overlay: rendered in DOM only when drawer is visible (JSX conditional),
-   * starts at opacity:0, transitions to opacity:1 when .is-visible is added.
-   * Richer darkness to make the raised drawer pop visually.
-   */
   .shell-backdrop {
     position: fixed;
     z-index: 25;
@@ -261,7 +342,7 @@
     opacity: 1;
   }
 
-  .shell-header { padding: 0 18px; }
+  .shell-header { padding: 0 16px; height: 52px; }
   .header-profile span { display: none; }
   .app-content { padding: 20px 16px 32px; }
   .toast-container { left: 16px; right: 16px; bottom: 16px; }
@@ -269,7 +350,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Accessibility — users who disable motion get instant transitions.
+   Accessibility — reduce motion
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   .app-content    { animation: none; }
@@ -284,56 +365,27 @@
 }
 
 
-.header-icon-btn {
-  display: inline-grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid #e5e5ea;
-  background: #ffffff;
-  cursor: pointer;
-  transition: all .16s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-}
-.header-icon-btn:hover {
-  background: #f5f5f7;
-  border-color: #d2d2d7;
-}
-.sidebar-user {
-  transition: background .16s ease, border-color .16s ease;
-  border-radius: 10px;
-}
-.sidebar-user:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-@keyframes modal-fade-in {
-  from { opacity: 0; transform: scale(0.97) translateY(8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════
    Yellow Graphite Dark Theme (html.dark)
    ═══════════════════════════════════════════════════════════════════════════ */
 html.dark, body.dark {
-  background-color: #121316 !important;
-  color: #F4F4F6 !important;
+  background-color: #0F1015 !important;
+  color: #F3F4F6 !important;
 }
 
 html.dark .app-shell {
-  background-color: #121316 !important;
-  color: #F4F4F6 !important;
+  background-color: #0F1015 !important;
+  color: #F3F4F6 !important;
 }
 
+/* ── Sidebar ── */
 html.dark .app-sidebar {
-  background-color: #18191E !important;
-  border-right: 1px solid #262830 !important;
+  background-color: #151720 !important;
+  border-right: 1px solid #1E2130 !important;
 }
-/* On mobile the sidebar becomes a glass drawer — dark glass */
 @media (max-width: 1023px) {
   html.dark .app-sidebar {
-    background: rgba(22, 23, 28, 0.94) !important;
+    background: rgba(18, 19, 26, 0.95) !important;
     backdrop-filter: blur(28px) saturate(1.4) !important;
     -webkit-backdrop-filter: blur(28px) saturate(1.4) !important;
     border-right: 1px solid rgba(255,255,255,.05) !important;
@@ -341,136 +393,163 @@ html.dark .app-sidebar {
 }
 
 html.dark .brand-lockup {
-  border-bottom: 1px solid #262830 !important;
+  border-bottom: 1px solid #1E2130 !important;
 }
 
 html.dark .brand-mark {
   background-color: #F59E0B !important;
-  color: #121316 !important;
+  color: #0F1015 !important;
   font-weight: 800;
-  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 2px 12px rgba(245, 158, 11, 0.35);
 }
 
 html.dark .brand-lockup strong {
-  color: #F4F4F6 !important;
+  color: #F3F4F6 !important;
 }
 
 html.dark .brand-lockup small {
-  color: #9CA3AF !important;
+  color: #6B7280 !important;
 }
 
 html.dark .shell-nav a {
-  color: #9CA3AF !important;
+  color: #8B92A5 !important;
 }
 
 html.dark .shell-nav a:hover {
-  background-color: rgba(255,255,255,.06) !important;
-  color: #FBBF24 !important;
+  background-color: rgba(255,255,255,.05) !important;
+  color: #F3F4F6 !important;
 }
 
 html.dark .shell-nav a.active {
-  /* Pill renders the amber background — link itself stays transparent */
   background: transparent !important;
   box-shadow: none !important;
-  color: #121316 !important;
+  color: #0F1015 !important;
   font-weight: 750 !important;
 }
 
-/* Dark mode pill: amber to match the Yellow Graphite design system */
 html.dark .nav-pill {
   background: #F59E0B !important;
   box-shadow:
-    0 4px 20px rgba(245, 158, 11, 0.35),
-    0 1px 4px  rgba(245, 158, 11, 0.2),
+    0 4px 20px rgba(245, 158, 11, 0.3),
+    0 1px 4px  rgba(245, 158, 11, 0.15),
     inset 0 1px 0 rgba(255,255,255,.14) !important;
 }
 
 html.dark .sidebar-user {
-  border-top: 1px solid #262830 !important;
+  border-top: 1px solid #1E2130 !important;
 }
 
 html.dark .sidebar-user:hover {
-  background-color: #22242C !important;
+  background-color: rgba(255,255,255,.04) !important;
 }
 
 html.dark .sidebar-user strong {
-  color: #F4F4F6 !important;
+  color: #F3F4F6 !important;
 }
 
 html.dark .sidebar-user span {
-  color: #9CA3AF !important;
+  color: #6B7280 !important;
 }
 
 html.dark .sidebar-user button {
-  color: #9CA3AF !important;
+  color: #6B7280 !important;
 }
 
 html.dark .sidebar-user button:hover {
-  background-color: rgba(239, 68, 68, 0.15) !important;
+  background-color: rgba(239, 68, 68, 0.12) !important;
   color: #F87171 !important;
 }
 
+/* ── Header ── */
 html.dark .shell-header {
-  background-color: rgba(24, 25, 30, 0.85) !important;
-  border-bottom: 1px solid #262830 !important;
-  backdrop-filter: blur(20px) !important;
+  background-color: rgba(15, 16, 21, 0.88) !important;
+  border-bottom: 1px solid #1E2130 !important;
+  backdrop-filter: blur(24px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
 }
 
 html.dark .header-context {
-  color: #9CA3AF !important;
+  color: #6B7280 !important;
 }
 
 html.dark .header-dot {
   background-color: #F59E0B !important;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
+}
+
+html.dark .header-separator {
+  color: #2B2E3C !important;
 }
 
 html.dark .header-page {
-  color: #F4F4F6 !important;
+  color: #F3F4F6 !important;
 }
 
 html.dark .header-profile {
-  color: #F4F4F6 !important;
+  color: #D1D5DB !important;
 }
 
 html.dark .header-icon-btn {
-  background-color: #1E2028 !important;
-  border: 1px solid #2C303B !important;
-  color: #F4F4F6 !important;
+  background-color: #181B25 !important;
+  border: 1px solid #252838 !important;
+  color: #D1D5DB !important;
 }
 
 html.dark .header-icon-btn:hover {
-  background-color: #262934 !important;
+  background-color: #1E2130 !important;
   border-color: #F59E0B !important;
   color: #F59E0B !important;
 }
 
-/* Automatic Card & Surface Styling in Yellow Graphite Dark Mode */
+/* ── Avatar in dark mode ── */
+html.dark .avatar {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #FBBF24 !important;
+}
+
+/* ── Toast in dark mode ── */
+html.dark .toast-item {
+  background: #181B25 !important;
+  border-color: #252838 !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,.4), 0 2px 6px rgba(0,0,0,.2) !important;
+}
+html.dark .toast-message {
+  color: #F3F4F6 !important;
+}
+html.dark .toast-close {
+  color: #6B7280 !important;
+}
+html.dark .toast-close:hover {
+  background: #1E2130 !important;
+  color: #F3F4F6 !important;
+}
+
+/* ── Automatic Card & Surface Styling ── */
 html.dark .bg-white,
 html.dark .bg-\[\#FFFFFF\],
 html.dark .bg-\[\#F8F8FA\],
 html.dark .bg-gradient-to-b {
-  background: #1A1C23 !important;
-  background-color: #1A1C23 !important;
+  background: #151720 !important;
+  background-color: #151720 !important;
 }
 
 html.dark .border,
 html.dark .border-\[\#E5E5EA\],
 html.dark .border-stone-200 {
-  border-color: #2C303B !important;
+  border-color: #1E2130 !important;
 }
 
 html.dark .text-\[\#1D1D1F\],
 html.dark .text-slate-900,
 html.dark .text-stone-900,
 html.dark .text-gray-900 {
-  color: #F4F4F6 !important;
+  color: #F3F4F6 !important;
 }
 
 html.dark .text-\[\#424245\],
 html.dark .text-slate-700,
 html.dark .text-stone-700 {
-  color: #D4D4D8 !important;
+  color: #D1D5DB !important;
 }
 
 html.dark .text-\[\#6E6E73\],
@@ -483,42 +562,61 @@ html.dark .text-stone-500 {
 html.dark .bg-stone-50,
 html.dark .bg-slate-50,
 html.dark .bg-gray-50 {
-  background-color: #22242D !important;
+  background-color: #1A1D28 !important;
 }
 
 html.dark .bg-emerald-50 {
-  background-color: rgba(16, 185, 129, 0.12) !important;
+  background-color: rgba(16, 185, 129, 0.10) !important;
 }
 
 html.dark .bg-amber-50 {
-  background-color: rgba(245, 158, 11, 0.14) !important;
+  background-color: rgba(245, 158, 11, 0.10) !important;
 }
 
 html.dark .bg-teal-50 {
-  background-color: rgba(45, 212, 191, 0.12) !important;
+  background-color: rgba(45, 212, 191, 0.10) !important;
 }
 
 html.dark .bg-cyan-50 {
-  background-color: rgba(56, 189, 248, 0.12) !important;
+  background-color: rgba(56, 189, 248, 0.10) !important;
 }
 
+html.dark .bg-\[\#F5F5F7\] {
+  background-color: #121420 !important;
+}
+
+html.dark .bg-\[\#1A1C23\] {
+  background-color: #151720 !important;
+}
+
+html.dark .border-\[\#2C303B\] {
+  border-color: #1E2130 !important;
+}
+
+html.dark .bg-\[\#141519\] {
+  background-color: #10121A !important;
+}
+
+/* ── Form elements ── */
 html.dark input,
 html.dark select,
 html.dark textarea {
-  background-color: #141519 !important;
-  border-color: #2C303B !important;
-  color: #F4F4F6 !important;
+  background-color: #10121A !important;
+  border-color: #1E2130 !important;
+  color: #F3F4F6 !important;
 }
 
 html.dark input:focus,
 html.dark select:focus,
 html.dark textarea:focus {
   border-color: #F59E0B !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12) !important;
 }
 
+/* ── Buttons ── */
 html.dark button.bg-emerald-600 {
   background-color: #F59E0B !important;
-  color: #121316 !important;
+  color: #0F1015 !important;
   font-weight: 750 !important;
 }
 
@@ -528,7 +626,7 @@ html.dark button.bg-emerald-600:hover {
 
 html.dark a.bg-emerald-600 {
   background-color: #F59E0B !important;
-  color: #121316 !important;
+  color: #0F1015 !important;
   font-weight: 750 !important;
 }
 
@@ -536,21 +634,127 @@ html.dark a.bg-emerald-600:hover {
   background-color: #FBBF24 !important;
 }
 
-/* Smooth Global Theme Transition */
+/* ── Dark mode progress bars — keep multi-accent, don't flatten to mono-amber ── */
+html.dark .bg-\[\#262830\] {
+  background-color: #181B25 !important;
+}
+
+/* ── Login page dark mode ── */
+html.dark .login-page {
+  background: radial-gradient(circle at 17% 14%, rgba(245, 158, 11, 0.06) 0, transparent 27rem), #0F1015 !important;
+  color: #F3F4F6 !important;
+}
+
+html.dark .login-card {
+  background: rgba(21, 23, 32, 0.95) !important;
+  border-color: #1E2130 !important;
+  box-shadow: 0 18px 50px rgba(0,0,0,.4) !important;
+}
+
+html.dark .login-card h2 {
+  color: #F3F4F6 !important;
+}
+
+html.dark .role-switch {
+  background: #10121A !important;
+}
+
+html.dark .role-switch button {
+  color: #6B7280 !important;
+}
+
+html.dark .role-switch button.active {
+  background: #1E2130 !important;
+  color: #F3F4F6 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3) !important;
+}
+
+html.dark .divider {
+  border-color: #1E2130 !important;
+}
+
+html.dark .divider span {
+  background: #151720 !important;
+  color: #6B7280 !important;
+}
+
+html.dark .login-form label {
+  color: #D1D5DB !important;
+}
+
+html.dark .login-form label span {
+  color: #6B7280 !important;
+}
+
+html.dark .login-form button {
+  background: #F59E0B !important;
+  color: #0F1015 !important;
+}
+
+html.dark .login-form button:hover {
+  background: #FBBF24 !important;
+}
+
+html.dark .demo-entry {
+  color: #FBBF24 !important;
+}
+
+html.dark .login-error {
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #F87171 !important;
+}
+
+html.dark .login-brand span {
+  background: #F59E0B !important;
+  color: #0F1015 !important;
+}
+
+html.dark .eyebrow, html.dark .card-kicker {
+  color: #FBBF24 !important;
+}
+
+html.dark .login-intro h1 em {
+  color: #FBBF24 !important;
+}
+
+html.dark .value-list {
+  color: #D1D5DB !important;
+}
+
+html.dark .value-list svg {
+  color: #FBBF24 !important;
+}
+
+html.dark .trust-label {
+  color: #6B7280 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Smooth Global Theme Transition — GPU-composited
+   ═══════════════════════════════════════════════════════════════════════════ */
 body,
 .app-shell,
 .app-sidebar,
 .shell-header,
 .app-content,
-.app-main {
-  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.15s ease;
+.app-main,
+.brand-lockup,
+.brand-mark,
+.shell-nav a,
+.sidebar-user,
+.header-icon-btn,
+.nav-pill,
+.avatar,
+.toast-item {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease, box-shadow 0.3s ease;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   Login responsive
+   ═══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 760px) {
   .trust-label { display: none; }
   .login-main { grid-template-columns: 1fr; gap: 42px; padding-top: 30px; }
   .login-intro h1 { font-size: 48px; }
   .login-card { padding: 24px; }
 }
-
-

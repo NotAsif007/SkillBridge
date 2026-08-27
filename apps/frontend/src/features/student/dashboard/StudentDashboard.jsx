@@ -21,12 +21,12 @@ function readinessBadge(score, isDark) {
 }
 
 const BREAKDOWN_METRICS = [
-  { key: 'technicalSkills', label: 'Technical Skills', color: 'bg-amber-500', text: 'text-amber-400', icon: Target },
-  { key: 'assessmentPerformance', label: 'Skill Assessments', color: 'bg-teal-400', text: 'text-teal-400', icon: ClipboardCheck },
-  { key: 'projects', label: 'Verified Projects', color: 'bg-emerald-400', text: 'text-emerald-400', icon: FolderOpen },
-  { key: 'resume', label: 'ATS Resume Quality', color: 'bg-amber-400', text: 'text-amber-400', icon: FileText },
-  { key: 'interviewPerformance', label: 'Mock Interviews', color: 'bg-emerald-500', text: 'text-emerald-400', icon: MessageSquare },
-  { key: 'roadmapProgress', label: 'Roadmap Milestone', color: 'bg-yellow-400', text: 'text-yellow-400', icon: Map },
+  { key: 'technicalSkills', label: 'Technical Skills', color: 'bg-amber-500', text: 'text-amber-400', darkColor: '#F59E0B', darkText: '#FBBF24', icon: Target },
+  { key: 'assessmentPerformance', label: 'Skill Assessments', color: 'bg-teal-400', text: 'text-teal-400', darkColor: '#06B6D4', darkText: '#22D3EE', icon: ClipboardCheck },
+  { key: 'projects', label: 'Verified Projects', color: 'bg-emerald-400', text: 'text-emerald-400', darkColor: '#10B981', darkText: '#34D399', icon: FolderOpen },
+  { key: 'resume', label: 'ATS Resume Quality', color: 'bg-amber-400', text: 'text-amber-400', darkColor: '#F59E0B', darkText: '#FBBF24', icon: FileText },
+  { key: 'interviewPerformance', label: 'Mock Interviews', color: 'bg-emerald-500', text: 'text-emerald-400', darkColor: '#10B981', darkText: '#34D399', icon: MessageSquare },
+  { key: 'roadmapProgress', label: 'Roadmap Milestone', color: 'bg-yellow-400', text: 'text-yellow-400', darkColor: '#6366F1', darkText: '#818CF8', icon: Map },
 ];
 
 export default function StudentDashboard() {
@@ -63,7 +63,7 @@ export default function StudentDashboard() {
   return (
     <div className="w-full max-w-6xl mx-auto space-y-8 font-sans">
       {/* ─── Top Header Banner ─── */}
-      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-6 ${isDark ? 'border-[#262830]' : 'border-[#E5E5EA]'}`}>
+      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-6 ${isDark ? 'border-[#1E2130]' : 'border-[#E5E5EA]'}`}>
         <div>
           <div className="flex items-center space-x-3">
             <h1 className={`text-2xl lg:text-3xl font-extrabold tracking-tight ${isDark ? 'text-[#F4F4F6]' : 'text-[#1D1D1F]'}`}>
@@ -88,7 +88,7 @@ export default function StudentDashboard() {
             disabled={loading}
             className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg border text-xs font-semibold transition-all ${
               isDark
-                ? 'bg-[#1E2028] hover:bg-[#262934] border-[#2C303B] text-[#F4F4F6]'
+                ? 'bg-[#181B25] hover:bg-[#1E2130] border-[#1E2130] text-[#F4F4F6]'
                 : 'bg-white hover:bg-[#E5E5EA] border-[#E5E5EA] text-[#424245]'
             }`}
           >
@@ -115,7 +115,7 @@ export default function StudentDashboard() {
         {/* Left: Interactive Readiness Gauge Card */}
         <div className={`lg:col-span-5 border rounded-2xl p-6 relative overflow-hidden shadow-sm ${
           isDark
-            ? 'bg-[#1A1C23] border-[#2C303B]'
+            ? 'bg-[#151720] border-[#1E2130]'
             : 'bg-gradient-to-b from-[#FFFFFF] to-[#F8F8FA] border-[#E5E5EA]'
         }`}>
           <div className="flex items-center justify-between mb-4 relative z-10">
@@ -134,7 +134,7 @@ export default function StudentDashboard() {
                   cx="80"
                   cy="80"
                   r="64"
-                  stroke={isDark ? '#262830' : '#E5E5EA'}
+                  stroke={isDark ? '#1E2130' : '#E5E5EA'}
                   strokeWidth="12"
                   fill="transparent"
                 />
@@ -163,7 +163,7 @@ export default function StudentDashboard() {
           </div>
 
           <div className={`pt-4 border-t flex items-center justify-between text-xs relative z-10 ${
-            isDark ? 'border-[#2C303B] text-[#9CA3AF]' : 'border-[#E5E5EA] text-[#6E6E73]'
+            isDark ? 'border-[#1E2130] text-[#9CA3AF]' : 'border-[#E5E5EA] text-[#6E6E73]'
           }`}>
             <span>Target score: 75%</span>
             <Link to="/career-analysis" className={`hover:underline flex items-center space-x-1 font-semibold ${isDark ? 'text-[#FBBF24]' : 'text-emerald-600'}`}>
@@ -175,7 +175,7 @@ export default function StudentDashboard() {
 
         {/* Right: 6 Diagnostic Pillars Breakdown */}
         <div className={`lg:col-span-7 border rounded-2xl p-6 shadow-sm flex flex-col justify-between ${
-          isDark ? 'bg-[#1A1C23] border-[#2C303B]' : 'bg-[#FFFFFF] border-[#E5E5EA]'
+          isDark ? 'bg-[#151720] border-[#1E2130]' : 'bg-[#FFFFFF] border-[#E5E5EA]'
         }`}>
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -185,21 +185,24 @@ export default function StudentDashboard() {
             </div>
 
             <div className="space-y-4">
-              {BREAKDOWN_METRICS.map(({ key, label, color, text, icon: Icon }) => {
+              {BREAKDOWN_METRICS.map(({ key, label, color, text, darkColor, darkText, icon: Icon }) => {
                 const val = data?.scoreBreakdown?.[key] ?? (key === 'technicalSkills' ? 52 : key === 'projects' || key === 'resume' ? 75 : key === 'interviewPerformance' ? 70 : 0);
                 return (
                   <div key={key} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs font-medium">
                       <div className="flex items-center space-x-2">
-                        <Icon className={`w-4 h-4 ${isDark ? 'text-[#FBBF24]' : text}`} />
-                        <span className={isDark ? 'text-[#D4D4D8]' : 'text-[#424245]'}>{label}</span>
+                        <Icon className="w-4 h-4" style={isDark ? { color: darkColor } : undefined} />
+                        <span className={isDark ? 'text-[#D1D5DB]' : 'text-[#424245]'}>{label}</span>
                       </div>
-                      <span className={`font-bold ${isDark ? 'text-[#FBBF24]' : text}`}>{val}%</span>
+                      <span className="font-bold" style={isDark ? { color: darkText } : undefined}>{val}%</span>
                     </div>
-                    <div className={`w-full h-2 rounded-full overflow-hidden ${isDark ? 'bg-[#262830]' : 'bg-[#E5E5EA]'}`}>
+                    <div className={`w-full h-2 rounded-full overflow-hidden ${isDark ? 'bg-[#181B25]' : 'bg-[#E5E5EA]'}`}>
                       <div
-                        className={`h-full rounded-full transition-all duration-700 ${isDark ? 'bg-[#F59E0B]' : color}`}
-                        style={{ width: `${Math.min(100, Math.max(0, val))}%` }}
+                        className={`h-full rounded-full transition-all duration-700 ${isDark ? '' : color}`}
+                        style={{
+                          width: `${Math.min(100, Math.max(0, val))}%`,
+                          ...(isDark ? { backgroundColor: darkColor } : {}),
+                        }}
                       ></div>
                     </div>
                   </div>
@@ -209,7 +212,7 @@ export default function StudentDashboard() {
           </div>
 
           <div className={`mt-6 pt-4 border-t flex items-center justify-between text-xs ${
-            isDark ? 'border-[#2C303B] text-[#9CA3AF]' : 'border-[#E5E5EA] text-[#6E6E73]'
+            isDark ? 'border-[#1E2130] text-[#9CA3AF]' : 'border-[#E5E5EA] text-[#6E6E73]'
           }`}>
             <span>Pass official assessments to upgrade verification status</span>
             <Link to="/assessments" className={`hover:underline font-semibold flex items-center space-x-1 ${isDark ? 'text-[#FBBF24]' : 'text-teal-600'}`}>
@@ -224,7 +227,7 @@ export default function StudentDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Top Skill Gaps (Left 7 cols) */}
         <div className={`lg:col-span-7 border rounded-2xl p-6 shadow-sm space-y-4 ${
-          isDark ? 'bg-[#1A1C23] border-[#2C303B]' : 'bg-[#FFFFFF] border-[#E5E5EA]'
+          isDark ? 'bg-[#151720] border-[#1E2130]' : 'bg-[#FFFFFF] border-[#E5E5EA]'
         }`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -244,7 +247,7 @@ export default function StudentDashboard() {
                 key={i}
                 className={`flex items-center justify-between p-3.5 rounded-xl border transition-all ${
                   isDark
-                    ? 'bg-[#141519] border-[#2C303B] hover:border-[#F59E0B]/50'
+                    ? 'bg-[#10121A] border-[#1E2130] hover:border-[#F59E0B]/40'
                     : 'bg-[#F5F5F7] border-[#E5E5EA] hover:border-[#D2D2D7]'
                 }`}
               >
@@ -266,7 +269,7 @@ export default function StudentDashboard() {
                   to="/roadmap"
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center space-x-1 ${
                     isDark
-                      ? 'bg-[#1E2028] hover:bg-[#262934] text-[#F4F4F6] border border-[#2C303B]'
+                      ? 'bg-[#181B25] hover:bg-[#1E2130] text-[#F4F4F6] border border-[#1E2130]'
                       : 'bg-[#E5E5EA] hover:bg-[#D2D2D7] text-[#1D1D1F]'
                   }`}
                 >
@@ -284,24 +287,24 @@ export default function StudentDashboard() {
             to="/roadmap"
             className={`p-4 rounded-xl border transition-all flex flex-col justify-between group ${
               isDark
-                ? 'bg-[#1A1C23] border-[#2C303B] hover:border-[#F59E0B]/50'
+                ? 'bg-[#151720] border-[#1E2130] hover:border-emerald-500/40'
                 : 'bg-[#F5F5F7] border-[#E5E5EA] hover:border-emerald-300'
             }`}
           >
             <div>
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-3 ${
-                isDark ? 'bg-amber-950/50 text-[#FBBF24] border border-amber-800/50' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                isDark ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-800/40' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
               }`}>
                 <Map className="w-4 h-4" />
               </div>
-              <h3 className={`font-bold text-sm group-hover:text-[#F59E0B] transition-colors ${isDark ? 'text-[#F4F4F6]' : 'text-[#1D1D1F]'}`}>
+              <h3 className={`font-bold text-sm transition-colors ${isDark ? 'text-[#F3F4F6] group-hover:text-emerald-400' : 'text-[#1D1D1F]'}`}>
                 Personalized Roadmap
               </h3>
-              <p className={`text-xs mt-1 ${isDark ? 'text-[#9CA3AF]' : 'text-[#6E6E73]'}`}>
+              <p className={`text-xs mt-1 ${isDark ? 'text-[#6B7280]' : 'text-[#6E6E73]'}`}>
                 45% Completed
               </p>
             </div>
-            <div className={`mt-3 flex items-center text-xs font-semibold ${isDark ? 'text-[#FBBF24]' : 'text-emerald-600'}`}>
+            <div className={`mt-3 flex items-center text-xs font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
               <span>View Tasks</span>
               <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
@@ -311,24 +314,24 @@ export default function StudentDashboard() {
             to="/interview"
             className={`p-4 rounded-xl border transition-all flex flex-col justify-between group ${
               isDark
-                ? 'bg-[#1A1C23] border-[#2C303B] hover:border-[#F59E0B]/50'
+                ? 'bg-[#151720] border-[#1E2130] hover:border-cyan-500/40'
                 : 'bg-[#F5F5F7] border-[#E5E5EA] hover:border-emerald-300'
             }`}
           >
             <div>
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-3 ${
-                isDark ? 'bg-amber-950/50 text-[#FBBF24] border border-amber-800/50' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                isDark ? 'bg-cyan-950/40 text-cyan-400 border border-cyan-800/40' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
               }`}>
                 <MessageSquare className="w-4 h-4" />
               </div>
-              <h3 className={`font-bold text-sm group-hover:text-[#F59E0B] transition-colors ${isDark ? 'text-[#F4F4F6]' : 'text-[#1D1D1F]'}`}>
+              <h3 className={`font-bold text-sm transition-colors ${isDark ? 'text-[#F3F4F6] group-hover:text-cyan-400' : 'text-[#1D1D1F]'}`}>
                 AI Mock Interview
               </h3>
-              <p className={`text-xs mt-1 ${isDark ? 'text-[#9CA3AF]' : 'text-[#6E6E73]'}`}>
+              <p className={`text-xs mt-1 ${isDark ? 'text-[#6B7280]' : 'text-[#6E6E73]'}`}>
                 0 Sessions Taken
               </p>
             </div>
-            <div className={`mt-3 flex items-center text-xs font-semibold ${isDark ? 'text-[#FBBF24]' : 'text-emerald-600'}`}>
+            <div className={`mt-3 flex items-center text-xs font-semibold ${isDark ? 'text-cyan-400' : 'text-emerald-600'}`}>
               <span>Practice AI</span>
               <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
@@ -338,24 +341,24 @@ export default function StudentDashboard() {
             to="/resume"
             className={`p-4 rounded-xl border transition-all flex flex-col justify-between group ${
               isDark
-                ? 'bg-[#1A1C23] border-[#2C303B] hover:border-[#F59E0B]/50'
+                ? 'bg-[#151720] border-[#1E2130] hover:border-amber-500/40'
                 : 'bg-[#F5F5F7] border-[#E5E5EA] hover:border-amber-300'
             }`}
           >
             <div>
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-3 ${
-                isDark ? 'bg-amber-950/50 text-[#FBBF24] border border-amber-800/50' : 'bg-amber-50 text-amber-600 border border-amber-200'
+                isDark ? 'bg-amber-950/40 text-amber-400 border border-amber-800/40' : 'bg-amber-50 text-amber-600 border border-amber-200'
               }`}>
                 <FileText className="w-4 h-4" />
               </div>
-              <h3 className={`font-bold text-sm group-hover:text-[#F59E0B] transition-colors ${isDark ? 'text-[#F4F4F6]' : 'text-[#1D1D1F]'}`}>
+              <h3 className={`font-bold text-sm transition-colors ${isDark ? 'text-[#F3F4F6] group-hover:text-amber-400' : 'text-[#1D1D1F]'}`}>
                 ATS Resume Audit
               </h3>
-              <p className={`text-xs mt-1 ${isDark ? 'text-[#9CA3AF]' : 'text-[#6E6E73]'}`}>
+              <p className={`text-xs mt-1 ${isDark ? 'text-[#6B7280]' : 'text-[#6E6E73]'}`}>
                 Score: 75/100
               </p>
             </div>
-            <div className={`mt-3 flex items-center text-xs font-semibold ${isDark ? 'text-[#FBBF24]' : 'text-amber-600'}`}>
+            <div className={`mt-3 flex items-center text-xs font-semibold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
               <span>Analyze PDF</span>
               <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
@@ -365,24 +368,24 @@ export default function StudentDashboard() {
             to="/projects"
             className={`p-4 rounded-xl border transition-all flex flex-col justify-between group ${
               isDark
-                ? 'bg-[#1A1C23] border-[#2C303B] hover:border-[#F59E0B]/50'
+                ? 'bg-[#151720] border-[#1E2130] hover:border-indigo-500/40'
                 : 'bg-[#F5F5F7] border-[#E5E5EA] hover:border-stone-300'
             }`}
           >
             <div>
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-3 ${
-                isDark ? 'bg-amber-950/50 text-[#FBBF24] border border-amber-800/50' : 'bg-stone-50 text-stone-600 border border-stone-200'
+                isDark ? 'bg-indigo-950/40 text-indigo-400 border border-indigo-800/40' : 'bg-stone-50 text-stone-600 border border-stone-200'
               }`}>
                 <FolderOpen className="w-4 h-4" />
               </div>
-              <h3 className={`font-bold text-sm group-hover:text-[#F59E0B] transition-colors ${isDark ? 'text-[#F4F4F6]' : 'text-[#1D1D1F]'}`}>
+              <h3 className={`font-bold text-sm transition-colors ${isDark ? 'text-[#F3F4F6] group-hover:text-indigo-400' : 'text-[#1D1D1F]'}`}>
                 Portfolio Projects
               </h3>
-              <p className={`text-xs mt-1 ${isDark ? 'text-[#9CA3AF]' : 'text-[#6E6E73]'}`}>
+              <p className={`text-xs mt-1 ${isDark ? 'text-[#6B7280]' : 'text-[#6E6E73]'}`}>
                 1 Live Verified
               </p>
             </div>
-            <div className={`mt-3 flex items-center text-xs font-semibold ${isDark ? 'text-[#FBBF24]' : 'text-stone-600'}`}>
+            <div className={`mt-3 flex items-center text-xs font-semibold ${isDark ? 'text-indigo-400' : 'text-stone-600'}`}>
               <span>Manage Projects</span>
               <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
