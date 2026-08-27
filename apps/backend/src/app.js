@@ -13,28 +13,31 @@ const app = express();
 app.use(helmet());
 
 // ── CORS ─────────────────────────────────────────────────────────────────────
+const clientUrls = (config.clientUrl || '').split(',').map((u) => u.trim()).filter(Boolean);
 const allowedOrigins = [
-  config.clientUrl,
+  ...clientUrls,
   'http://localhost:3000',
   'http://localhost:5173',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:5173',
 ].filter(Boolean);
 
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, server-to-server) or matching allowed origins
-    if (!origin || allowedOrigins.includes(origin) || (!config.isProd && /^http:\/\/localhost:\d+$/.test(origin))) {
-      callback(null, true);
-    } else {
-      callback(new Error('Blocked by CORS policy'));
-    }
-  },
-  credentials: true,
-  methods:     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
-  exposedHeaders: ['X-Request-ID'],
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, server-to-server) or matching allowed origins
+      if (!origin || allowedOrigins.includes(origin) || (!config.isProd && /^http:\/\/localhost:\d+$/.test(origin))) {
+        callback(null, true);
+      } else {
+        callback(new Error('Blocked by CORS policy'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
+    exposedHeaders: ['X-Request-ID'],
+  })
+);
 
 // ── Request Correlation ──────────────────────────────────────────────────────
 app.use(requestContext);
