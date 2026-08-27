@@ -12,7 +12,7 @@
     "dev:backend": "npm --workspace=apps/backend run dev",
     "dev:frontend": "npm --workspace=apps/frontend run dev",
     "start": "npm --workspace=apps/backend start",
-    "build": "npm --workspace=apps/frontend run build",
+    "build": "npm --workspace=apps/frontend run build && node -e \"const fs=require('fs'); fs.cpSync('apps/frontend/dist', 'dist', {recursive:true});\"",
     "test": "npm --workspace=apps/backend test",
     "test:watch": "npm --workspace=apps/backend run test:watch",
     "test:smoke": "npm --workspace=apps/backend run test:smoke",
