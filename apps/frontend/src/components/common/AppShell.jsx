@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   BarChart3, BriefcaseBusiness, Building2, ClipboardCheck, Compass, FileText,
@@ -32,22 +32,23 @@ const adminNavigation = [
   ['Opportunities', '/admin/jobs', BriefcaseBusiness],
 ];
 
-/* Build a flat route→label lookup for the breadcrumb header */
 const routeLabels = Object.fromEntries(
   [...studentNavigation, ...adminNavigation].map(([label, path]) => [path, label])
 );
 
 export default function AppShell({ portal }) {
-  const [open, setOpen] = useState(false);
+  const [drawerState, setDrawerState] = useState('closed');
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const navRef = useRef(null);
+  const [pill, setPill] = useState({ y: 0, h: 40, ready: false, animated: false });
+
   const { user, logout } = useAuth();
-  const { theme, toggleTheme, isDark } = useTheme();
+  const { toggleTheme, isDark } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const navigation = portal === 'admin' ? adminNavigation : studentNavigation;
   const portalLabel = portal === 'admin' ? 'Institution workspace' : 'Student workspace';
 
-  /* Derive current page title from the pathname */
   const pageTitle = useMemo(() => {
     const { pathname } = location;
     if (routeLabels[pathname]) return routeLabels[pathname];
@@ -57,19 +58,45 @@ export default function AppShell({ portal }) {
     return parent ? routeLabels[parent] : '';
   }, [location.pathname]);
 
-  /* Close mobile drawer on Escape key */
+  useLayoutEffect(() => {
+    if (!navRef.current) return;
+    const activeLink = navRef.current.querySelector('a.active');
+    if (!activeLink) {
+      setPill((p) => ({ ...p, ready: false }));
+      return;
+    }
+    const navRect  = navRef.current.getBoundingClientRect();
+    const linkRect = activeLink.getBoundingClientRect();
+    const y = linkRect.top - navRect.top + navRef.current.scrollTop;
+    setPill((prev) => ({
+      y,
+      h: linkRect.height,
+      ready: true,
+      animated: prev.ready,
+    }));
+  }, [location.pathname]);
+
+  const openDrawer = () => {
+    setDrawerState('opening');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setDrawerState('open'));
+    });
+  };
+
+  const closeDrawer = () => {
+    setDrawerState('closing');
+    setTimeout(() => setDrawerState('closed'), 340);
+  };
+
   useEffect(() => {
-    if (!open) return;
-    const onKey = (e) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
+    if (drawerState === 'closed') return;
+    const onKey = (e) => { if (e.key === 'Escape') closeDrawer(); };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [open]);
+  }, [drawerState]);
 
-  /* Close mobile drawer on route change */
   useEffect(() => {
-    setOpen(false);
+    if (drawerState !== 'closed') closeDrawer();
   }, [location.pathname]);
 
   const handleLogout = async () => {
@@ -77,7 +104,6 @@ export default function AppShell({ portal }) {
     navigate('/login', { replace: true });
   };
 
-  /* Profile image or initial */
   const avatarContent = user?.profileImage ? (
     <img
       src={user.profileImage}
@@ -90,47 +116,58 @@ export default function AppShell({ portal }) {
     <div className="avatar">{user?.name?.charAt(0)?.toUpperCase() || 'C'}</div>
   );
 
+  const isDrawerVisible = drawerState !== 'closed';
+  const isDrawerOpen   = drawerState === 'open';
+
   return (
     <div className="app-shell">
-      {/* ── Settings & Profile Modal ── */}
-      <ProfileSettingsModal
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-      />
+      <ProfileSettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
-      {open && (
+      {isDrawerVisible && (
         <button
-          className="shell-backdrop"
-          onClick={() => setOpen(false)}
+          className={`shell-backdrop${isDrawerOpen ? ' is-visible' : ''}`}
+          onClick={closeDrawer}
           aria-label="Close navigation"
         />
       )}
 
-      {/* ── Sidebar ── */}
-      <aside className={`app-sidebar ${open ? 'is-open' : ''}`}>
+      <aside
+        className={[
+          'app-sidebar',
+          isDrawerOpen ? 'is-open' : '',
+          drawerState === 'closing' ? 'is-closing' : '',
+        ].filter(Boolean).join(' ')}
+      >
         <div className="brand-lockup">
-          <span className="brand-mark">
-            <GraduationCap size={19} />
-          </span>
+          <span className="brand-mark"><GraduationCap size={19} /></span>
           <span>
             <strong>CareerOS</strong>
             <small>{portalLabel}</small>
           </span>
-          <button
-            className="mobile-close"
-            onClick={() => setOpen(false)}
-            aria-label="Close navigation"
-          >
+          <button className="mobile-close" onClick={closeDrawer} aria-label="Close navigation">
             <X size={18} />
           </button>
         </div>
 
-        <nav className="shell-nav" aria-label="Primary navigation">
-          {navigation.map(([label, to, Icon]) => (
+        <nav className="shell-nav" ref={navRef} aria-label="Primary navigation">
+          {pill.ready && (
+            <div
+              className={`nav-pill${pill.animated ? ' is-animated' : ''}`}
+              style={{ transform: `translateY(${pill.y}px)`, height: pill.h }}
+              aria-hidden="true"
+            />
+          )}
+
+          {navigation.map(([label, to, Icon], index) => (
             <NavLink
               key={to}
               to={to}
               end={to === '/dashboard' || to === '/admin'}
+              style={isDrawerOpen ? { animationDelay: `${index * 28}ms` } : undefined}
+              className={({ isActive }) =>
+                [isActive ? 'active' : '', isDrawerOpen ? 'nav-item-enter' : '']
+                  .filter(Boolean).join(' ') || undefined
+              }
             >
               <Icon size={17} />
               <span>{label}</span>
@@ -138,11 +175,10 @@ export default function AppShell({ portal }) {
           ))}
         </nav>
 
-        {/* ── Bottom-Left User Card (Clickable to Edit Profile & Theme) ── */}
         <div
           className="sidebar-user"
           onClick={() => setSettingsOpen(true)}
-          style={{ cursor: 'pointer', transition: 'background-color 0.15s ease' }}
+          style={{ cursor: 'pointer' }}
           title="Click to edit profile, adjust credentials, and toggle theme"
         >
           {avatarContent}
@@ -151,10 +187,7 @@ export default function AppShell({ portal }) {
             <span>{portal === 'admin' ? 'Administrator' : 'Student'}</span>
           </div>
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleLogout();
-            }}
+            onClick={(e) => { e.stopPropagation(); handleLogout(); }}
             aria-label="Sign out"
             title="Sign out"
           >
@@ -163,14 +196,9 @@ export default function AppShell({ portal }) {
         </div>
       </aside>
 
-      {/* ── Main App Content ── */}
-      <section className="app-main">
+      <section className={`app-main${isDrawerOpen ? ' drawer-open' : ''}`}>
         <header className="shell-header">
-          <button
-            className="menu-trigger"
-            onClick={() => setOpen(true)}
-            aria-label="Open navigation"
-          >
+          <button className="menu-trigger" onClick={openDrawer} aria-label="Open navigation">
             <Menu size={20} />
           </button>
           <div className="header-context">
@@ -181,24 +209,20 @@ export default function AppShell({ portal }) {
                 <span className="header-sep">/</span>
                 <span className="header-page">{pageTitle}</span>
               </>
-            ) : (
-              portalLabel
-            )}
+            ) : portalLabel}
           </div>
 
-          {/* ── Top-Right Header Actions (Theme Toggle, Settings Gear & Clickable Profile) ── */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
-            {/* Quick 1-Click Theme Toggle Button */}
             <button
               onClick={toggleTheme}
               className="header-icon-btn"
               aria-label="Toggle theme"
               title={`Switch to ${isDark ? 'Light' : 'Dark'} mode`}
             >
-              {isDark ? <Sun size={17} style={{ color: '#F59E0B' }} /> : <Moon size={17} style={{ color: '#6E6E73' }} />}
+              {isDark
+                ? <Sun  size={17} style={{ color: '#F59E0B' }} />
+                : <Moon size={17} style={{ color: '#6E6E73' }} />}
             </button>
-
-            {/* Quick Settings Gear Button */}
             <button
               onClick={() => setSettingsOpen(true)}
               className="header-icon-btn"
@@ -207,8 +231,6 @@ export default function AppShell({ portal }) {
             >
               <Settings size={17} style={{ color: isDark ? '#94A3B8' : '#6E6E73' }} />
             </button>
-
-            {/* Clickable Profile Badge */}
             <div
               className="header-profile"
               onClick={() => setSettingsOpen(true)}
@@ -221,7 +243,7 @@ export default function AppShell({ portal }) {
           </div>
         </header>
 
-        <main className="app-content">
+        <main className="app-content" key={location.key}>
           <Outlet />
         </main>
       </section>
