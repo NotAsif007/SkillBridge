@@ -1,8 +1,8 @@
 services:
-  # ── Backend Web Service ───────────────────────────────────────────────────
+  # ── CareerOS / SkillBridge Backend API Web Service ──────────────────────────
   - type: web
-    name: careeros-backend
-    env: node
+    name: skillbridge-backend
+    runtime: node
     plan: free
     region: oregon
     rootDir: apps/backend
@@ -14,20 +14,24 @@ services:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 5000
+        value: 10000
+      - key: CLIENT_URL
+        value: https://skillbridge012.netlify.app
+      - key: API_BASE_URL
+        value: https://skillbridge-6fky.onrender.com/api/v1
+      - key: ALLOW_DEV_LOGIN
+        value: "true"
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN
         value: 7d
-      - key: ALLOW_DEV_LOGIN
-        value: "true"
       - key: MONGO_URI
-        sync: false # Set in Render Dashboard
-      - key: CLIENT_URL
-        sync: false # Set to Netlify URL (e.g. https://careeros.netlify.app)
+        sync: false # Sensitive: keep existing or set in Render UI
       - key: GEMINI_API_KEY
-        sync: false # Set in Render Dashboard
+        sync: false # Sensitive: keep existing or set in Render UI
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      - key: GOOGLE_CALLBACK_URL
+        value: https://skillbridge-6fky.onrender.com/api/v1/auth/google/callback
