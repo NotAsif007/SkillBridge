@@ -21,6 +21,22 @@ Traditional campus placements are often reactive: students apply to recruitment 
 
 ---
 
+## 🎨 Design System & Theme Engine
+
+CareerOS features a dual-theme design system engineered for high legibility and focus:
+
+- **Apple Light Mode**: Crisp white surfaces (`#FFFFFF`), light canvas (`#F5F5F7`), slate-900 typography (`#1D1D1F`), and muted `#6E6E73` captions.
+- **Yellow Graphite Dark Mode**: Warm charcoal graphite surfaces (`#191B22`), deep canvas (`#121317`), border separation (`#2B2E3C`), and high-contrast typography (`#F3F4F6`).
+- **Harmonious Multi-Accent Tokens**:
+  - 🟡 **Warm Amber Gold (`#F59E0B` / `#FBBF24`)**: Active navigation, primary actions, and milestone progression.
+  - 🟢 **Emerald Green (`#10B981` / `#34D399`)**: Verified skills, passed assessments, and high match scores.
+  - 🔵 **Cyan / Teal (`#06B6D4` / `#22D3EE`)**: Diagnostic assessments, durations, and emerging benchmarks.
+  - 🟣 **Indigo (`#6366F1` / `#818CF8`)**: Technical tags, AI insights, and career track categories.
+  - 🔴 **Rose / Coral (`#F43F5E` / `#FB7185`)**: Critical missing skill gaps, deadline notices, and error alerts.
+- **Silky Smooth Transitions**: Global `0.25s` ease transitions on backgrounds, borders, and text colors.
+
+---
+
 ## 🚀 Core Features & Logical Engines
 
 ### 🎓 1. Student Workspace
@@ -42,12 +58,11 @@ Traditional campus placements are often reactive: students apply to recruitment 
 
 - **🤖 Multi-Turn AI Mock Interview Engine**:
   - Conversational technical interview state machine powered by Gemini AI.
-  - Dynamically asks follow-up technical questions based on prior candidate answers.
-  - Evaluates technical accuracy, depth, and communication, delivering an instant diagnostic rubric report.
+  - Dynamically asks follow-up technical questions based on prior candidate answers with split-screen answer editor and real-time rubric evaluation.
 
 - **📝 Secure Skill Assessments**:
   - Timed assessments across programming languages, system design, and frameworks.
-  - Anti-cheat architecture ensuring **zero answer-key leaks** to the client before submission.
+  - Anti-cheat architecture ensuring zero answer-key leaks to the client before submission.
   - Passing an assessment automatically mints verified skill credentials to the student profile.
 
 - **💼 Matched Campus Jobs & Application Engine**:
@@ -69,7 +84,7 @@ Traditional campus placements are often reactive: students apply to recruitment 
   - Slide-over detail drawer inspecting individual student progress, verified skills, and placement status.
 
 - **📈 Campus Placement Funnel**:
-  - Live recruitment drive tracking across all hiring stages: `Applied` &rarr; `Under Review` &rarr; `Shortlisted` &rarr; `Interview Scheduled` &rarr; `Offered`.
+  - Live recruitment drive tracking across all hiring stages: `Applied` → `Under Review` → `Shortlisted` → `Interview Scheduled` → `Offered`.
 
 - **🏢 Department & Job Management**:
   - Create and manage academic departments and campus drive eligibility criteria (minimum CGPA, salary brackets).
@@ -84,20 +99,7 @@ Traditional campus placements are often reactive: students apply to recruitment 
 - **Structured Logging & Redaction**: Production logs are structured with method, URL, status, duration, and actor context. Sensitive keys (passwords, tokens, cookies, auth headers) are automatically redacted.
 - **Graceful Lifecycle & Shutdown**: Standardized error handling, isolated stack traces in development, and guarded graceful shutdown routines (disconnecting DB and closing server with 10s safety timeout).
 - **Session Lifecycle & Invalidation**: Token versioning and `lastLogoutAt` tracking for server-side token revocation upon logout.
-- **ReDoS Protection**: Regular expression sanitization across all search and query parameters.
-- **AI Fault-Tolerance**: Automatic fallback mechanism with degraded status metadata (`{ source: 'AI' | 'FALLBACK' }`) ensuring zero downtime during API rate limits.
-- **Apple-Inspired Design System**: Light neutral presentation (#F5F5F7 surfaces, #1D1D1F graphite, #E5E5EA dividers, emerald feedback) with a unified `AppShell` for student and admin layouts.
-
----
-
-## 💻 Tech Stack
-
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | React 18, Vite, Tailwind CSS, Lucide Icons, Recharts, Axios, React Router v6 |
-| **Backend** | Node.js, Express, MongoDB Atlas, Mongoose ODM, Multer, PDF-Parse, JWT, Helmet, Morgan |
-| **AI & LLM** | Google GenAI SDK (`@google/genai`), Google Gemini 3.5 Flash |
-| **Testing** | Jest (ES Modules), Supertest, MongoDB Memory Server |
+- **Route-Level Code Splitting**: Frontend routes use `React.lazy` and `Suspense` for lightning-fast initial load times.
 
 ---
 
@@ -105,33 +107,41 @@ Traditional campus placements are often reactive: students apply to recruitment 
 
 ```text
 careeros/
+├── .editorconfig                # Standard cross-editor rules
+├── .prettierrc                  # Consistent code formatting configuration
+├── package.json                 # Monorepo root workspace orchestration
+│
 ├── apps/
 │   ├── backend/                 # Node.js + Express REST API & AI Engines
 │   │   ├── src/
 │   │   │   ├── config/          # Environment & database configuration
-│   │   │   ├── controllers/     # Express route controllers
+│   │   │   ├── controllers/     # Express route controllers (+ barrel index.js)
 │   │   │   ├── integrations/    # Google Gemini AI & Google OAuth clients
-│   │   │   ├── middleware/      # Auth, CORS, rate limiting, error handlers, correlation
-│   │   │   ├── models/          # Mongoose multi-tenant schemas
+│   │   │   ├── middleware/      # Auth, CORS, rate limiting, error, correlation (+ barrel index.js)
+│   │   │   ├── models/          # Mongoose multi-tenant schemas (+ barrel index.js)
 │   │   │   ├── routes/          # REST API endpoints
-│   │   │   ├── services/        # Business logic & gap analysis engines
+│   │   │   ├── services/        # Business logic & gap analysis engines (+ barrel index.js)
 │   │   │   ├── utils/           # Response envelopes, errors, logger, regex sanitizers
 │   │   │   └── validators/      # Zod request validation schemas
-│   │   ├── scripts/             # Database seeders & live smoke test runners
+│   │   ├── scripts/             # Database seeders & smoke test runners
 │   │   └── tests/               # 15 Jest automated test suites (93 tests)
 │   │
 │   └── frontend/                # React 18 + Vite Single Page Application
 │       └── src/
-│           ├── api/             # Axios API client & endpoints
-│           ├── app/             # Router & context providers
-│           ├── components/      # Common UI components, AppShell, route guards, charts
-│           │   └── common/      # AppShell.jsx, Navbar, Sidebar
-│           ├── context/         # AuthContext session management
+│           ├── api/             # Axios API client & domain service exports
+│           ├── app/             # Router (code-split) & App providers
+│           ├── components/      # Common UI components, AppShell, route guards
+│           │   ├── common/      # AppShell.jsx, ProfileSettingsModal.jsx (+ barrel index.js)
+│           │   ├── ui/          # Badge, Button, Card, Modal, Progress, Table (+ barrel index.js)
+│           │   └── charts/      # Recharts wrappers & readiness distribution
+│           ├── context/         # AuthContext, ThemeContext, ToastContext (+ barrel index.js)
 │           ├── features/
-│           │   ├── student/     # Student portal pages (Dashboard, Resume, Roadmap, etc.)
-│           │   └── admin/       # College admin pages (Analytics, Rosters, Departments)
+│           │   ├── student/     # Student portal (Dashboard, Resume, Roadmap, Interview, Jobs)
+│           │   └── admin/       # College admin (Analytics, Rosters, Departments, Jobs)
+│           ├── hooks/           # Custom reusable hooks (useDebounce, useMediaQuery)
 │           ├── layouts/         # StudentLayout & AdminLayout (thin AppShell wrappers)
-│           └── pages/           # Institutional Splash & Login Portal (Apple-inspired)
+│           ├── pages/           # Login & Institutional Splash Portal
+│           └── styles/          # Unified design tokens (themeTokens.js)
 │
 ├── docs/                        # Specifications, Database Schemas, API Contracts, Design
 │   ├── API_CONTRACT.md
@@ -140,74 +150,36 @@ careeros/
 │   ├── DESIGN.md
 │   └── openapi.yaml
 │
-├── CONTEXT.md                   # Current state, architecture decisions & handoff context
+├── CONTEXT.md                   # Continuation context & handoff log
 └── SPEC.md                      # Complete system specifications
 ```
 
 ---
 
-## ⚡ Getting Started
+## ⚡ Monorepo CLI Commands
 
-### Prerequisites
-- **Node.js**: `v18.x` or higher
-- **MongoDB**: Local MongoDB or MongoDB Atlas URI
-- **Google Cloud Console**: OAuth 2.0 Web Client ID
-- **Google AI Studio**: Gemini API Key
-
----
-
-### 1. Backend Setup
+You can run commands directly from the root workspace:
 
 ```bash
-cd apps/backend
-
-# Install dependencies
+# 1. Install all dependencies across workspaces
 npm install
 
-# Configure environment variables
-# (Edit .env with your MONGO_URI, GEMINI_API_KEY, and GOOGLE_CLIENT_ID)
-cp .env.example .env
-
-# Run database seeder (seeds demo college, skills, careers, students)
+# 2. Seed database with demo university, careers, skills, and personas
 npm run seed
 
-# Start development server (port 5000)
-npm run dev
-```
+# 3. Start backend development server (Port 5000)
+npm run dev:backend
 
----
+# 4. Start frontend development server (Port 5173)
+npm run dev:frontend
 
-### 2. Frontend Setup
-
-```bash
-cd apps/frontend
-
-# Install dependencies
-npm install
-
-# Configure environment variables
-cp .env.example .env
-
-# Start frontend dev server (port 5173)
-npm run dev
-```
-
-Visit **`http://localhost:5173`** in your browser.
-
----
-
-### 3. Running Automated Tests
-
-```bash
-# Run complete backend test suite (15 suites, 93 tests)
-cd apps/backend
+# 5. Run full backend automated test suites (15 suites, 93 tests)
 npm test
 
-# Run interactive smoke test with in-memory MongoDB
+# 6. Run backend smoke test
 npm run test:smoke
 
-# Run frontend production build
-cd apps/frontend
+# 7. Run frontend production build
 npm run build
 ```
 
