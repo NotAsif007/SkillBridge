@@ -146,8 +146,8 @@ The frontend implements a unified token-driven interface with smooth transitions
 
 ```bash
 # Clone the repository
-git clone https://github.com/NotAsif007/careerOS.git
-cd careerOS
+git clone https://github.com/NotAsif007/SkillBridge.git
+cd SkillBridge
 
 # Install dependencies across all workspaces
 npm install
