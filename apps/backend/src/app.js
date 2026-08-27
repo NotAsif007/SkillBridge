@@ -49,6 +49,16 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 // ── HTTP Request Logging ─────────────────────────────────────────────────────
 app.use(requestLogger);
 
+// ── Root / Health Ping Endpoint ──────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'SkillBridge API is running',
+    version: '1.0.0',
+    health: '/api/v1/health',
+  });
+});
+
 // ── Rate Limiting ─────────────────────────────────────────────────────────────
 app.use('/api', apiLimiter);
 

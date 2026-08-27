@@ -371,7 +371,7 @@ function DashboardEmpty() {
           No data yet
         </p>
         <p className="text-sm" style={{ color: T.textMuted }}>
-          Student data will appear here once your institution's students begin using CareerOS.
+          Student data will appear here once your institution's students begin using SkillBridge.
         </p>
       </div>
     </div>

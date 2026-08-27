@@ -52,7 +52,7 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <header className="login-header">
-        <div className="login-brand"><span><GraduationCap size={19} /></span><strong>CareerOS</strong></div>
+        <div className="login-brand"><span><GraduationCap size={19} /></span><strong>SkillBridge</strong></div>
         <div className="trust-label"><ShieldCheck size={15} /> Secure institutional access</div>
       </header>
       <main className="login-main">
@@ -66,8 +66,8 @@ export default function LoginPage() {
             <li><Check size={16} /> Private, role-based workspaces</li>
           </ul>
         </section>
-        <section className="login-card" aria-label="Sign in to CareerOS">
-          <div><p className="card-kicker">Welcome to CareerOS</p><h2>Sign in to continue</h2><p>Use your institution account or enter the demo workspace.</p></div>
+        <section className="login-card" aria-label="Sign in to SkillBridge">
+          <div><p className="card-kicker">Welcome to SkillBridge</p><h2>Sign in to continue</h2><p>Use your institution account or enter the demo workspace.</p></div>
           <div className="role-switch" role="tablist" aria-label="Workspace type">
             <button className={role === 'STUDENT' ? 'active' : ''} onClick={() => setRole('STUDENT')}><GraduationCap size={16} /> Student</button>
             <button className={role === 'COLLEGE_ADMIN' ? 'active' : ''} onClick={() => setRole('COLLEGE_ADMIN')}><Building2 size={16} /> Administrator</button>

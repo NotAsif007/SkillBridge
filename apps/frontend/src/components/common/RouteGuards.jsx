@@ -17,7 +17,7 @@ export function RequireAuth({ children }) {
         <div className="flex items-center space-x-3 text-emerald-600">
           <Loader2 className="w-8 h-8 animate-spin" />
           <span className="text-[#6E6E73] font-medium text-sm tracking-wide">
-            Verifying CareerOS Session...
+            Verifying SkillBridge Session...
           </span>
         </div>
       </div>

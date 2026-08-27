@@ -141,7 +141,7 @@ export default function AppShell({ portal }) {
         <div className="brand-lockup">
           <span className="brand-mark"><GraduationCap size={19} /></span>
           <span>
-            <strong>CareerOS</strong>
+            <strong>SkillBridge</strong>
             <small>{portalLabel}</small>
           </span>
           <button className="mobile-close" onClick={closeDrawer} aria-label="Close navigation">
@@ -183,7 +183,7 @@ export default function AppShell({ portal }) {
         >
           {avatarContent}
           <div>
-            <strong>{user?.name || 'CareerOS user'}</strong>
+            <strong>{user?.name || 'SkillBridge user'}</strong>
             <span>{portal === 'admin' ? 'Administrator' : 'Student'}</span>
           </div>
           <button
@@ -196,37 +196,37 @@ export default function AppShell({ portal }) {
         </div>
       </aside>
 
-      <section className={`app-main${isDrawerOpen ? ' drawer-open' : ''}`}>
+      <section className="app-main">
         <header className="shell-header">
-          <button className="menu-trigger" onClick={openDrawer} aria-label="Open navigation">
-            <Menu size={20} />
-          </button>
-          <div className="header-context">
-            <span className="header-dot" />
-            {pageTitle ? (
-              <>
-                {portalLabel}
-                <span className="header-sep">/</span>
-                <span className="header-page">{pageTitle}</span>
-              </>
-            ) : portalLabel}
+          <div className="header-breadcrumbs">
+            <button
+              className="header-icon-btn mobile-menu-btn"
+              onClick={openDrawer}
+              aria-label="Open navigation menu"
+            >
+              <Menu size={18} />
+            </button>
+            <div className="header-context">
+              <span className="header-dot" aria-hidden="true" />
+              <span>{portalLabel}</span>
+            </div>
+            <span className="header-separator" aria-hidden="true">/</span>
+            <span className="header-page">{pageTitle}</span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
+          <div className="header-actions">
             <button
-              onClick={toggleTheme}
               className="header-icon-btn"
-              aria-label="Toggle theme"
-              title={`Switch to ${isDark ? 'Light' : 'Dark'} mode`}
+              onClick={toggleTheme}
+              aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+              title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
             >
-              {isDark
-                ? <Sun  size={17} style={{ color: '#F59E0B' }} />
-                : <Moon size={17} style={{ color: '#6E6E73' }} />}
+              {isDark ? <Sun size={17} style={{ color: '#FBBF24' }} /> : <Moon size={17} style={{ color: '#1D1D1F' }} />}
             </button>
             <button
-              onClick={() => setSettingsOpen(true)}
               className="header-icon-btn"
-              aria-label="Profile and Settings"
+              onClick={() => setSettingsOpen(true)}
+              aria-label="Adjust Profile & Settings"
               title="Adjust Profile & Settings"
             >
               <Settings size={17} style={{ color: isDark ? '#94A3B8' : '#6E6E73' }} />
@@ -237,7 +237,7 @@ export default function AppShell({ portal }) {
               style={{ cursor: 'pointer' }}
               title="Click to edit profile"
             >
-              <span>{user?.name || 'CareerOS user'}</span>
+              <span>{user?.name || 'SkillBridge user'}</span>
               {avatarContent}
             </div>
           </div>
