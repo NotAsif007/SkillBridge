@@ -2,60 +2,48 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, Target, ChevronRight, CheckCircle, TrendingUp,
-  DollarSign, Briefcase, Zap
+  DollarSign, Briefcase, Zap, Loader2
 } from 'lucide-react';
 import { studentApi } from '../../../api/student';
 import { useTheme } from '../../../context/ThemeContext';
 import { getTokens } from '../../../styles/themeTokens';
 
-const MOCK_CAREERS = [
-  {
-    _id: 'career_001', title: 'Full Stack Developer', slug: 'full-stack-developer',
-    category: 'Software Engineering',
-    overview: 'Build end-to-end web applications using modern frontend and backend technologies. Work across the entire stack from UI design to database architecture.',
-    marketDemand: 'VERY_HIGH',
-    averageSalaryRange: { min: 600000, max: 1800000, currency: 'INR' },
-  },
-  {
-    _id: 'career_002', title: 'Data Scientist', slug: 'data-scientist',
-    category: 'Data & Analytics',
-    overview: 'Analyze complex datasets to extract insights and build predictive machine learning models that drive business decisions.',
-    marketDemand: 'VERY_HIGH',
-    averageSalaryRange: { min: 800000, max: 2200000, currency: 'INR' },
-  },
-  {
-    _id: 'career_003', title: 'DevOps Engineer', slug: 'devops-engineer',
-    category: 'Infrastructure',
-    overview: 'Bridge development and operations to automate software delivery, manage cloud infrastructure and ensure system reliability.',
-    marketDemand: 'HIGH',
-    averageSalaryRange: { min: 700000, max: 2000000, currency: 'INR' },
-  },
-  {
-    _id: 'career_004', title: 'Product Manager', slug: 'product-manager',
-    category: 'Product',
-    overview: 'Lead product strategy, roadmap planning and cross-functional execution to bring customer-centric products from concept to launch.',
-    marketDemand: 'HIGH',
-    averageSalaryRange: { min: 900000, max: 2500000, currency: 'INR' },
-  },
-  {
-    _id: 'career_005', title: 'UI/UX Designer', slug: 'ui-ux-designer',
-    category: 'Design',
-    overview: 'Create intuitive user interfaces and experiences through research, prototyping and iterative design for web and mobile products.',
-    marketDemand: 'MEDIUM',
-    averageSalaryRange: { min: 500000, max: 1500000, currency: 'INR' },
-  },
-  {
-    _id: 'career_006', title: 'Machine Learning Engineer', slug: 'ml-engineer',
-    category: 'AI & ML',
-    overview: 'Design, train and deploy machine learning systems at scale. Work on cutting-edge AI research applied to production systems.',
-    marketDemand: 'VERY_HIGH',
-    averageSalaryRange: { min: 1000000, max: 3000000, currency: 'INR' },
-  },
-];
-
 function formatSalary(amount) {
+  if (!amount) return '₹6L – ₹18L';
   const lakh = amount / 100000;
-  return `\u20b9${lakh % 1 === 0 ? lakh.toFixed(0) : lakh.toFixed(1)}L`;
+  return `₹${lakh % 1 === 0 ? lakh.toFixed(0) : lakh.toFixed(1)}L`;
+}
+
+function CareerSkeletonCard({ T, isDark }) {
+  return (
+    <div
+      style={{
+        backgroundColor: T.surface,
+        border: `1px solid ${T.border}`,
+        borderRadius: 14,
+        padding: 22,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 14,
+        minHeight: 220,
+      }}
+      className="animate-pulse"
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '60%' }}>
+          <div style={{ height: 12, width: '40%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 4 }} />
+          <div style={{ height: 18, width: '80%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 4 }} />
+        </div>
+        <div style={{ height: 22, width: 80, backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 999 }} />
+      </div>
+      <div style={{ height: 40, width: '100%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 6 }} />
+      <div style={{ height: 14, width: '50%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 4 }} />
+      <div style={{ display: 'flex', gap: 10, marginTop: 'auto' }}>
+        <div style={{ height: 36, flex: 1, backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 8 }} />
+        <div style={{ height: 36, flex: 1, backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 8 }} />
+      </div>
+    </div>
+  );
 }
 
 function CareerCard({ career, isTarget, onSetTarget, onViewDetails, settingId, T }) {
@@ -65,6 +53,9 @@ function CareerCard({ career, isTarget, onSetTarget, onViewDetails, settingId, T
     : career.marketDemand === 'HIGH'
     ? { text: T.tealText, bg: T.tealBg, border: T.tealBorder, label: 'High Demand' }
     : { text: T.yellowText, bg: T.yellowBg, border: T.yellowBorder, label: 'Medium Demand' };
+
+  const minSal = career.averageSalaryRange?.min ? formatSalary(career.averageSalaryRange.min) : '₹6L';
+  const maxSal = career.averageSalaryRange?.max ? formatSalary(career.averageSalaryRange.max) : '₹18L';
 
   return (
     <div
@@ -77,12 +68,13 @@ function CareerCard({ career, isTarget, onSetTarget, onViewDetails, settingId, T
         flexDirection: 'column',
         boxShadow: isTarget ? `0 0 0 1px ${T.yellow}` : '0 2px 8px rgba(0,0,0,0.02)',
         width: '100%',
+        transition: 'all 0.2s ease',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
         <div>
           <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: T.indigoText }}>
-            {career.category}
+            {career.category || 'Software Engineering'}
           </span>
           <h3 style={{ margin: '4px 0 0', fontSize: 17, fontWeight: 750, color: T.textPrimary }}>
             {career.title}
@@ -98,24 +90,37 @@ function CareerCard({ career, isTarget, onSetTarget, onViewDetails, settingId, T
             border: `1px solid ${demandCfg.border}`,
             padding: '3px 9px',
             borderRadius: 9999,
+            whiteSpace: 'nowrap',
           }}
         >
           {demandCfg.label}
         </span>
       </div>
 
-      <p style={{ color: T.textMuted, fontSize: 13, lineHeight: 1.55, margin: '0 0 16px', flex: 1 }}>
-        {career.overview}
+      <p
+        style={{
+          fontSize: 13,
+          color: T.textMuted,
+          lineHeight: 1.5,
+          margin: '0 0 14px 0',
+          flex: 1,
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+        }}
+      >
+        {career.overview || career.description || 'Explore career requirements and roadmap paths.'}
       </p>
 
-      {career.averageSalaryRange && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 18, color: T.textMuted, fontSize: 12 }}>
-          <DollarSign size={14} color={T.yellow} />
-          <span>Average Package: <strong style={{ color: T.textPrimary }}>{formatSalary(career.averageSalaryRange.min)} – {formatSalary(career.averageSalaryRange.max)}</strong></span>
-        </div>
-      )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
+        <DollarSign size={14} style={{ color: T.yellow }} />
+        <span style={{ fontSize: 12, fontWeight: 600, color: T.textMuted }}>
+          Average Package: <strong style={{ color: T.textPrimary }}>{minSal} – {maxSal}</strong>
+        </span>
+      </div>
 
-      <div style={{ display: 'flex', gap: 10, marginTop: 'auto', paddingTop: 14, borderTop: `1px solid ${T.border}` }}>
+      <div style={{ display: 'flex', gap: 10, marginTop: 'auto' }}>
         <button
           onClick={() => onViewDetails(career._id)}
           style={{
@@ -123,15 +128,16 @@ function CareerCard({ career, isTarget, onSetTarget, onViewDetails, settingId, T
             padding: '9px 0',
             borderRadius: 8,
             border: `1px solid ${T.border}`,
-            backgroundColor: 'transparent',
+            backgroundColor: T.surfaceSubtle,
             color: T.textPrimary,
             fontSize: 13,
-            fontWeight: 600,
+            fontWeight: 650,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 4,
+            transition: 'background-color 0.15s ease',
           }}
         >
           Details <ChevronRight size={14} />
@@ -154,12 +160,13 @@ function CareerCard({ career, isTarget, onSetTarget, onViewDetails, settingId, T
             alignItems: 'center',
             justifyContent: 'center',
             gap: 5,
+            transition: 'all 0.15s ease',
           }}
         >
           {isTarget ? (
             <><CheckCircle size={14} /> Target Set</>
           ) : setting ? (
-            'Setting…'
+            <><Loader2 size={14} className="animate-spin" /> Setting…</>
           ) : (
             <><Target size={14} /> Set as Target</>
           )}
@@ -174,21 +181,37 @@ export default function CareerList() {
   const T = getTokens(isDark);
   const navigate = useNavigate();
 
-  const [careers, setCareers] = useState(MOCK_CAREERS);
-  const [targetId, setTargetId] = useState('career_001');
+  const [careers, setCareers] = useState([]);
+  const [targetId, setTargetId] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [settingId, setSettingId] = useState(null);
 
   const fetchData = useCallback(async () => {
     try {
+      setLoading(true);
       const [careersRes, profileRes] = await Promise.all([
         studentApi.getCareers(),
         studentApi.getProfile(),
       ]);
-      if (careersRes?.data) setCareers(careersRes.data);
-      if (profileRes?.data?.targetCareer?._id) setTargetId(profileRes.data.targetCareer._id);
-    } catch {
-      // Retain mock data
+
+      const careerList = Array.isArray(careersRes) ? careersRes : careersRes?.data || [];
+      const userProfile = profileRes?.data || profileRes;
+      
+      setCareers(careerList);
+      if (userProfile?.targetCareer?._id) {
+        setTargetId(userProfile.targetCareer._id);
+      } else if (userProfile?.targetCareerId) {
+        setTargetId(userProfile.targetCareerId);
+      } else if (careerList.length > 0) {
+        // Fallback target: match by title or default to first
+        const matchedTarget = careerList.find((c) => c.title === 'Full Stack Developer') || careerList[0];
+        setTargetId(matchedTarget?._id);
+      }
+    } catch (err) {
+      console.warn('Career list fetch notice:', err);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -197,8 +220,8 @@ export default function CareerList() {
   }, [fetchData]);
 
   const filtered = careers.filter((c) =>
-    c.title.toLowerCase().includes(search.toLowerCase()) ||
-    c.category.toLowerCase().includes(search.toLowerCase())
+    (c.title || '').toLowerCase().includes(search.toLowerCase()) ||
+    (c.category || '').toLowerCase().includes(search.toLowerCase())
   );
 
   const handleSetTarget = async (careerId) => {
@@ -221,7 +244,7 @@ export default function CareerList() {
           <h1 style={{ fontSize: 28, fontWeight: 800, color: T.textPrimary, letterSpacing: '-0.03em', margin: 0 }}>
             Explore Careers
           </h1>
-          <p style={{ color: T.textMuted, fontSize: 14, marginTop: 4, margin: '4px 0 0 0' }}>
+          <p style={{ color: T.textMuted, fontSize: 14, margin: '4px 0 0 0' }}>
             Discover career paths, compare industry requirements, and set your active target role
           </p>
         </div>
@@ -250,17 +273,27 @@ export default function CareerList() {
 
       {/* Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
-        {filtered.map((career) => (
-          <CareerCard
-            key={career._id}
-            career={career}
-            isTarget={career._id === targetId}
-            onSetTarget={handleSetTarget}
-            onViewDetails={(id) => navigate(`/careers/${id}`)}
-            settingId={settingId}
-            T={T}
-          />
-        ))}
+        {loading && careers.length === 0 ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <CareerSkeletonCard key={i} T={T} isDark={isDark} />
+          ))
+        ) : filtered.length > 0 ? (
+          filtered.map((career) => (
+            <CareerCard
+              key={career._id}
+              career={career}
+              isTarget={career._id === targetId || (career.title === 'Full Stack Developer' && !targetId)}
+              onSetTarget={handleSetTarget}
+              onViewDetails={(id) => navigate(`/careers/${id}`)}
+              settingId={settingId}
+              T={T}
+            />
+          ))
+        ) : (
+          <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '48px 0', color: T.textMuted }}>
+            No careers found matching "{search}"
+          </div>
+        )}
       </div>
     </div>
   );

@@ -138,9 +138,17 @@ export async function seedDatabase() {
     { name: 'Docker', category: 'DevOps', description: 'Containers, Dockerfile, multi-stage builds, compose' },
     { name: 'Kubernetes', category: 'DevOps', description: 'Pods, deployments, services, ingress' },
     { name: 'CI/CD Pipelines', category: 'DevOps', description: 'GitHub Actions, automated testing, releases' },
+    { name: 'Terraform', category: 'DevOps', description: 'Infrastructure as Code and cloud orchestration' },
     { name: 'AWS', category: 'Cloud', description: 'EC2, S3, Lambda, ECS, RDS, IAM' },
     { name: 'Machine Learning Fundamentals', category: 'AI/ML', description: 'Supervised, unsupervised algorithms, evaluation' },
+    { name: 'PyTorch & TensorFlow', category: 'AI/ML', description: 'Deep learning frameworks, neural networks, model training' },
     { name: 'Pandas & NumPy', category: 'Data', description: 'Data wrangling, matrix operations, exploratory analysis' },
+    { name: 'Power BI & Tableau', category: 'Data', description: 'Interactive dashboard creation and data visualization' },
+    { name: 'Figma & UI Prototyping', category: 'Design', description: 'Design systems, wireframing, high-fidelity prototypes' },
+    { name: 'User Research & Wireframing', category: 'Design', description: 'Usability testing, persona creation, user journey mapping' },
+    { name: 'React Native & Flutter', category: 'Mobile', description: 'Cross-platform native iOS & Android development' },
+    { name: 'Network Security & OWASP', category: 'Security', description: 'Vulnerability assessment, penetration testing, web security' },
+    { name: 'Product Analytics & Roadmapping', category: 'Product', description: 'Feature prioritization, KPI tracking, agile delivery' },
     { name: 'Communication & Articulation', category: 'Soft Skills', description: 'Clear technical communication, presentation' },
   ];
 
@@ -153,27 +161,138 @@ export async function seedDatabase() {
   logger.info(`✨ Seeded ${skillDocs.length} master skills.`);
 
   // 6. Master Careers & Requirements
-  const fullStackCareer = await Career.create({
-    title: 'Full Stack Developer',
-    slug: 'full-stack-developer',
-    category: 'Software Engineering',
-    overview: 'Builds end-to-end scalable web applications across modern frontend and backend architectures.',
-    marketDemand: 'VERY_HIGH',
-    averageSalaryRange: { min: 600000, max: 1800000, currency: 'INR' },
-    isActive: true,
+  const careersData = [
+    {
+      title: 'Full Stack Developer',
+      slug: 'full-stack-developer',
+      category: 'Software Engineering',
+      overview: 'Build end-to-end web applications using modern frontend and backend technologies. Work across the entire stack from UI design to database architecture.',
+      marketDemand: 'VERY_HIGH',
+      averageSalaryRange: { min: 600000, max: 1800000, currency: 'INR' },
+      isActive: true,
+    },
+    {
+      title: 'Backend Developer',
+      slug: 'backend-developer',
+      category: 'Software Engineering',
+      overview: 'Architect robust server systems, APIs, database schemas, and microservice infrastructure capable of handling high-throughput traffic.',
+      marketDemand: 'VERY_HIGH',
+      averageSalaryRange: { min: 650000, max: 1900000, currency: 'INR' },
+      isActive: true,
+    },
+    {
+      title: 'Frontend Developer',
+      slug: 'frontend-developer',
+      category: 'Software Engineering',
+      overview: 'Craft fluid, accessible, and high-performance user interfaces using modern JavaScript frameworks, design tokens, and state management.',
+      marketDemand: 'HIGH',
+      averageSalaryRange: { min: 550000, max: 1600000, currency: 'INR' },
+      isActive: true,
+    },
+    {
+      title: 'Data Scientist',
+      slug: 'data-scientist',
+      category: 'Data & Analytics',
+      overview: 'Analyze complex datasets to extract insights, build predictive statistical models, and drive strategic automated decision-making.',
+      marketDemand: 'VERY_HIGH',
+      averageSalaryRange: { min: 800000, max: 2200000, currency: 'INR' },
+      isActive: true,
+    },
+    {
+      title: 'DevOps Engineer',
+      slug: 'devops-engineer',
+      category: 'Infrastructure',
+      overview: 'Bridge software development and IT operations by automating CI/CD pipelines, containerization, and resilient cloud architectures.',
+      marketDemand: 'HIGH',
+      averageSalaryRange: { min: 700000, max: 2000000, currency: 'INR' },
+      isActive: true,
+    },
+    {
+      title: 'Machine Learning Engineer',
+      slug: 'ml-engineer',
+      category: 'AI & ML',
+      overview: 'Design, train, fine-tune, and deploy large-scale machine learning models and neural networks into low-latency production pipelines.',
+      marketDemand: 'VERY_HIGH',
+      averageSalaryRange: { min: 1000000, max: 3000000, currency: 'INR' },
+      isActive: true,
+    },
+    {
+      title: 'Cloud Solutions Architect',
+      slug: 'cloud-architect',
+      category: 'Infrastructure',
+      overview: 'Architect enterprise-grade cloud systems on AWS and GCP with strict high-availability, zero-trust security, and cost efficiency.',
+      marketDemand: 'VERY_HIGH',
+      averageSalaryRange: { min: 1200000, max: 3500000, currency: 'INR' },
+      isActive: true,
+    },
+    {
+      title: 'Product Manager',
+      slug: 'product-manager',
+      category: 'Product',
+      overview: 'Lead cross-functional teams to define product vision, strategic roadmaps, user stories, and data-driven feature iterations.',
+      marketDemand: 'HIGH',
+      averageSalaryRange: { min: 900000, max: 2500000, currency: 'INR' },
+      isActive: true,
+    },
+    {
+      title: 'UI/UX Designer',
+      slug: 'ui-ux-designer',
+      category: 'Design',
+      overview: 'Design intuitive, human-centered interfaces, user flows, design systems, and rapid interactive prototypes for web and mobile products.',
+      marketDemand: 'MEDIUM',
+      averageSalaryRange: { min: 500000, max: 1500000, currency: 'INR' },
+      isActive: true,
+    },
+    {
+      title: 'Mobile App Developer',
+      slug: 'mobile-app-developer',
+      category: 'Software Engineering',
+      overview: 'Develop native and cross-platform mobile apps for iOS and Android using React Native, Flutter, and native mobile toolchains.',
+      marketDemand: 'HIGH',
+      averageSalaryRange: { min: 600000, max: 1800000, currency: 'INR' },
+      isActive: true,
+    },
+    {
+      title: 'Cybersecurity Analyst',
+      slug: 'cybersecurity-analyst',
+      category: 'Security',
+      overview: 'Protect networks and infrastructure through threat intelligence, penetration testing, vulnerability remediation, and compliance governance.',
+      marketDemand: 'VERY_HIGH',
+      averageSalaryRange: { min: 750000, max: 2200000, currency: 'INR' },
+      isActive: true,
+    },
+    {
+      title: 'Data Analyst',
+      slug: 'data-analyst',
+      category: 'Data & Analytics',
+      overview: 'Transform raw data into actionable dashboards and visualizations using SQL, Power BI, Tableau, and exploratory Python analytics.',
+      marketDemand: 'HIGH',
+      averageSalaryRange: { min: 500000, max: 1400000, currency: 'INR' },
+      isActive: true,
+    },
+  ];
+
+  const careerDocs = await Career.insertMany(careersData);
+  const careerMap = {};
+  careerDocs.forEach((c) => {
+    careerMap[c.slug] = c;
   });
 
-  const backendCareer = await Career.create({
-    title: 'Backend Developer',
-    slug: 'backend-developer',
-    category: 'Software Engineering',
-    overview: 'Architects robust server systems, APIs, database schemas, and microservice infrastructure.',
-    marketDemand: 'VERY_HIGH',
-    averageSalaryRange: { min: 650000, max: 1900000, currency: 'INR' },
-    isActive: true,
-  });
+  const fullStackCareer = careerMap['full-stack-developer'];
+  const backendCareer = careerMap['backend-developer'];
+  const frontendCareer = careerMap['frontend-developer'];
+  const dataScientistCareer = careerMap['data-scientist'];
+  const devopsCareer = careerMap['devops-engineer'];
+  const mlCareer = careerMap['ml-engineer'];
+  const uiuxCareer = careerMap['ui-ux-designer'];
+  const productCareer = careerMap['product-manager'];
+  const mobileCareer = careerMap['mobile-app-developer'];
+  const securityCareer = careerMap['cybersecurity-analyst'];
+  const dataAnalystCareer = careerMap['data-analyst'];
 
-  await CareerRequirement.insertMany([
+  // Attach requirements to each career
+  const requirementsData = [
+    // Full Stack
     { careerId: fullStackCareer._id, skillId: skillMap['JavaScript']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
     { careerId: fullStackCareer._id, skillId: skillMap['React']._id, importance: 'High', requiredProficiency: 3, weight: 9 },
     { careerId: fullStackCareer._id, skillId: skillMap['Node.js']._id, importance: 'High', requiredProficiency: 3, weight: 9 },
@@ -183,15 +302,68 @@ export async function seedDatabase() {
     { careerId: fullStackCareer._id, skillId: skillMap['Docker']._id, importance: 'Medium', requiredProficiency: 2, weight: 6 },
     { careerId: fullStackCareer._id, skillId: skillMap['System Design']._id, importance: 'Medium', requiredProficiency: 3, weight: 6 },
 
+    // Backend
     { careerId: backendCareer._id, skillId: skillMap['Node.js']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
     { careerId: backendCareer._id, skillId: skillMap['System Design']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
-    { careerId: backendCareer._id, skillId: skillMap['MongoDB']._id, importance: 'High', requiredProficiency: 3, weight: 8 },
+    { careerId: backendCareer._id, skillId: skillMap['PostgreSQL']._id, importance: 'High', requiredProficiency: 3, weight: 8 },
     { careerId: backendCareer._id, skillId: skillMap['REST APIs']._id, importance: 'High', requiredProficiency: 4, weight: 8 },
     { careerId: backendCareer._id, skillId: skillMap['Docker']._id, importance: 'High', requiredProficiency: 3, weight: 7 },
     { careerId: backendCareer._id, skillId: skillMap['Data Structures & Algorithms']._id, importance: 'High', requiredProficiency: 4, weight: 8 },
-  ]);
 
-  logger.info('✨ Seeded careers and requirements.');
+    // Frontend
+    { careerId: frontendCareer._id, skillId: skillMap['JavaScript']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: frontendCareer._id, skillId: skillMap['React']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: frontendCareer._id, skillId: skillMap['TypeScript']._id, importance: 'High', requiredProficiency: 3, weight: 8 },
+    { careerId: frontendCareer._id, skillId: skillMap['HTML5 & CSS3']._id, importance: 'Critical', requiredProficiency: 4, weight: 9 },
+    { careerId: frontendCareer._id, skillId: skillMap['Tailwind CSS']._id, importance: 'High', requiredProficiency: 3, weight: 8 },
+
+    // Data Scientist
+    { careerId: dataScientistCareer._id, skillId: skillMap['Python']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: dataScientistCareer._id, skillId: skillMap['Machine Learning Fundamentals']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: dataScientistCareer._id, skillId: skillMap['Pandas & NumPy']._id, importance: 'High', requiredProficiency: 4, weight: 9 },
+    { careerId: dataScientistCareer._id, skillId: skillMap['SQL']._id, importance: 'High', requiredProficiency: 3, weight: 8 },
+
+    // DevOps
+    { careerId: devopsCareer._id, skillId: skillMap['Docker']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: devopsCareer._id, skillId: skillMap['Kubernetes']._id, importance: 'Critical', requiredProficiency: 3, weight: 9 },
+    { careerId: devopsCareer._id, skillId: skillMap['CI/CD Pipelines']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: devopsCareer._id, skillId: skillMap['AWS']._id, importance: 'High', requiredProficiency: 3, weight: 8 },
+    { careerId: devopsCareer._id, skillId: skillMap['Terraform']._id, importance: 'High', requiredProficiency: 3, weight: 8 },
+
+    // Machine Learning
+    { careerId: mlCareer._id, skillId: skillMap['Python']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: mlCareer._id, skillId: skillMap['PyTorch & TensorFlow']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: mlCareer._id, skillId: skillMap['Machine Learning Fundamentals']._id, importance: 'Critical', requiredProficiency: 4, weight: 9 },
+    { careerId: mlCareer._id, skillId: skillMap['Data Structures & Algorithms']._id, importance: 'High', requiredProficiency: 3, weight: 8 },
+
+    // UI/UX
+    { careerId: uiuxCareer._id, skillId: skillMap['Figma & UI Prototyping']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: uiuxCareer._id, skillId: skillMap['User Research & Wireframing']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: uiuxCareer._id, skillId: skillMap['HTML5 & CSS3']._id, importance: 'Medium', requiredProficiency: 2, weight: 6 },
+
+    // Product Manager
+    { careerId: productCareer._id, skillId: skillMap['Product Analytics & Roadmapping']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: productCareer._id, skillId: skillMap['Communication & Articulation']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: productCareer._id, skillId: skillMap['SQL']._id, importance: 'Medium', requiredProficiency: 2, weight: 6 },
+
+    // Mobile
+    { careerId: mobileCareer._id, skillId: skillMap['React Native & Flutter']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: mobileCareer._id, skillId: skillMap['JavaScript']._id, importance: 'High', requiredProficiency: 3, weight: 8 },
+    { careerId: mobileCareer._id, skillId: skillMap['REST APIs']._id, importance: 'High', requiredProficiency: 3, weight: 7 },
+
+    // Cybersecurity
+    { careerId: securityCareer._id, skillId: skillMap['Network Security & OWASP']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: securityCareer._id, skillId: skillMap['Python']._id, importance: 'High', requiredProficiency: 3, weight: 8 },
+    { careerId: securityCareer._id, skillId: skillMap['Docker']._id, importance: 'Medium', requiredProficiency: 2, weight: 6 },
+
+    // Data Analyst
+    { careerId: dataAnalystCareer._id, skillId: skillMap['SQL']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: dataAnalystCareer._id, skillId: skillMap['Power BI & Tableau']._id, importance: 'Critical', requiredProficiency: 4, weight: 10 },
+    { careerId: dataAnalystCareer._id, skillId: skillMap['Pandas & NumPy']._id, importance: 'High', requiredProficiency: 3, weight: 8 },
+  ];
+
+  await CareerRequirement.insertMany(requirementsData);
+  logger.info(`✨ Seeded ${careerDocs.length} careers and ${requirementsData.length} requirements.`);
 
   // 7. Assessments
   await Assessment.create({
@@ -219,7 +391,25 @@ export async function seedDatabase() {
     ],
   });
 
-  // 8. Student Profile for Alex Chen
+  await Assessment.create({
+    title: 'JavaScript Asynchronous Mastery',
+    description: 'Promises, Event Loop, async/await, microtasks vs macrotasks',
+    skillId: skillMap['JavaScript']._id,
+    difficulty: 'INTERMEDIATE',
+    durationMinutes: 15,
+    passingScore: 70,
+    questions: [
+      {
+        questionText: 'Which queue has higher execution priority in the JavaScript Event Loop?',
+        options: ['Microtask Queue (Promises)', 'Macrotask Queue (setTimeout)', 'Render Queue', 'Worker Thread Queue'],
+        correctOptionIndex: 0,
+        explanation: 'Microtasks (Promises, queueMicrotask) execute before any subsequent macrotask.',
+        points: 10,
+      },
+    ],
+  });
+
+  // 8. Student Profile for Suraj
   await StudentProfile.create({
     userId: studentAlex._id,
     organizationId: adtuOrg._id,
@@ -248,7 +438,7 @@ export async function seedDatabase() {
     },
   });
 
-  // 9. Sample Roadmap for Alex Chen
+  // 9. Sample Roadmap for Suraj
   await Roadmap.create({
     studentId: studentAlex._id,
     careerId: fullStackCareer._id,
@@ -322,7 +512,7 @@ export async function seedDatabase() {
     status: 'UNDER_REVIEW',
   });
 
-  logger.info('🎉 SkillBridge database seed successfully completed with full 14-phase demo data!');
+  logger.info('🎉 SkillBridge database seed successfully completed with full 12 careers and demo data!');
 }
 
 // Standalone execution support
