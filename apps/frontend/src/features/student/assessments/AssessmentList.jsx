@@ -1,8 +1,3 @@
-/**
- * AssessmentList.jsx — Available Skill Assessments & Attempt History
- * Dynamic Apple Light and Multi-Accent Yellow Graphite Dark Mode
- * APIs: GET /api/v1/assessments | GET /api/v1/assessments/attempts/me
- */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -14,39 +9,56 @@ import api from '../../../api/client';
 import { useTheme } from '../../../context/ThemeContext';
 import { getTokens } from '../../../styles/themeTokens';
 
-const MOCK_ASSESSMENTS = [
-  { _id: 'a1', title: 'JavaScript Fundamentals', skillName: 'JavaScript', difficulty: 'BEGINNER', durationMinutes: 20, totalQuestions: 10, passingScore: 70 },
-  { _id: 'a2', title: 'React Intermediate Assessment', skillName: 'React', difficulty: 'INTERMEDIATE', durationMinutes: 30, totalQuestions: 15, passingScore: 70 },
-  { _id: 'a3', title: 'Node.js Architecture', skillName: 'Node.js', difficulty: 'INTERMEDIATE', durationMinutes: 25, totalQuestions: 12, passingScore: 75 },
-  { _id: 'a4', title: 'DSA — Arrays & Trees', skillName: 'Data Structures', difficulty: 'ADVANCED', durationMinutes: 45, totalQuestions: 20, passingScore: 65 },
-  { _id: 'a5', title: 'Docker Basics', skillName: 'Docker', difficulty: 'BEGINNER', durationMinutes: 15, totalQuestions: 8, passingScore: 70 },
-  { _id: 'a6', title: 'System Design Fundamentals', skillName: 'System Design', difficulty: 'ADVANCED', durationMinutes: 40, totalQuestions: 10, passingScore: 75 },
-];
-
-const MOCK_ATTEMPTS = [
-  { assessmentId: 'a2', score: 90, passed: true, createdAt: '2026-08-24T14:20:00.000Z' },
-  { assessmentId: 'a1', score: 85, passed: true, createdAt: '2026-08-20T10:00:00.000Z' },
-];
+function AssessmentSkeleton({ T, isDark }) {
+  return (
+    <div
+      style={{
+        backgroundColor: T.surface,
+        border: `1px solid ${T.border}`,
+        borderRadius: 14,
+        padding: 22,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 14,
+        minHeight: 180,
+      }}
+      className="animate-pulse"
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ height: 16, width: '50%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 4 }} />
+        <div style={{ height: 20, width: 70, backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 999 }} />
+      </div>
+      <div style={{ height: 14, width: '70%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 4 }} />
+      <div style={{ height: 38, width: '100%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 8, marginTop: 'auto' }} />
+    </div>
+  );
+}
 
 export default function AssessmentList() {
   const { isDark } = useTheme();
   const T = getTokens(isDark);
   const navigate = useNavigate();
 
-  const [assessments, setAssessments] = useState(MOCK_ASSESSMENTS);
-  const [attempts, setAttempts] = useState(MOCK_ATTEMPTS);
+  const [assessments, setAssessments] = useState([]);
+  const [attempts, setAttempts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [difficultyFilter, setDifficultyFilter] = useState('ALL');
 
   const fetchData = useCallback(async () => {
     try {
+      setLoading(true);
       const [aRes, attRes] = await Promise.all([
         studentApi.getAssessments(),
-        api.get('/assessments/attempts/me').catch(() => ({ data: MOCK_ATTEMPTS })),
+        api.get('/assessments/attempts/me').catch(() => ({ data: [] })),
       ]);
-      if (aRes?.data) setAssessments(aRes.data);
-      if (attRes?.data) setAttempts(attRes.data);
-    } catch {
-      // Retain mock fallback
+      const aList = Array.isArray(aRes) ? aRes : aRes?.data || [];
+      const attList = Array.isArray(attRes) ? attRes : attRes?.data || [];
+      setAssessments(aList);
+      setAttempts(attList);
+    } catch (err) {
+      console.warn('Assessment fetch notice:', err);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -102,13 +114,13 @@ export default function AssessmentList() {
               key={tab.id}
               onClick={() => setDifficultyFilter(tab.id)}
               style={{
-                padding: '8px 16px',
+                padding: '7px 16px',
                 borderRadius: 8,
-                border: `1px solid ${active ? T.yellow : T.border}`,
-                backgroundColor: active ? (isDark ? T.yellowBg : '#1D1D1F') : T.surface,
-                color: active ? (isDark ? T.yellowText : '#FFFFFF') : T.textMuted,
                 fontSize: 13,
-                fontWeight: active ? 700 : 500,
+                fontWeight: 650,
+                border: active ? `1px solid ${T.yellow}` : `1px solid ${T.border}`,
+                backgroundColor: active ? T.yellowBg : T.surface,
+                color: active ? T.yellowText : T.textMuted,
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}
@@ -119,114 +131,119 @@ export default function AssessmentList() {
         })}
       </div>
 
-      {/* Assessment List Cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        {filtered.map((assessment) => {
-          const attempt = attemptMap[assessment._id];
-          const diffCfg = getDifficultyConfig(assessment.difficulty);
+      {/* Assessment Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+        {loading && assessments.length === 0 ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <AssessmentSkeleton key={i} T={T} isDark={isDark} />
+          ))
+        ) : filtered.length > 0 ? (
+          filtered.map((item) => {
+            const diffCfg = getDifficultyConfig(item.difficulty);
+            const prevAttempt = attemptMap[item._id];
 
-          return (
-            <div
-              key={assessment._id}
-              style={{
-                backgroundColor: T.surface,
-                border: `1px solid ${T.border}`,
-                borderRadius: 14,
-                padding: '18px 24px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-                flexWrap: 'wrap',
-                gap: 16,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, minWidth: 260 }}>
-                <div
-                  style={{
-                    width: 44,
-                    height: 44,
-                    backgroundColor: isDark ? T.tealBg : '#F0FDFA',
-                    borderRadius: 12,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    color: T.tealText,
-                  }}
-                >
-                  <ClipboardCheck size={22} />
-                </div>
-
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                    <h3 style={{ color: T.textPrimary, fontSize: 16, fontWeight: 750, margin: 0 }}>
-                      {assessment.title}
+            return (
+              <div
+                key={item._id}
+                style={{
+                  backgroundColor: T.surface,
+                  border: `1px solid ${T.border}`,
+                  borderRadius: 14,
+                  padding: 22,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                  transition: 'border-color 0.15s ease',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                  <div>
+                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: T.indigoText, letterSpacing: '0.04em' }}>
+                      {item.skillName || item.skillId?.name || 'Programming'}
+                    </span>
+                    <h3 style={{ margin: '4px 0 0', fontSize: 16, fontWeight: 750, color: T.textPrimary }}>
+                      {item.title}
                     </h3>
-                    <span
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 700,
-                        color: diffCfg.text,
-                        backgroundColor: diffCfg.bg,
-                        border: `1px solid ${diffCfg.border}`,
-                        padding: '2px 8px',
-                        borderRadius: 9999,
-                      }}
-                    >
-                      {diffCfg.label}
-                    </span>
                   </div>
 
-                  <div style={{ display: 'flex', gap: 16, color: T.textMuted, fontSize: 12.5, flexWrap: 'wrap' }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <Clock size={12} /> {assessment.durationMinutes} min
-                    </span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <FileQuestion size={12} /> {assessment.totalQuestions} questions
-                    </span>
-                    <span>Passing Score: <strong style={{ color: T.textPrimary }}>{assessment.passingScore}%</strong></span>
-                    <span style={{ color: T.indigoText, fontWeight: 600 }}>{assessment.skillName}</span>
-                  </div>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: diffCfg.text,
+                      backgroundColor: diffCfg.bg,
+                      border: `1px solid ${diffCfg.border}`,
+                      padding: '3px 9px',
+                      borderRadius: 9999,
+                    }}
+                  >
+                    {diffCfg.label}
+                  </span>
                 </div>
-              </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-                {attempt && (
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, fontWeight: 700, color: attempt.passed ? T.emeraldText : T.roseText, marginBottom: 2 }}>
-                      {attempt.passed && <CheckCircle2 size={13} />}
-                      {attempt.passed ? 'Verified' : 'Unverified'} · {attempt.score}%
-                    </div>
-                    <div style={{ fontSize: 11, color: T.textMuted }}>
-                      Attempted {new Date(attempt.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                    </div>
+                <div style={{ display: 'flex', gap: 16, fontSize: 12, color: T.textMuted, margin: '8px 0 18px' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <Clock size={13} style={{ color: T.teal }} /> {item.durationMinutes || 20} mins
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <FileQuestion size={13} style={{ color: T.indigo }} /> {item.questions?.length || item.totalQuestions || 10} Questions
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <Award size={13} style={{ color: T.yellow }} /> Pass: {item.passingScore || 70}%
+                  </span>
+                </div>
+
+                {prevAttempt && (
+                  <div
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      backgroundColor: prevAttempt.passed ? T.emeraldBg : T.yellowBg,
+                      border: `1px solid ${prevAttempt.passed ? T.emeraldBorder : T.yellowBorder}`,
+                      color: prevAttempt.passed ? T.emeraldText : T.yellowText,
+                      fontSize: 12,
+                      fontWeight: 650,
+                      marginBottom: 16,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                  >
+                    <CheckCircle2 size={14} /> Previous Score: {prevAttempt.score}% ({prevAttempt.passed ? 'Passed' : 'Needs Retake'})
                   </div>
                 )}
 
                 <button
-                  onClick={() => navigate(`/assessments/${assessment._id}`)}
+                  onClick={() => navigate(`/assessments/${item._id}`)}
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    padding: '9px 20px',
-                    borderRadius: 9,
+                    marginTop: 'auto',
+                    width: '100%',
+                    padding: '10px 0',
+                    borderRadius: 8,
                     border: 'none',
-                    backgroundColor: attempt ? T.surfaceSubtle : T.buttonPrimaryBg,
-                    color: attempt ? T.textPrimary : T.buttonPrimaryText,
-                    fontWeight: 750,
+                    backgroundColor: prevAttempt?.passed ? T.surfaceSubtle : T.buttonPrimaryBg,
+                    color: prevAttempt?.passed ? T.textPrimary : T.buttonPrimaryText,
                     fontSize: 13,
+                    fontWeight: 700,
                     cursor: 'pointer',
-                    boxShadow: attempt ? 'none' : '0 2px 8px rgba(0,0,0,0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    transition: 'all 0.15s ease',
                   }}
                 >
-                  {attempt ? 'Retake' : 'Start'} <ChevronRight size={14} />
+                  <span>{prevAttempt?.passed ? 'Retake Assessment' : 'Start Assessment'}</span>
+                  <ChevronRight size={14} />
                 </button>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        ) : (
+          <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '48px 0', color: T.textMuted }}>
+            No assessments found for this filter level.
+          </div>
+        )}
       </div>
     </div>
   );

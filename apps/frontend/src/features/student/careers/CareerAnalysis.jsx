@@ -71,16 +71,16 @@ export default function CareerAnalysis() {
   const T = getTokens(isDark);
   const navigate = useNavigate();
 
-  const [analysis, setAnalysis] = useState(MOCK_ANALYSIS);
-  const [loading, setLoading] = useState(false);
+  const [analysis, setAnalysis] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchAnalysis = useCallback(async () => {
     try {
       setLoading(true);
       const res = await studentApi.getCareerAnalysis();
-      if (res?.data) setAnalysis(res.data);
-    } catch {
-      // Retain mock analysis
+      if (res?.data || res) setAnalysis(res?.data || res);
+    } catch (err) {
+      console.warn('Career analysis notice:', err);
     } finally {
       setLoading(false);
     }
@@ -89,6 +89,18 @@ export default function CareerAnalysis() {
   useEffect(() => {
     fetchAnalysis();
   }, [fetchAnalysis]);
+
+  if (loading && !analysis) {
+    return (
+      <div style={{ width: '100%', maxWidth: 1120, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{ height: 60, width: '40%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 8 }} className="animate-pulse" />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+          <div style={{ height: 260, backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 14 }} className="animate-pulse" />
+          <div style={{ height: 260, backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 14 }} className="animate-pulse" />
+        </div>
+      </div>
+    );
+  }
 
   if (!analysis) {
     return (

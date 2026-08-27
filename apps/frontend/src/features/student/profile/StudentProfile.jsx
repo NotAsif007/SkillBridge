@@ -145,9 +145,9 @@ export default function StudentProfile() {
   const { addToast } = useToast();
   const T = getTokens(isDark);
 
-  const [profile, setProfile] = useState(MOCK_PROFILE);
+  const [profile, setProfile] = useState(null);
   const [allSkills, setAllSkills] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({});
@@ -160,20 +160,37 @@ export default function StudentProfile() {
 
   const fetchData = useCallback(async () => {
     try {
+      setLoading(true);
       const [profileRes, skillsRes] = await Promise.all([
         studentApi.getProfile(),
         studentApi.getSkills(),
       ]);
-      if (profileRes?.data) setProfile(profileRes.data);
-      if (skillsRes?.data) setAllSkills(skillsRes.data);
-    } catch {
-      // Retain mock fallback cleanly
+      const pData = profileRes?.data || profileRes;
+      const sData = Array.isArray(skillsRes) ? skillsRes : skillsRes?.data || [];
+      if (pData) setProfile(pData);
+      if (sData) setAllSkills(sData);
+    } catch (err) {
+      console.warn('Profile fetch notice:', err);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  if (loading && !profile) {
+    return (
+      <div style={{ maxWidth: 1040, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div style={{ height: 160, backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 16 }} className="animate-pulse" />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+          <div style={{ height: 220, backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 16 }} className="animate-pulse" />
+          <div style={{ height: 220, backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 16 }} className="animate-pulse" />
+        </div>
+      </div>
+    );
+  }
 
   const startEdit = () => {
     if (!profile) return;

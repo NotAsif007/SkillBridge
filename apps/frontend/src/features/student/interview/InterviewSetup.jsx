@@ -28,7 +28,8 @@ export default function InterviewSetup() {
   const navigate = useNavigate();
 
   const [careers, setCareers] = useState([]);
-  const [history, setHistory] = useState(MOCK_HISTORY);
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCareer, setSelectedCareer] = useState('');
   const [difficulty, setDifficulty] = useState('MEDIUM');
   const [starting, setStarting] = useState(false);
@@ -36,21 +37,20 @@ export default function InterviewSetup() {
 
   const fetchData = useCallback(async () => {
     try {
+      setLoading(true);
       const [cRes, hRes] = await Promise.all([
         studentApi.getCareers(),
-        api.get('/interviews/history').catch(() => ({ data: MOCK_HISTORY })),
+        api.get('/interviews/history').catch(() => ({ data: [] })),
       ]);
-      setCareers(cRes.data || []);
-      setHistory(hRes.data || MOCK_HISTORY);
-      if (cRes.data?.length) setSelectedCareer(cRes.data[0]._id);
-    } catch {
-      const mockCareers = [
-        { _id: 'c1', title: 'Full Stack Developer' },
-        { _id: 'c2', title: 'Data Scientist' },
-      ];
-      setCareers(mockCareers);
-      setHistory(MOCK_HISTORY);
-      setSelectedCareer('c1');
+      const cList = Array.isArray(cRes) ? cRes : cRes?.data || [];
+      const hList = Array.isArray(hRes) ? hRes : hRes?.data || [];
+      setCareers(cList);
+      setHistory(hList);
+      if (cList.length) setSelectedCareer(cList[0]._id);
+    } catch (err) {
+      console.warn('Interview setup fetch notice:', err);
+    } finally {
+      setLoading(false);
     }
   }, []);
 

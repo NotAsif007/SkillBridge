@@ -1,47 +1,42 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Briefcase, SlidersHorizontal, FileX, ChevronDown } from 'lucide-react';
 import { studentApi } from '../../../api/student';
-import api from '../../../api/client';
-import JobCard, { MOCK_JOB } from './JobCard';
+import JobCard from './JobCard';
 import { useTheme } from '../../../context/ThemeContext';
 import { getTokens } from '../../../styles/themeTokens';
 
-const MOCK_JOBS = [
-  MOCK_JOB,
-  {
-    _id: 'job_mock_002',
-    title: 'Full Stack Developer',
-    company: 'Zepto',
-    location: 'Mumbai, India',
-    jobType: 'FULL_TIME',
-    salaryRange: { min: 1200000, max: 1800000, currency: 'INR' },
-    matchScore: 71,
-    matchedSkills: ['Node.js', 'React', 'MongoDB'],
-    missingSkills: ['Redis', 'Kafka'],
-    applicationDeadline: new Date(Date.now() + 15 * 86400000).toISOString(),
-    applied: false,
-  },
-  {
-    _id: 'job_mock_003',
-    title: 'Backend Intern',
-    company: 'CRED',
-    location: 'Bengaluru, India (Remote)',
-    jobType: 'INTERNSHIP',
-    salaryRange: { min: 400000, max: 600000, currency: 'INR' },
-    matchScore: 55,
-    matchedSkills: ['Python', 'Django'],
-    missingSkills: ['Docker', 'AWS', 'PostgreSQL'],
-    applicationDeadline: new Date(Date.now() + 3 * 86400000).toISOString(),
-    applied: true,
-  },
-];
+function JobSkeleton({ T, isDark }) {
+  return (
+    <div
+      style={{
+        backgroundColor: T.surface,
+        border: `1px solid ${T.border}`,
+        borderRadius: 14,
+        padding: 22,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        minHeight: 200,
+      }}
+      className="animate-pulse"
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ height: 16, width: '60%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 4 }} />
+        <div style={{ height: 16, width: '25%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 4 }} />
+      </div>
+      <div style={{ height: 12, width: '40%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 4 }} />
+      <div style={{ height: 32, width: '100%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 6 }} />
+      <div style={{ height: 38, width: '100%', backgroundColor: isDark ? '#1E2130' : '#E5E5EA', borderRadius: 8, marginTop: 'auto' }} />
+    </div>
+  );
+}
 
 export default function JobList() {
   const { isDark } = useTheme();
   const T = getTokens(isDark);
 
-  const [jobs, setJobs] = useState(MOCK_JOBS);
-  const [loading, setLoading] = useState(false);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [applyingId, setApplyingId] = useState(null);
@@ -50,11 +45,10 @@ export default function JobList() {
     try {
       setLoading(true);
       const res = await studentApi.getJobs();
-      if (res?.data && res.data.length > 0) {
-        setJobs(res.data);
-      }
-    } catch {
-      // Retain mock jobs
+      const jobList = Array.isArray(res) ? res : res?.data || [];
+      setJobs(jobList);
+    } catch (err) {
+      console.warn('Jobs fetch notice:', err);
     } finally {
       setLoading(false);
     }
@@ -67,7 +61,7 @@ export default function JobList() {
   const handleApply = async (jobId) => {
     try {
       setApplyingId(jobId);
-      await studentApi.applyToJob(jobId);
+      await studentApi.applyJob(jobId);
       setJobs((prev) =>
         prev.map((j) => (j._id === jobId ? { ...j, applied: true } : j))
       );
@@ -82,8 +76,8 @@ export default function JobList() {
 
   const filtered = jobs.filter((j) => {
     const matchesSearch =
-      j.title.toLowerCase().includes(search.toLowerCase()) ||
-      j.company.toLowerCase().includes(search.toLowerCase());
+      (j.title || '').toLowerCase().includes(search.toLowerCase()) ||
+      (j.company || '').toLowerCase().includes(search.toLowerCase());
     const matchesType = typeFilter === 'ALL' || j.jobType === typeFilter;
     return matchesSearch && matchesType;
   });
@@ -155,14 +149,24 @@ export default function JobList() {
 
       {/* Job Cards Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 20 }}>
-        {filtered.map((job) => (
-          <JobCard
-            key={job._id}
-            job={job}
-            onApply={handleApply}
-            isApplying={applyingId === job._id}
-          />
-        ))}
+        {loading && jobs.length === 0 ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <JobSkeleton key={i} T={T} isDark={isDark} />
+          ))
+        ) : filtered.length > 0 ? (
+          filtered.map((job) => (
+            <JobCard
+              key={job._id}
+              job={job}
+              onApply={handleApply}
+              isApplying={applyingId === job._id}
+            />
+          ))
+        ) : (
+          <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '48px 0', color: T.textMuted }}>
+            No opportunities found matching your criteria.
+          </div>
+        )}
       </div>
     </div>
   );

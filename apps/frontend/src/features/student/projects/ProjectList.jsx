@@ -161,9 +161,9 @@ export default function ProjectList() {
   const { isDark } = useTheme();
   const T = getTokens(isDark);
 
-  const [projects, setProjects] = useState(MOCK_PROJECTS);
-  const [recommendations, setRecommendations] = useState(MOCK_RECOMMENDATIONS);
-  const [loading, setLoading] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
   const fetchProjects = useCallback(async () => {
@@ -171,12 +171,14 @@ export default function ProjectList() {
       setLoading(true);
       const [projRes, recRes] = await Promise.all([
         studentApi.getProjects(),
-        api.get('/projects/recommendations').catch(() => ({ data: MOCK_RECOMMENDATIONS })),
+        api.get('/projects/recommendations').catch(() => ({ data: [] })),
       ]);
-      if (projRes?.data) setProjects(projRes.data);
-      if (recRes?.data) setRecommendations(recRes.data);
-    } catch {
-      // Retain mock data
+      const pList = Array.isArray(projRes) ? projRes : projRes?.data || [];
+      const rList = Array.isArray(recRes) ? recRes : recRes?.data || [];
+      setProjects(pList);
+      setRecommendations(rList);
+    } catch (err) {
+      console.warn('Projects fetch notice:', err);
     } finally {
       setLoading(false);
     }
