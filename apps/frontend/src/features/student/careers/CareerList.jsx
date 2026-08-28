@@ -59,6 +59,7 @@ function CareerCard({ career, isTarget, onSetTarget, onViewDetails, settingId, T
 
   return (
     <div
+      className="card-hover"
       style={{
         backgroundColor: T.surface,
         border: `1px solid ${isTarget ? T.yellow : T.border}`,
@@ -66,9 +67,8 @@ function CareerCard({ career, isTarget, onSetTarget, onViewDetails, settingId, T
         padding: 22,
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: isTarget ? `0 0 0 1px ${T.yellow}` : '0 2px 8px rgba(0,0,0,0.02)',
+        outline: isTarget ? `1px solid ${T.yellow}` : 'none',
         width: '100%',
-        transition: 'all 0.2s ease',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>

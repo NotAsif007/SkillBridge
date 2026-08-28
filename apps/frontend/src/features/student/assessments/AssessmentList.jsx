@@ -145,6 +145,7 @@ export default function AssessmentList() {
             return (
               <div
                 key={item._id}
+                className="card-hover"
                 style={{
                   backgroundColor: T.surface,
                   border: `1px solid ${T.border}`,
@@ -152,8 +153,6 @@ export default function AssessmentList() {
                   padding: 22,
                   display: 'flex',
                   flexDirection: 'column',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-                  transition: 'border-color 0.15s ease',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>

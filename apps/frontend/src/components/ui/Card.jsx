@@ -10,8 +10,11 @@ const Card = ({ className, hoverable, children, ...props }) => {
   return (
     <div
       className={cn(
+        // Base: clean white surface, subtle border, gentle resting shadow
         'bg-white border border-[#E5E5EA] rounded-xl overflow-hidden',
-        hoverable && 'transition-shadow hover:shadow-md',
+        'shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.03)]',
+        // Hoverable: adds the card-hover micro-lift from index.css
+        hoverable && 'card-hover',
         className
       )}
       {...props}

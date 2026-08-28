@@ -91,13 +91,13 @@ export default function InterviewSetup() {
 
       {/* Setup Card */}
       <div
+        className="card-hover"
         style={{
           backgroundColor: T.surface,
           border: `1px solid ${T.border}`,
           borderRadius: 14,
           padding: 28,
           marginBottom: 28,
-          boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
         }}
       >
         <h2 style={{ color: T.textPrimary, fontSize: 16, fontWeight: 750, margin: '0 0 20px' }}>
@@ -201,12 +201,12 @@ export default function InterviewSetup() {
       {/* History */}
       {history.length > 0 && (
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
             borderRadius: 14,
             overflow: 'hidden',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
           }}
         >
           <div style={{ padding: '16px 24px', borderBottom: `1px solid ${T.border}`, backgroundColor: T.surfaceSubtle }}>

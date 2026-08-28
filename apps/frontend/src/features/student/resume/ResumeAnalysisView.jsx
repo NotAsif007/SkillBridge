@@ -163,6 +163,7 @@ export default function ResumeAnalysisView() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 340px) 1fr', gap: 20 }}>
         {/* Left: Overall ATS Score */}
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
@@ -172,7 +173,6 @@ export default function ResumeAnalysisView() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
           }}
         >
           <div style={{ position: 'relative', width: 140, height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>
@@ -214,6 +214,7 @@ export default function ResumeAnalysisView() {
 
         {/* Right: Recognized Skills */}
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
@@ -222,7 +223,6 @@ export default function ResumeAnalysisView() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
           }}
         >
           <div>
@@ -270,12 +270,12 @@ export default function ResumeAnalysisView() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
         {/* Strengths */}
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
             borderRadius: 14,
             padding: 22,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: T.emeraldText, marginBottom: 14 }}>
@@ -306,12 +306,12 @@ export default function ResumeAnalysisView() {
 
         {/* Weaknesses */}
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
             borderRadius: 14,
             padding: 22,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: T.yellowText, marginBottom: 14 }}>

@@ -77,6 +77,7 @@ export default function ResumeUpload() {
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
         onClick={() => !file && inputRef.current?.click()}
+        className="card-hover"
         style={{
           border: `2px dashed ${dragging ? T.yellow : file ? T.emerald : T.border}`,
           borderRadius: 14,
@@ -84,9 +85,7 @@ export default function ResumeUpload() {
           textAlign: 'center',
           backgroundColor: dragging ? T.yellowBg : T.surface,
           cursor: file ? 'default' : 'pointer',
-          transition: 'all 0.2s ease',
           marginBottom: 20,
-          boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
         }}
       >
         <input ref={inputRef} type="file" accept=".pdf" style={{ display: 'none' }} onChange={(e) => handleFile(e.target.files[0])} />

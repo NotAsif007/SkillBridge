@@ -80,13 +80,13 @@ export default function InterviewReport() {
       {/* Score Card */}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
             borderRadius: 14,
             padding: '28px 48px',
             textAlign: 'center',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
           }}
         >
           <ScoreGauge score={avgScore} T={T} />
@@ -105,12 +105,12 @@ export default function InterviewReport() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 18, marginBottom: 32 }}>
         {/* Strengths */}
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
             borderRadius: 12,
             padding: 22,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
           }}
         >
           <h3 style={{ color: T.emeraldText, fontSize: 14, fontWeight: 750, margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -132,12 +132,12 @@ export default function InterviewReport() {
 
         {/* Improvements */}
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
             borderRadius: 12,
             padding: 22,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
           }}
         >
           <h3 style={{ color: T.yellowText, fontSize: 14, fontWeight: 750, margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>

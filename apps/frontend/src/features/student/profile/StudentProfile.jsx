@@ -93,12 +93,12 @@ function TagPill({ label, onRemove, T }) {
 function ProfileCard({ title, icon: Icon, children, headerAction, T }) {
   return (
     <div
+      className="card-hover"
       style={{
         backgroundColor: T.surface,
         border: `1px solid ${T.border}`,
         borderRadius: 14,
         padding: 24,
-        boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
         marginBottom: 20,
       }}
     >

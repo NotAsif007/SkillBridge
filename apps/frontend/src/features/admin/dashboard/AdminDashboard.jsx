@@ -130,7 +130,7 @@ const MOCK_DASHBOARD_DATA = {
 function KpiCard({ icon: Icon, iconColor, iconBg, label, value, sub, trend }) {
   return (
     <article
-      className="rounded-xl p-5 flex flex-col gap-4"
+      className="rounded-xl p-5 flex flex-col gap-4 card-hover"
       style={{
         backgroundColor: T.surface,
         border: `1px solid ${T.border}`,
