@@ -413,7 +413,7 @@ function StudentRow({ student, isSelected, onClick, isEven }) {
   return (
     <tr
       onClick={() => onClick(student)}
-      className="cursor-pointer transition-colors group"
+      className="cursor-pointer transition-colors group interactive-row"
       style={{
         backgroundColor: isSelected
           ? 'rgba(37,99,235,0.08)'

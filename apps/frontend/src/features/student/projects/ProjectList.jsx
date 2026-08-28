@@ -46,6 +46,7 @@ function ProjectCard({ project, T }) {
 
   return (
     <div
+      className="card-hover"
       style={{
         backgroundColor: T.surface,
         border: `1px solid ${T.border}`,
@@ -53,7 +54,6 @@ function ProjectCard({ project, T }) {
         padding: 22,
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>

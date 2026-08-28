@@ -51,6 +51,7 @@
  */
 
 import React, { useEffect, useCallback } from 'react';
+import { useTheme } from '../../../context/ThemeContext';
 import {
   X,
   User,
@@ -257,6 +258,16 @@ function ActionButton({ icon: Icon, label, disabled = true, onClick }) {
 // StudentDrawer — main component
 // ═══════════════════════════════════════════════════════════════════════════════
 export default function StudentDrawer({ student, open, onClose }) {
+  const { isDark } = useTheme();
+
+  // Override static T tokens that need to be theme-aware
+  // (T is a module-level const so we shadow the two theme-sensitive values here)
+  const TT = {
+    ...T,
+    surfaceHigh: isDark ? '#1A2235' : '#F5F5F7',
+    borderLight: isDark ? '#2D3748' : '#E5E5EA',
+  };
+
   // ── ESC to close ─────────────────────────────────────────────────────────
   const handleKeyDown = useCallback(
     (e) => {

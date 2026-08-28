@@ -112,13 +112,13 @@ export default function CareerDetail() {
 
       {/* Header Card */}
       <div
+        className="card-hover"
         style={{
           backgroundColor: T.surface,
           border: `1px solid ${T.border}`,
           borderRadius: 14,
           padding: 28,
           marginBottom: 24,
-          boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap', marginBottom: 16 }}>
@@ -160,12 +160,12 @@ export default function CareerDetail() {
 
       {/* Skill Requirements Table */}
       <div
+        className="card-hover"
         style={{
           backgroundColor: T.surface,
           border: `1px solid ${T.border}`,
           borderRadius: 14,
           overflow: 'hidden',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
         }}
       >
         <div style={{ padding: '18px 24px', borderBottom: `1px solid ${T.border}`, backgroundColor: T.surfaceSubtle }}>

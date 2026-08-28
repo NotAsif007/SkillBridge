@@ -51,6 +51,275 @@ html.dark * {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   iOS 18 / Apple-Inspired Visual Polish — Universal Box Lift System
+   ─────────────────────────────────────────────────────────────────────────
+   THREE-TIER CASCADE — all scoped to .app-content (excludes sidebar,
+   header, toast, login, modals automatically).
+
+   TIER 1 — CSS attribute selector [style*="border-radius"]
+     Catches every inline-styled box in student pages — from the outermost
+     card (borderRadius:14) down to the smallest inner metric box
+     (borderRadius:8). No JSX changes needed. Works on every nesting level.
+
+   TIER 2 — Tailwind rounded-lg / rounded-xl / rounded-2xl classes
+     Catches admin pages and StudentDashboard which use Tailwind for radius.
+     Higher specificity via will-change + later order than Tier 1.
+
+   TIER 3 — Explicit .card-hover class
+     Placed LAST so it wins cascade ties with same specificity.
+     Used on large outer cards for the strongest shadow depth.
+
+   CSS Specificity note:
+     Tier 1: .app-content div[style*="border-radius"]:hover = (0,3,1)
+     Tier 2: .app-content :is(div).rounded-xl:hover         = (0,3,0)
+     Tier 3: .app-content div.card-hover:hover              = (0,3,1)
+     → Tier 1 & 3 tie; Tier 3 wins because it appears LAST in file.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── TIER 1: Universal — ALL inline-styled boxes + buttons (student pages) ──
+   Targets every element that has an inline border-radius — including buttons.
+   Covers: outer card (borderRadius:14), inner metric box (borderRadius:8),
+   action buttons (borderRadius:8-10), link buttons, skill rows, everything.
+   ─────────────────────────────────────────────────────────────────────── */
+.app-content div[style*="border-radius"],
+.app-content button[style*="border-radius"],
+.app-content a[style*="border-radius"],
+.app-content article[style*="border-radius"],
+.app-content section[style*="border-radius"],
+.app-content li[style*="border-radius"] {
+  transition:
+    transform    280ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow   280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.app-content div[style*="border-radius"]:hover,
+.app-content button[style*="border-radius"]:hover,
+.app-content a[style*="border-radius"]:hover,
+.app-content article[style*="border-radius"]:hover,
+.app-content section[style*="border-radius"]:hover,
+.app-content li[style*="border-radius"]:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 14px 36px rgba(0, 0, 0, 0.10),
+    0 4px  12px rgba(0, 0, 0, 0.06),
+    0 1px  4px  rgba(0, 0, 0, 0.03);
+}
+.app-content div[style*="border-radius"]:active,
+.app-content button[style*="border-radius"]:active,
+.app-content a[style*="border-radius"]:active,
+.app-content article[style*="border-radius"]:active,
+.app-content section[style*="border-radius"]:active,
+.app-content li[style*="border-radius"]:active {
+  transform: translateY(-1px);
+  transition-duration: 80ms;
+}
+html.dark .app-content div[style*="border-radius"]:hover,
+html.dark .app-content button[style*="border-radius"]:hover,
+html.dark .app-content a[style*="border-radius"]:hover,
+html.dark .app-content article[style*="border-radius"]:hover,
+html.dark .app-content section[style*="border-radius"]:hover,
+html.dark .app-content li[style*="border-radius"]:hover {
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.44),
+    0 6px  16px rgba(0, 0, 0, 0.28),
+    0 2px  5px  rgba(0, 0, 0, 0.16);
+}
+
+/* ── TIER 2: Tailwind rounded-* classes (admin + StudentDashboard) ────────
+   Catches rounded-lg (inner admin items + buttons), rounded-xl and rounded-2xl
+   (large admin cards, StudentDashboard cards). Includes button and a elements.
+   ─────────────────────────────────────────────────────────────────────── */
+.app-content :is(div, button, a, article, section, li).rounded-lg,
+.app-content :is(div, button, a, article, section, li).rounded-xl,
+.app-content :is(div, button, a, article, section, li).rounded-2xl {
+  transition:
+    transform    320ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow   320ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 240ms ease;
+  will-change: transform, box-shadow;
+}
+.app-content :is(div, button, a, article, section, li).rounded-lg:hover,
+.app-content :is(div, button, a, article, section, li).rounded-xl:hover,
+.app-content :is(div, button, a, article, section, li).rounded-2xl:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 52px rgba(0, 0, 0, 0.11),
+    0 6px  18px rgba(0, 0, 0, 0.07),
+    0 2px  5px  rgba(0, 0, 0, 0.04);
+}
+.app-content :is(div, button, a, article, section, li).rounded-lg:active,
+.app-content :is(div, button, a, article, section, li).rounded-xl:active,
+.app-content :is(div, button, a, article, section, li).rounded-2xl:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition-duration: 80ms;
+}
+html.dark .app-content :is(div, button, a, article, section, li).rounded-lg:hover,
+html.dark .app-content :is(div, button, a, article, section, li).rounded-xl:hover,
+html.dark .app-content :is(div, button, a, article, section, li).rounded-2xl:hover {
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.52),
+    0 8px  22px rgba(0, 0, 0, 0.32),
+    0 3px  7px  rgba(0, 0, 0, 0.20);
+}
+
+/* ── TIER 3: Explicit .card-hover — outermost cards, placed LAST to win ──
+   Same specificity (0,3,1) as Tier 1 attribute selector, but later in the
+   file so it takes precedence. Larger lift + deeper shadow for big cards.
+   ─────────────────────────────────────────────────────────────────────── */
+.app-content div.card-hover,
+.app-content article.card-hover,
+.app-content section.card-hover,
+.app-content li.card-hover,
+.card-hover {
+  transition:
+    transform    320ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow   320ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 240ms ease;
+  will-change: transform, box-shadow;
+}
+.app-content div.card-hover:hover,
+.app-content article.card-hover:hover,
+.app-content section.card-hover:hover,
+.app-content li.card-hover:hover,
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 24px 56px rgba(0, 0, 0, 0.12),
+    0 8px  20px rgba(0, 0, 0, 0.08),
+    0 2px  6px  rgba(0, 0, 0, 0.04);
+}
+.app-content div.card-hover:active,
+.app-content article.card-hover:active,
+.card-hover:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition-duration: 80ms;
+}
+html.dark .app-content div.card-hover:hover,
+html.dark .app-content article.card-hover:hover,
+html.dark .card-hover:hover {
+  box-shadow:
+    0 28px 72px rgba(0, 0, 0, 0.56),
+    0 10px 26px rgba(0, 0, 0, 0.34),
+    0 3px  8px  rgba(0, 0, 0, 0.22);
+}
+
+/* ── card-hover-sm — nested inner metric cards (explicit class) ──────────── */
+.card-hover-sm {
+  transition:
+    transform    260ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow   260ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 200ms ease;
+  will-change: transform, box-shadow;
+}
+.card-hover-sm:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.09),
+    0 4px  10px rgba(0, 0, 0, 0.05),
+    0 1px  3px  rgba(0, 0, 0, 0.03);
+}
+.card-hover-sm:active {
+  transform: translateY(-1px);
+  transition-duration: 70ms;
+}
+html.dark .card-hover-sm:hover {
+  box-shadow:
+    0 16px 44px rgba(0, 0, 0, 0.48),
+    0 5px  14px rgba(0, 0, 0, 0.28),
+    0 2px  5px  rgba(0, 0, 0, 0.16);
+}
+
+/* ── Interactive table / list row hover ──────────────────────────────────── */
+.interactive-row {
+  transition:
+    background-color 140ms ease,
+    border-color     140ms ease;
+  cursor: pointer;
+}
+.interactive-row:hover {
+  background-color: rgba(0, 0, 0, 0.025);
+}
+html.dark .interactive-row:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* ── Button press feedback ───────────────────────────────────────────────── */
+.btn-lift {
+  transition:
+    transform        140ms cubic-bezier(0.34, 1.3, 0.64, 1),
+    box-shadow       140ms ease,
+    background-color 180ms ease,
+    border-color     180ms ease;
+}
+.btn-lift:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.btn-lift:active {
+  transform: scale(0.96);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition-duration: 70ms;
+}
+
+/* ── Apple-style frosted glass surface ──────────────────────────────────── */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border: 1px solid rgba(229, 229, 234, 0.80);
+}
+html.dark .glass-panel {
+  background: rgba(21, 23, 32, 0.88);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(30, 33, 48, 0.90);
+}
+
+/* ── Refined keyboard focus ring ────────────────────────────────────────── */
+.focus-ring:focus-visible {
+  outline: 2px solid #059669;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+html.dark .focus-ring:focus-visible {
+  outline-color: #F59E0B;
+}
+
+/* ── Input smooth focus transition ──────────────────────────────────────── */
+input, select, textarea {
+  transition:
+    border-color 160ms ease,
+    box-shadow   160ms ease;
+}
+
+/* ── Prefers-reduced-motion — disable all polish animations ─────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .app-content div[style*="border-radius"],
+  .app-content button[style*="border-radius"],
+  .app-content a[style*="border-radius"],
+  .app-content article[style*="border-radius"],
+  .app-content section[style*="border-radius"],
+  .app-content li[style*="border-radius"],
+  .app-content :is(div, button, a, article, section, li).rounded-lg,
+  .app-content :is(div, button, a, article, section, li).rounded-xl,
+  .app-content :is(div, button, a, article, section, li).rounded-2xl,
+  .header-icon-btn,
+  .card-hover,
+  .card-hover-sm,
+  .interactive-row,
+  .btn-lift {
+    transition: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+    will-change: auto !important;
+  }
+  input, select, textarea {
+    transition: none !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
    Application Shell
    ═══════════════════════════════════════════════════════════════════════════ */
 .app-shell { min-height: 100vh; display: flex; background: #f5f5f7; }
@@ -131,15 +400,25 @@ html.dark * {
   border: 1px solid #e5e5ea;
   background: #ffffff;
   cursor: pointer;
-  transition: background-color .16s ease, border-color .16s ease, transform .1s ease;
+  transition:
+    background-color 160ms ease,
+    border-color     160ms ease,
+    transform        240ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow       240ms cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
 .header-icon-btn:hover {
   background: #f5f5f7;
   border-color: #d2d2d7;
+  transform: translateY(-3px);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.09),
+    0 2px 6px  rgba(0, 0, 0, 0.05);
 }
 .header-icon-btn:active {
-  transform: scale(0.92);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition-duration: 80ms;
 }
 
 .header-profile {
@@ -499,6 +778,10 @@ html.dark .header-icon-btn:hover {
   background-color: #1E2130 !important;
   border-color: #F59E0B !important;
   color: #F59E0B !important;
+  transform: translateY(-3px);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.40),
+    0 3px  8px  rgba(0, 0, 0, 0.24);
 }
 
 /* ── Avatar in dark mode ── */

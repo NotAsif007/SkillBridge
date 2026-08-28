@@ -72,12 +72,12 @@ export default function JobCard({
 
   return (
     <div
+      className="card-hover"
       style={{
         backgroundColor: T.surface,
         border: `1px solid ${T.border}`,
         borderRadius: 14,
         padding: 22,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
         display: 'flex',
         flexDirection: 'column',
         gap: 14,

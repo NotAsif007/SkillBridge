@@ -220,13 +220,11 @@ function DepartmentEmpty() {
 function DepartmentCard({ department }) {
   return (
     <article
-      className="rounded-xl p-5 flex flex-col gap-4 transition-colors duration-150"
+      className="rounded-xl p-5 flex flex-col gap-4 card-hover"
       style={{
         backgroundColor: T.surface,
         border: `1px solid ${T.border}`,
       }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = '#374151'; }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; }}
     >
       {/* Header: Icon + Code Badge */}
       <div className="flex items-start justify-between">

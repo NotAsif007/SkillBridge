@@ -23,13 +23,12 @@ function MilestoneTimeline({ milestones, onToggleTask, T, isDark }) {
         return (
           <div
             key={m._id || idx}
+            className="card-hover"
             style={{
               backgroundColor: T.surface,
               border: `1px solid ${allDone ? T.emeraldBorder : T.border}`,
               borderRadius: 14,
               overflow: 'hidden',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-              transition: 'border-color 0.2s ease',
             }}
           >
             {/* Milestone Header */}
@@ -311,13 +310,13 @@ export default function RoadmapView() {
         <>
           {/* Progress Overview Card */}
           <div
+            className="card-hover"
             style={{
               backgroundColor: T.surface,
               border: `1px solid ${T.border}`,
               borderRadius: 14,
               padding: '24px 28px',
               marginBottom: 32,
-              boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>

@@ -172,6 +172,7 @@ export default function CareerAnalysis() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 280px) 1fr', gap: 20, marginBottom: 24 }}>
         {/* Left: Overall Gauge Card */}
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
@@ -181,7 +182,6 @@ export default function CareerAnalysis() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
           }}
         >
           <ReadinessGauge score={score} T={T} />
@@ -203,12 +203,12 @@ export default function CareerAnalysis() {
 
         {/* Right: Score Breakdown Progress Bars */}
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
             borderRadius: 14,
             padding: 24,
-            boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -252,12 +252,12 @@ export default function CareerAnalysis() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginBottom: 24 }}>
         {/* Matched Skills Card */}
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
             borderRadius: 14,
             padding: 20,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
           }}
         >
           <h3 style={{ color: T.emeraldText, fontSize: 14, fontWeight: 700, margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -286,12 +286,12 @@ export default function CareerAnalysis() {
 
         {/* Weak / Level Gap Skills Card */}
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
             borderRadius: 14,
             padding: 20,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
           }}
         >
           <h3 style={{ color: T.yellowText, fontSize: 14, fontWeight: 700, margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -320,12 +320,12 @@ export default function CareerAnalysis() {
 
         {/* Missing Skills Card */}
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
             borderRadius: 14,
             padding: 20,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
           }}
         >
           <h3 style={{ color: T.roseText, fontSize: 14, fontWeight: 700, margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -366,6 +366,7 @@ export default function CareerAnalysis() {
       {/* ── AI Insights Card ── */}
       {analysis.aiInsights && (
         <div
+          className="card-hover"
           style={{
             backgroundColor: T.surface,
             border: `1px solid ${T.border}`,
@@ -373,7 +374,6 @@ export default function CareerAnalysis() {
             borderRadius: 14,
             padding: 22,
             marginBottom: 24,
-            boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, color: T.indigoText }}>
